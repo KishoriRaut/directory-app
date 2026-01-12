@@ -17,6 +17,7 @@ export const validateField = (field: string, value: any): ValidationResult => {
       }
       if (name.length > VALIDATION_RULES.name.maxLength) {
         return { isValid: false, error: `Name must be less than ${VALIDATION_RULES.name.maxLength} characters` }
+      }
       return { isValid: true }
     
     case 'profession':
