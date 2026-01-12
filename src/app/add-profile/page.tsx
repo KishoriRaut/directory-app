@@ -118,9 +118,9 @@ export default function AddProfilePage() {
           availability: formData.availability,
           image_url: formData.imageUrl || null,
           verified: false
-        } as any)
+        })
         .select()
-        .single()
+        .single() as any
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
@@ -137,7 +137,7 @@ export default function AddProfilePage() {
 
         const { error: servicesError } = await supabase
           .from('services')
-          .insert(servicesToInsert as any)
+          .insert(servicesToInsert)
 
         if (servicesError) {
           console.error('Error adding services:', servicesError)
