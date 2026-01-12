@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { ImageUpload } from '@/components/ImageUpload'
 
 const categories = [
   { value: 'doctor', label: 'Doctor' },
@@ -32,7 +33,8 @@ export default function AddProfilePage() {
     description: '',
     availability: '',
     services: [] as string[],
-    newService: ''
+    newService: '',
+    imageUrl: ''
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -79,6 +81,7 @@ export default function AddProfilePage() {
           rating: 0,
           description: formData.description,
           availability: formData.availability,
+          image_url: formData.imageUrl || null,
           verified: false
         })
         .select()
@@ -121,7 +124,8 @@ export default function AddProfilePage() {
         description: '',
         availability: '',
         services: [],
-        newService: ''
+        newService: '',
+        imageUrl: ''
       })
       
     } catch (error) {
@@ -156,6 +160,10 @@ export default function AddProfilePage() {
     }
   }
 
+  const handleImageChange = (imageUrl: string | null) => {
+    updateField('imageUrl', imageUrl || '')
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -185,6 +193,17 @@ export default function AddProfilePage() {
             </CardHeader>
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Profile Photo</Label>
+                  <div className="mt-2">
+                    <ImageUpload
+                      currentImage={formData.imageUrl}
+                      onImageChange={handleImageChange}
+                      className="max-w-xs mx-auto"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name *</Label>

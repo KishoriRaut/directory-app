@@ -101,9 +101,11 @@ export default function Home() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Siscora Connect
-              </h1>
+              <Link href="/" className="hover:opacity-80 transition-opacity">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Siscora Connect
+                </h1>
+              </Link>
               <p className="text-gray-600 mt-2 text-lg">Connect with trusted professionals in your area</p>
             </div>
             <Link href="/add-profile">
