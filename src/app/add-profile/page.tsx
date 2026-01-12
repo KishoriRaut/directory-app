@@ -118,9 +118,9 @@ export default function AddProfilePage() {
           availability: formData.availability,
           image_url: formData.imageUrl || null,
           verified: false
-        } as any)
+        })
         .select()
-        .single()
+        .single() as { data: { id: string } | null; error: any }
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
