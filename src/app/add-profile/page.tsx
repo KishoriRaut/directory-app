@@ -118,7 +118,7 @@ export default function AddProfilePage() {
           availability: formData.availability,
           image_url: formData.imageUrl || null,
           verified: false
-        })
+        } as any)
         .select()
         .single() as { data: { id: string } | null; error: any }
 
