@@ -5,7 +5,7 @@ import { categories, professions } from '@/data/mockData'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, X } from 'lucide-react'
+import { Search, X, MapPin, Star, CheckCircle } from 'lucide-react'
 
 interface SearchFiltersProps {
   filters: SearchFiltersType
@@ -25,16 +25,30 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
     value !== undefined && value !== '' && value !== false
   )
 
+  const getActiveFiltersCount = () => {
+    return Object.values(filters).filter(value => 
+      value !== undefined && value !== '' && value !== false
+    ).length
+  }
+
   return (
-    <div className="space-y-4 p-4 bg-white border border-gray-200 rounded-sm">
+    <div className="space-y-6 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+      {/* Header with Active Filter Count */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Search Filters</h3>
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">Search Filters</h3>
+          {hasActiveFilters && (
+            <p className="text-sm text-gray-600 mt-1">
+              {getActiveFiltersCount()} filter{getActiveFiltersCount() !== 1 ? 's' : ''} applied
+            </p>
+          )}
+        </div>
         {hasActiveFilters && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={clearFilters}
-            className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
           >
             <X className="h-4 w-4 mr-1" />
             Clear All
@@ -42,84 +56,166 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
         )}
       </div>
 
-      <div className="space-y-4">
+      {/* Search Input */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-900">Search Professionals</label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by profession..."
+            placeholder="Search by name, profession, or skills..."
             value={filters.profession || ''}
             onChange={(e) => updateFilter('profession', e.target.value)}
-            className="pl-10 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
           />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block text-gray-700">Category</label>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Badge
-                key={category.value}
-                variant={filters.category === category.value ? "default" : "outline"}
-                className={`cursor-pointer rounded-sm ${
-                  filters.category === category.value 
-                    ? 'bg-blue-600 text-white border-blue-600' 
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-                onClick={() => updateFilter('category', 
-                  filters.category === category.value ? undefined : category.value
-                )}
-              >
-                {category.label}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block text-gray-700">Location</label>
-          <Input
-            placeholder="Enter location..."
-            value={filters.location || ''}
-            onChange={(e) => updateFilter('location', e.target.value)}
-            className="border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block text-gray-700">Minimum Rating</label>
-          <div className="flex gap-2">
-            {[3, 4, 4.5, 4.8].map((rating) => (
-              <Badge
-                key={rating}
-                variant={filters.minRating === rating ? "default" : "outline"}
-                className={`cursor-pointer rounded-sm ${
-                  filters.minRating === rating 
-                    ? 'bg-blue-600 text-white border-blue-600' 
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-                onClick={() => updateFilter('minRating', 
-                  filters.minRating === rating ? undefined : rating
-                )}
-              >
-                {rating}+ ⭐
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="verified"
-            checked={filters.verified || false}
-            onChange={(e) => updateFilter('verified', e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <label htmlFor="verified" className="text-sm font-medium cursor-pointer text-gray-700">
-            Verified Professionals Only
-          </label>
         </div>
       </div>
+
+      {/* Category Filter */}
+      <div className="space-y-3">
+        <label className="text-sm font-semibold text-gray-900">Category</label>
+        <div className="grid grid-cols-2 gap-2">
+          {categories.map((category) => (
+            <Badge
+              key={category.value}
+              variant={filters.category === category.value ? "default" : "outline"}
+              className={`cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                filters.category === category.value 
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
+                  : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
+              }`}
+              onClick={() => updateFilter('category', 
+                filters.category === category.value ? undefined : category.value
+              )}
+            >
+              {category.label}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Location Filter */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-900">Location</label>
+        <div className="relative">
+          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="City, state, or zip code..."
+            value={filters.location || ''}
+            onChange={(e) => updateFilter('location', e.target.value)}
+            className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
+          />
+        </div>
+        </div>
+
+      {/* Rating Filter */}
+      <div className="space-y-3">
+        <label className="text-sm font-semibold text-gray-900">Minimum Rating</label>
+        <div className="grid grid-cols-2 gap-2">
+          {[3, 4, 4.5, 5].map((rating) => (
+            <Badge
+              key={rating}
+              variant={filters.minRating === rating ? "default" : "outline"}
+              className={`cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                filters.minRating === rating 
+                  ? 'bg-yellow-500 text-white border-yellow-500 shadow-sm' 
+                  : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
+              }`}
+              onClick={() => updateFilter('minRating', 
+                filters.minRating === rating ? undefined : rating
+              )}
+            >
+              <div className="flex items-center gap-1">
+                <Star className="h-3 w-3 fill-current" />
+                <span>{rating}+</span>
+              </div>
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Additional Filters */}
+      <div className="space-y-3">
+        <label className="text-sm font-semibold text-gray-900">Additional Options</label>
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <input
+              type="checkbox"
+              id="verified"
+              checked={filters.verified || false}
+              onChange={(e) => updateFilter('verified', e.target.checked)}
+              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <label htmlFor="verified" className="text-sm font-medium cursor-pointer text-gray-900 flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              Verified Professionals Only
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Active Filters Summary */}
+      {hasActiveFilters && (
+        <div className="space-y-3 pt-4 border-t border-gray-200">
+          <label className="text-sm font-semibold text-gray-900">Active Filters</label>
+          <div className="flex flex-wrap gap-2">
+            {filters.category && filters.category !== 'all' && (
+              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                {categories.find(c => c.value === filters.category)?.label}
+                <button
+                  onClick={() => updateFilter('category', undefined)}
+                  className="ml-2 text-indigo-500 hover:text-indigo-700"
+                  aria-label="Remove category filter"
+                  title="Remove category filter"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {filters.location && (
+              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                <MapPin className="h-3 w-3 mr-1" />
+                {filters.location}
+                <button
+                  onClick={() => updateFilter('location', undefined)}
+                  className="ml-2 text-indigo-500 hover:text-indigo-700"
+                  aria-label="Remove location filter"
+                  title="Remove location filter"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {filters.minRating && (
+              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                <Star className="h-3 w-3 mr-1 fill-current" />
+                {filters.minRating}+ Rating
+                <button
+                  onClick={() => updateFilter('minRating', undefined)}
+                  className="ml-2 text-indigo-500 hover:text-indigo-700"
+                  aria-label="Remove rating filter"
+                  title="Remove rating filter"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {filters.verified && (
+              <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Verified Only
+                <button
+                  onClick={() => updateFilter('verified', undefined)}
+                  className="ml-2 text-indigo-500 hover:text-indigo-700"
+                  aria-label="Remove verified filter"
+                  title="Remove verified filter"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
