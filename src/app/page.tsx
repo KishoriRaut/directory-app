@@ -178,8 +178,8 @@ export default function Home() {
       <Header user={user} onSignOut={handleSignOut} />
 
       {/* Hero Section with Search */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-16">
-        <div className="container mx-auto px-6">
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-16">
+        <div className="container mx-auto px-4 sm:px-6">
           <HeroSearch onSearch={handleHeroSearch} />
         </div>
       </section>
@@ -200,20 +200,20 @@ export default function Home() {
       <Testimonials />
 
       {/* Main Search Results Section */}
-      <section id="results-section" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <section id="results-section" className="py-12 sm:py-16 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Browse All Professionals
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
               Search our complete directory of verified professionals
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
             <aside className="lg:col-span-1">
-              <div className="sticky top-24">
+              <div className="sticky top-20 lg:top-24">
                 <SearchFilters 
                   filters={filters} 
                   onFiltersChange={setFilters} 
@@ -364,12 +364,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
-        <div className="container mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Company Info */}
             <div>
               <div className="mb-4">
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
+                <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
                   Khojix
                 </h3>
                 <p className="text-xs text-gray-500">by Siscora.com</p>
@@ -470,33 +470,33 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-200 pt-8 mt-8">
+          <div className="border-t border-gray-200 pt-6 sm:pt-8 mt-6 sm:mt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 2024 Khojix. All rights reserved.
               </p>
-              <div className="flex items-center gap-4">
-                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                   Privacy
                 </Link>
                 <span className="text-gray-400">•</span>
-                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                   Terms
                 </Link>
                 <span className="text-gray-400">•</span>
-                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                   Contact
                 </Link>
               </div>
             </div>
             {/* Free Profile CTA */}
-            <div className="border-t border-gray-200 pt-6 mt-6 text-center">
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
-                <p className="text-sm text-gray-700 mb-3">
+            <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-4 sm:mt-6 text-center">
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 sm:p-4 border border-indigo-200">
+                <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3">
                   <span className="font-semibold text-indigo-900"> Ready to grow your business?</span>
                 </p>
                 <Link href="/add-profile">
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 text-sm px-6">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 text-xs sm:text-sm px-4 sm:px-6">
                     Add Your Free Profile
                   </Button>
                 </Link>

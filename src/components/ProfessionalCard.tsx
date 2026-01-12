@@ -32,21 +32,21 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
   return (
     <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl">
       {/* Status Badges */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20 flex flex-col gap-2">
         {professional.verified && (
           <Badge className="text-xs bg-emerald-500 text-white border-emerald-600 font-medium shadow-lg">
             <CheckCircle className="h-3 w-3 mr-1" />
             Verified
           </Badge>
         )}
-        <div className="flex items-center gap-1 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full border border-gray-200 shadow-lg">
-          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-          <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
+        <div className="flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-gray-200 shadow-lg">
+          <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+          <span className="text-xs sm:text-sm font-bold text-gray-900">{professional.rating}</span>
         </div>
       </div>
 
       {/* Image Section */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+      <div className="relative h-40 sm:h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20"></div>
@@ -109,19 +109,19 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
       </div>
 
       {/* Content Section */}
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors duration-200 truncate">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors duration-200 truncate">
                 {professional.name}
               </h3>
-              <p className="text-sm font-medium text-gray-600 truncate">{professional.profession}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{professional.profession}</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge className={`text-xs font-medium border ${getCategoryColor(professional.category)}`}>
               {professional.category.charAt(0).toUpperCase() + professional.category.slice(1)}
             </Badge>
@@ -135,18 +135,18 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
           {professional.description}
         </p>
 
         {/* Key Info Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-sm p-2 bg-gray-50 rounded-lg">
-            <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 text-xs sm:text-sm p-2 bg-gray-50 rounded-lg">
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
             <span className="text-gray-700 font-medium truncate">{professional.location}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm p-2 bg-gray-50 rounded-lg">
-            <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-2 text-xs sm:text-sm p-2 bg-gray-50 rounded-lg">
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
             <span className="text-gray-700 font-medium truncate">{professional.availability}</span>
           </div>
         </div>

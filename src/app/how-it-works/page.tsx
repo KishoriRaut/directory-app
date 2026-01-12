@@ -256,32 +256,32 @@ export default function HowItWorksPage() {
       <Header user={user} onSignOut={handleSignOut} />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-20">
-        <div className="container mx-auto px-6">
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="mb-6">
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <div className="mb-4 sm:mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Khojix
               </h1>
-              <p className="text-lg text-gray-700 font-medium mb-1">Professional Directory</p>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-1">Professional Directory</p>
               <p className="text-xs text-gray-500">by Siscora.com</p>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
               How Khojix Works
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8">
               Get connected with trusted professionals in 4 simple steps. 
               Our platform makes it easy to find, book, and review services.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link href="/#results-section">
-                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-8 py-3">
+                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-6 sm:px-8 py-3">
                   <Search className="h-4 w-4 mr-2" />
                   Find a Professional
                 </Button>
               </Link>
               <Link href="/add-profile">
-                <Button variant="outline" className="border-gray-300 hover:bg-gray-50 px-8 py-3">
+                <Button variant="outline" className="border-gray-300 hover:bg-gray-50 px-6 sm:px-8 py-3">
                   Add Your Profile
                 </Button>
               </Link>
