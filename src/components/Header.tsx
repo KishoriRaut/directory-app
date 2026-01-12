@@ -58,9 +58,9 @@ export function Header({ user, onSignOut }: HeaderProps) {
   }, [])
 
   const navigationItems = [
-    { name: 'Find Professionals', href: '#', icon: Search },
-    { name: 'Categories', href: '#categories', icon: Briefcase },
-    { name: 'How It Works', href: '#how-it-works', icon: Shield },
+    { name: 'Find Professionals', href: '/#results-section', icon: Search },
+    { name: 'Categories', href: '/#categories', icon: Briefcase },
+    { name: 'How It Works', href: '/how-it-works', icon: Shield },
   ]
 
   const dropdownItems = [

@@ -6,8 +6,9 @@ import { Professional } from '@/types/directory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle, User, Briefcase } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 
 export default function ProfilePage() {
@@ -16,8 +17,19 @@ export default function ProfilePage() {
   const [professional, setProfessional] = useState<Professional | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase()
+  }
+
   useEffect(() => {
     const fetchProfessional = async () => {
+      if (!params.id) {
+        console.error('No ID parameter provided')
+        setProfessional(null)
+        setLoading(false)
+        return
+      }
+
       try {
         const { data, error } = await supabase
           .from('professionals')
@@ -28,7 +40,7 @@ export default function ProfilePage() {
             )
           `)
           .eq('id', params.id)
-          .single()
+          .maybeSingle()
 
         if (error) {
           console.error('Error fetching professional:', error)
@@ -36,23 +48,32 @@ export default function ProfilePage() {
           return
         }
 
+        if (!data) {
+          console.log('No professional found with ID:', params.id)
+          setProfessional(null)
+          return
+        }
+
+        // Type assertion for the data
+        const professionalData = data as any
+
         // Transform data to match Professional interface
         const transformedProfessional: Professional = {
-          id: data.id,
-          name: data.name,
-          profession: data.profession,
-          category: data.category,
-          email: data.email,
-          phone: data.phone,
-          location: data.location,
-          experience: data.experience,
-          rating: data.rating,
-          description: data.description,
-          services: data.services?.map((s: any) => s.service_name) || [],
-          availability: data.availability,
-          imageUrl: data.image_url,
-          verified: data.verified,
-          createdAt: data.created_at
+          id: professionalData.id,
+          name: professionalData.name,
+          profession: professionalData.profession,
+          category: professionalData.category,
+          email: professionalData.email,
+          phone: professionalData.phone,
+          location: professionalData.location,
+          experience: professionalData.experience,
+          rating: professionalData.rating,
+          description: professionalData.description,
+          services: professionalData.services?.map((s: any) => s.service_name) || [],
+          availability: professionalData.availability,
+          imageUrl: professionalData.image_url,
+          verified: professionalData.verified,
+          createdAt: professionalData.created_at
         }
 
         setProfessional(transformedProfessional)
@@ -64,9 +85,7 @@ export default function ProfilePage() {
       }
     }
 
-    if (params.id) {
-      fetchProfessional()
-    }
+    fetchProfessional()
   }, [params.id])
 
   if (loading) {
@@ -122,13 +141,122 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
+            {/* Hero Image Section */}
+            <div className="relative h-64 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl overflow-hidden border border-gray-200">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20"></div>
+                <div className="absolute inset-0" style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  backgroundSize: '60px 60px'
+                }}></div>
+              </div>
+
+              {/* Professional Image or Avatar */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {professional.imageUrl ? (
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={professional.imageUrl}
+                      alt={professional.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 66vw"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const parent = target.parentElement
+                        if (parent) {
+                          const fallback = parent.querySelector('.hero-avatar-fallback')
+                          if (fallback) {
+                            fallback.classList.remove('hidden')
+                          }
+                        }
+                      }}
+                    />
+                    {/* Hero Fallback Avatar */}
+                    <div className="hero-avatar-fallback hidden absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-white mx-auto mb-4">
+                          <span className="text-4xl font-bold text-indigo-600">
+                            {getInitials(professional.name)}
+                          </span>
+                        </div>
+                        <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 shadow-lg">
+                          <span className="text-lg font-semibold text-gray-900">{professional.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-white mx-auto mb-4">
+                      <span className="text-4xl font-bold text-indigo-600">
+                        {getInitials(professional.name)}
+                      </span>
+                    </div>
+                    <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 shadow-lg">
+                      <span className="text-lg font-semibold text-gray-900">{professional.name}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Overlay Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+            </div>
+
             <Card className="bg-white border border-gray-200 rounded-sm">
               <CardHeader className="border-b border-gray-200">
-                <div className="flex items-start justify-between">
-                  <div>
+                <div className="flex items-start gap-6">
+                  {/* Profile Image */}
+                  <div className="flex-shrink-0">
+                    <div className="relative w-24 h-24">
+                      {professional.imageUrl ? (
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={professional.imageUrl}
+                            alt={professional.name}
+                            fill
+                            className="object-cover rounded-full border-4 border-gray-100"
+                            sizes="96px"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                              const parent = target.parentElement
+                              if (parent) {
+                                const fallback = parent.querySelector('.avatar-fallback')
+                                if (fallback) {
+                                  fallback.classList.remove('hidden')
+                                }
+                              }
+                            }}
+                          />
+                          {/* Fallback Avatar */}
+                          <div className="avatar-fallback hidden absolute inset-0 w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-gray-100">
+                            <span className="text-2xl font-bold text-white">
+                              {getInitials(professional.name)}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-gray-100 relative">
+                          <span className="text-2xl font-bold text-white">
+                            {getInitials(professional.name)}
+                          </span>
+                          <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-gray-200 shadow-sm">
+                            <Briefcase className="h-4 w-4 text-gray-600" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Profile Info */}
+                  <div className="flex-1 min-w-0">
                     <CardTitle className="text-2xl mb-2 text-gray-900">{professional.name}</CardTitle>
-                    <p className="text-lg text-gray-600">{professional.profession}</p>
-                    <div className="flex items-center gap-4 mt-3">
+                    <p className="text-lg text-gray-600 mb-3">{professional.profession}</p>
+                    <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
                         <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                         <span className="font-semibold text-gray-900">{professional.rating}</span>
