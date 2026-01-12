@@ -259,9 +259,16 @@ export default function HowItWorksPage() {
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-20">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <div className="mb-8">
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                Khojix
+              </h1>
+              <p className="text-2xl text-gray-700 font-medium mb-2">Professional Directory</p>
+              <p className="text-sm text-gray-500">by Siscora.com</p>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               How Khojix Works
-            </h1>
+            </h2>
             <p className="text-xl text-gray-600 mb-8">
               Get connected with trusted professionals in 4 simple steps. 
               Our platform makes it easy to find, book, and review services.

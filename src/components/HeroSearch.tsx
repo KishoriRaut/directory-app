@@ -28,9 +28,17 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Khojix
+          </h1>
+          <p className="text-2xl text-gray-700 font-medium mb-2">
+            Professional Directory
+          </p>
+        </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           Find Trusted Professionals Near You
-        </h1>
+        </h2>
         <p className="text-xl text-gray-600 mb-8">
           Connect with verified experts in your area. Get quotes, read reviews, and hire with confidence.
         </p>
