@@ -1,0 +1,311 @@
+'use client'
+
+import { useState } from 'react'
+import { Professional } from '@/types/directory'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, Plus, X } from 'lucide-react'
+import Link from 'next/link'
+
+const categories = [
+  { value: 'doctor', label: 'Doctor' },
+  { value: 'engineer', label: 'Engineer' },
+  { value: 'plumber', label: 'Plumber' },
+  { value: 'electrician', label: 'Electrician' },
+  { value: 'other', label: 'Other' }
+]
+
+export default function AddProfilePage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    profession: '',
+    category: 'doctor' as Professional['category'],
+    email: '',
+    phone: '',
+    location: '',
+    experience: '',
+    description: '',
+    availability: '',
+    services: [] as string[],
+    newService: ''
+  })
+
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.name.trim()) newErrors.name = 'Name is required'
+    if (!formData.profession.trim()) newErrors.profession = 'Profession is required'
+    if (!formData.email.trim()) newErrors.email = 'Email is required'
+    if (!formData.phone.trim()) newErrors.phone = 'Phone is required'
+    if (!formData.location.trim()) newErrors.location = 'Location is required'
+    if (!formData.experience || parseInt(formData.experience) < 0) {
+      newErrors.experience = 'Valid experience is required'
+    }
+    if (!formData.description.trim()) newErrors.description = 'Description is required'
+    if (!formData.availability.trim()) newErrors.availability = 'Availability is required'
+    if (formData.services.length === 0) newErrors.services = 'At least one service is required'
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!validateForm()) return
+
+    const newProfessional: Professional = {
+      id: Date.now().toString(),
+      name: formData.name,
+      profession: formData.profession,
+      category: formData.category,
+      email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
+      experience: parseInt(formData.experience),
+      rating: 0,
+      description: formData.description,
+      services: formData.services,
+      availability: formData.availability,
+      verified: false,
+      createdAt: new Date().toISOString()
+    }
+
+    console.log('New professional:', newProfessional)
+    alert('Profile submitted successfully! (Check console for data)')
+    
+    // Reset form
+    setFormData({
+      name: '',
+      profession: '',
+      category: 'doctor',
+      email: '',
+      phone: '',
+      location: '',
+      experience: '',
+      description: '',
+      availability: '',
+      services: [],
+      newService: ''
+    })
+  }
+
+  const addService = () => {
+    if (formData.newService.trim() && !formData.services.includes(formData.newService.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        services: [...prev.services, prev.newService.trim()],
+        newService: ''
+      }))
+    }
+  }
+
+  const removeService = (serviceToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      services: prev.services.filter(service => service !== serviceToRemove)
+    }))
+  }
+
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Directory
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold">Add Your Profile</h1>
+              <p className="text-muted-foreground">Join our professional directory</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Professional Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => updateField('name', e.target.value)}
+                      className={errors.name ? 'border-red-500' : ''}
+                    />
+                    {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="profession">Profession *</Label>
+                    <Input
+                      id="profession"
+                      value={formData.profession}
+                      onChange={(e) => updateField('profession', e.target.value)}
+                      placeholder="e.g., Cardiologist, Software Engineer"
+                      className={errors.profession ? 'border-red-500' : ''}
+                    />
+                    {errors.profession && <p className="text-sm text-red-500 mt-1">{errors.profession}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="category">Category *</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {categories.map((cat) => (
+                      <Badge
+                        key={cat.value}
+                        variant={formData.category === cat.value ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => updateField('category', cat.value)}
+                      >
+                        {cat.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => updateField('email', e.target.value)}
+                      className={errors.email ? 'border-red-500' : ''}
+                    />
+                    {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone">Phone *</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => updateField('phone', e.target.value)}
+                      className={errors.phone ? 'border-red-500' : ''}
+                    />
+                    {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="location">Location *</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => updateField('location', e.target.value)}
+                      placeholder="City, State"
+                      className={errors.location ? 'border-red-500' : ''}
+                    />
+                    {errors.location && <p className="text-sm text-red-500 mt-1">{errors.location}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="experience">Years of Experience *</Label>
+                    <Input
+                      id="experience"
+                      type="number"
+                      min="0"
+                      value={formData.experience}
+                      onChange={(e) => updateField('experience', e.target.value)}
+                      className={errors.experience ? 'border-red-500' : ''}
+                    />
+                    {errors.experience && <p className="text-sm text-red-500 mt-1">{errors.experience}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => updateField('description', e.target.value)}
+                    placeholder="Describe your professional background and expertise..."
+                    rows={4}
+                    className={errors.description ? 'border-red-500' : ''}
+                  />
+                  {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
+                </div>
+
+                <div>
+                  <Label htmlFor="availability">Availability *</Label>
+                  <Input
+                    id="availability"
+                    value={formData.availability}
+                    onChange={(e) => updateField('availability', e.target.value)}
+                    placeholder="e.g., Mon-Fri: 9AM-5PM"
+                    className={errors.availability ? 'border-red-500' : ''}
+                  />
+                  {errors.availability && <p className="text-sm text-red-500 mt-1">{errors.availability}</p>}
+                </div>
+
+                <div>
+                  <Label>Services *</Label>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={formData.newService}
+                        onChange={(e) => updateField('newService', e.target.value)}
+                        placeholder="Add a service you offer"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addService())}
+                      />
+                      <Button type="button" onClick={addService}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.services.map((service) => (
+                        <Badge key={service} variant="secondary" className="pr-1">
+                          {service}
+                          <button
+                            type="button"
+                            onClick={() => removeService(service)}
+                            className="ml-2 hover:text-red-500"
+                            aria-label={`Remove ${service}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                    {errors.services && <p className="text-sm text-red-500 mt-1">{errors.services}</p>}
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full">
+                  Submit Profile
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
