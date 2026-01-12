@@ -6,6 +6,7 @@ import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Pagination } from '@/components/Pagination'
+import { Header } from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut } from 'lucide-react'
@@ -151,58 +152,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Hero Section */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Link href="/" className="hover:opacity-80 transition-opacity">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Siscora Connect
-                </h1>
-              </Link>
-              <p className="text-gray-600 mt-2 text-lg">Connect with trusted professionals in your area</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {user ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">
-                      {user.email?.split('@')[0]}
-                    </span>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleSignOut} className="border-gray-300 text-gray-700 hover:bg-gray-50">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/signin">
-                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/auth/signup">
-                    <Button className="modern-button group">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-              <Link href="/add-profile">
-                <Button className="modern-button group">
-                  <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
-                  Add Your Profile
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Professional Header */}
+      <Header user={user} onSignOut={handleSignOut} />
 
       {/* Free Profile Banner */}
       <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
