@@ -122,64 +122,68 @@ export default function AddProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-6">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Directory
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold">Add Your Profile</h1>
-              <p className="text-muted-foreground">Join our professional directory</p>
+              <h1 className="text-2xl font-semibold text-gray-900">Add Your Profile</h1>
+              <p className="text-sm text-gray-600 mt-1">Join our professional directory</p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional Information</CardTitle>
+          <Card className="bg-white border border-gray-200 rounded-sm">
+            <CardHeader className="border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-gray-900">Professional Information</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => updateField('name', e.target.value)}
-                      className={errors.name ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
                     />
                     {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="profession">Profession *</Label>
+                    <Label htmlFor="profession" className="text-sm font-medium text-gray-700">Profession *</Label>
                     <Input
                       id="profession"
                       value={formData.profession}
                       onChange={(e) => updateField('profession', e.target.value)}
                       placeholder="e.g., Cardiologist, Software Engineer"
-                      className={errors.profession ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.profession ? 'border-red-500' : ''}`}
                     />
                     {errors.profession && <p className="text-sm text-red-500 mt-1">{errors.profession}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="category" className="text-sm font-medium text-gray-700">Category *</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {categories.map((cat) => (
                       <Badge
                         key={cat.value}
                         variant={formData.category === cat.value ? "default" : "outline"}
-                        className="cursor-pointer"
+                        className={`cursor-pointer rounded-sm ${
+                          formData.category === cat.value 
+                            ? 'bg-blue-600 text-white border-blue-600' 
+                            : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                        }`}
                         onClick={() => updateField('category', cat.value)}
                       >
                         {cat.label}
@@ -190,24 +194,24 @@ export default function AddProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      className={errors.email ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
                     />
                     {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">Phone *</Label>
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone *</Label>
                     <Input
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => updateField('phone', e.target.value)}
-                      className={errors.phone ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
                     />
                     {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
                   </div>
@@ -215,58 +219,58 @@ export default function AddProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="location">Location *</Label>
+                    <Label htmlFor="location" className="text-sm font-medium text-gray-700">Location *</Label>
                     <Input
                       id="location"
                       value={formData.location}
                       onChange={(e) => updateField('location', e.target.value)}
                       placeholder="City, State"
-                      className={errors.location ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.location ? 'border-red-500' : ''}`}
                     />
                     {errors.location && <p className="text-sm text-red-500 mt-1">{errors.location}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="experience">Years of Experience *</Label>
+                    <Label htmlFor="experience" className="text-sm font-medium text-gray-700">Years of Experience *</Label>
                     <Input
                       id="experience"
                       type="number"
                       min="0"
                       value={formData.experience}
                       onChange={(e) => updateField('experience', e.target.value)}
-                      className={errors.experience ? 'border-red-500' : ''}
+                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.experience ? 'border-red-500' : ''}`}
                     />
                     {errors.experience && <p className="text-sm text-red-500 mt-1">{errors.experience}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description *</Label>
+                  <Label htmlFor="description" className="text-sm font-medium text-gray-700">Description *</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => updateField('description', e.target.value)}
                     placeholder="Describe your professional background and expertise..."
                     rows={4}
-                    className={errors.description ? 'border-red-500' : ''}
+                    className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.description ? 'border-red-500' : ''}`}
                   />
                   {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="availability">Availability *</Label>
+                  <Label htmlFor="availability" className="text-sm font-medium text-gray-700">Availability *</Label>
                   <Input
                     id="availability"
                     value={formData.availability}
                     onChange={(e) => updateField('availability', e.target.value)}
                     placeholder="e.g., Mon-Fri: 9AM-5PM"
-                    className={errors.availability ? 'border-red-500' : ''}
+                    className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.availability ? 'border-red-500' : ''}`}
                   />
                   {errors.availability && <p className="text-sm text-red-500 mt-1">{errors.availability}</p>}
                 </div>
 
                 <div>
-                  <Label>Services *</Label>
+                  <Label className="text-sm font-medium text-gray-700">Services *</Label>
                   <div className="space-y-2">
                     <div className="flex gap-2">
                       <Input
@@ -274,14 +278,15 @@ export default function AddProfilePage() {
                         onChange={(e) => updateField('newService', e.target.value)}
                         placeholder="Add a service you offer"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addService())}
+                        className="border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500"
                       />
-                      <Button type="button" onClick={addService}>
+                      <Button type="button" onClick={addService} className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm">
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {formData.services.map((service) => (
-                        <Badge key={service} variant="secondary" className="pr-1">
+                        <Badge key={service} variant="secondary" className="pr-1 bg-gray-50 border-gray-200 text-gray-700">
                           {service}
                           <button
                             type="button"
@@ -298,7 +303,7 @@ export default function AddProfilePage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm">
                   Submit Profile
                 </Button>
               </form>

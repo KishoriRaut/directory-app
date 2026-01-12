@@ -61,10 +61,10 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-6">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <Link href="/">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Directory
             </Button>
@@ -72,20 +72,20 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
+              <Card className="bg-white border border-gray-200 rounded-sm">
+                <CardHeader className="border-b border-gray-200">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-2xl mb-2">{professional.name}</CardTitle>
-                      <p className="text-lg text-muted-foreground">{professional.profession}</p>
+                      <CardTitle className="text-2xl mb-2 text-gray-900">{professional.name}</CardTitle>
+                      <p className="text-lg text-gray-600">{professional.profession}</p>
                       <div className="flex items-center gap-4 mt-3">
                         <div className="flex items-center gap-1">
                           <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">{professional.rating}</span>
+                          <span className="font-semibold text-gray-900">{professional.rating}</span>
                         </div>
                         {professional.verified && (
                           <div className="flex items-center gap-1 text-green-600">
@@ -97,19 +97,19 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 p-6">
                   <div>
-                    <h3 className="font-semibold mb-2">About</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="font-semibold mb-2 text-gray-900">About</h3>
+                    <p className="text-gray-600 leading-relaxed">
                       {professional.description}
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-3">Services Offered</h3>
+                    <h3 className="font-semibold mb-3 text-gray-900">Services Offered</h3>
                     <div className="flex flex-wrap gap-2">
                       {professional.services.map((service, index) => (
-                        <Badge key={index} variant="secondary">
+                        <Badge key={index} variant="secondary" className="bg-gray-50 border-gray-200 text-gray-700">
                           {service}
                         </Badge>
                       ))}
@@ -119,33 +119,33 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5 text-muted-foreground" />
+                        <MapPin className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="font-medium">Location</p>
-                          <p className="text-sm text-muted-foreground">{professional.location}</p>
+                          <p className="font-medium text-gray-900">Location</p>
+                          <p className="text-sm text-gray-600">{professional.location}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-muted-foreground" />
+                        <Clock className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="font-medium">Availability</p>
-                          <p className="text-sm text-muted-foreground">{professional.availability}</p>
+                          <p className="font-medium text-gray-900">Availability</p>
+                          <p className="text-sm text-gray-600">{professional.availability}</p>
                         </div>
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <Phone className="h-5 w-5 text-muted-foreground" />
+                        <Phone className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="font-medium">Phone</p>
-                          <p className="text-sm text-muted-foreground">{professional.phone}</p>
+                          <p className="font-medium text-gray-900">Phone</p>
+                          <p className="text-sm text-gray-600">{professional.phone}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Mail className="h-5 w-5 text-muted-foreground" />
+                        <Mail className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="font-medium">Email</p>
-                          <p className="text-sm text-muted-foreground">{professional.email}</p>
+                          <p className="font-medium text-gray-900">Email</p>
+                          <p className="text-sm text-gray-600">{professional.email}</p>
                         </div>
                       </div>
                     </div>
@@ -155,30 +155,30 @@ export default function ProfilePage() {
             </div>
 
             <div className="lg:col-span-1">
-              <Card className="sticky top-6">
-                <CardHeader>
-                  <CardTitle>Quick Info</CardTitle>
+              <Card className="bg-white border border-gray-200 rounded-sm sticky top-6">
+                <CardHeader className="border-b border-gray-200">
+                  <CardTitle className="text-lg font-semibold text-gray-900">Quick Info</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center py-2 border-b">
-                    <span className="text-muted-foreground">Experience</span>
-                    <span className="font-medium">{professional.experience} years</span>
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Experience</span>
+                    <span className="font-medium text-gray-900">{professional.experience} years</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b">
-                    <span className="text-muted-foreground">Category</span>
-                    <Badge variant="outline" className="capitalize">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Category</span>
+                    <Badge variant="outline" className="capitalize bg-gray-50 border-gray-200 text-gray-700">
                       {professional.category}
                     </Badge>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b">
-                    <span className="text-muted-foreground">Rating</span>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Rating</span>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{professional.rating}</span>
+                      <span className="font-medium text-gray-900">{professional.rating}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-muted-foreground">Status</span>
+                    <span className="text-gray-600">Status</span>
                     <div className="flex items-center gap-1">
                       {professional.verified ? (
                         <>
@@ -186,17 +186,17 @@ export default function ProfilePage() {
                           <span className="text-green-600 font-medium">Verified</span>
                         </>
                       ) : (
-                        <span className="text-muted-foreground">Not Verified</span>
+                        <span className="text-gray-600">Not Verified</span>
                       )}
                     </div>
                   </div>
 
                   <div className="pt-4 space-y-2">
-                    <Button className="w-full">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm">
                       <Phone className="h-4 w-4 mr-2" />
                       Call Now
                     </Button>
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-sm">
                       <Mail className="h-4 w-4 mr-2" />
                       Send Message
                     </Button>
