@@ -7,6 +7,12 @@ import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Pagination } from '@/components/Pagination'
 import { Header } from '@/components/Header'
+import { HeroSearch } from '@/components/HeroSearch'
+import { PopularCategories } from '@/components/PopularCategories'
+import { HowItWorks } from '@/components/HowItWorks'
+import { FeaturedProfessionals } from '@/components/FeaturedProfessionals'
+import { Testimonials } from '@/components/Testimonials'
+import { Statistics } from '@/components/Statistics'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut } from 'lucide-react'
@@ -146,6 +152,22 @@ export default function Home() {
     window.location.href = `/profile/${id}`
   }
 
+  const handleHeroSearch = (query: string, category: string, location: string) => {
+    const newFilters: SearchFiltersType = {}
+    if (query) newFilters.search = query
+    if (category && category !== 'all') newFilters.category = category
+    if (location) newFilters.location = location
+    
+    setFilters(newFilters)
+    setCurrentPage(1)
+    
+    // Scroll to results section
+    const resultsSection = document.getElementById('results-section')
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== undefined && value !== '' && value !== false
   )
@@ -155,96 +177,51 @@ export default function Home() {
       {/* Professional Header */}
       <Header user={user} onSignOut={handleSignOut} />
 
-      {/* Free Profile Banner */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-        <div className="container mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex-1">
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                🎉 Add Your Professional Profile for FREE!
-              </h2>
-              <p className="text-lg text-indigo-100 mb-4">
-                Join thousands of trusted professionals. Get discovered by clients looking for your expertise.
-              </p>
-              <div className="flex flex-wrap gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>Free forever</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>No hidden fees</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>Instant setup</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/add-profile">
-                <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 border-white hover:border-gray-200 font-semibold px-8">
-                  <Plus className="h-5 w-5 mr-2" />
-                  Add Your Profile
-                </Button>
-              </Link>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600 font-semibold px-8">
-                Learn More
-              </Button>
-            </div>
-          </div>
+      {/* Hero Section with Search */}
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-16">
+        <div className="container mx-auto px-6">
+          <HeroSearch onSearch={handleHeroSearch} />
         </div>
       </section>
 
-      {/* Trust Signals Section */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="container mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                <CheckCircle className="h-6 w-6 text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Verified Professionals</h3>
-              <p className="text-sm text-gray-600">All professionals are background checked</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                <Star className="h-6 w-6 text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Top Rated</h3>
-              <p className="text-sm text-gray-600">4.5+ average rating across all professionals</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                <Clock className="h-6 w-6 text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Quick Response</h3>
-              <p className="text-sm text-gray-600">Average response time under 24 hours</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                <MapPin className="h-6 w-6 text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">Local Experts</h3>
-              <p className="text-sm text-gray-600">Find professionals near your location</p>
-            </div>
+      {/* Popular Categories */}
+      <PopularCategories />
+
+      {/* How It Works */}
+      <HowItWorks />
+
+      {/* Featured Professionals */}
+      <FeaturedProfessionals />
+
+      {/* Statistics */}
+      <Statistics />
+
+      {/* Testimonials */}
+      <Testimonials />
+
+      {/* Main Search Results Section */}
+      <section id="results-section" className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Browse All Professionals
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Search our complete directory of verified professionals
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <aside className="lg:col-span-1">
-            <div className="sticky top-24">
-              <SearchFilters 
-                filters={filters} 
-                onFiltersChange={setFilters} 
-              />
-            </div>
-          </aside>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <aside className="lg:col-span-1">
+              <div className="sticky top-24">
+                <SearchFilters 
+                  filters={filters} 
+                  onFiltersChange={setFilters} 
+                />
+              </div>
+            </aside>
 
-          <main className="lg:col-span-3">
+            <main className="lg:col-span-3">
             {/* Results Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between">
@@ -382,6 +359,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           </main>
         </div>
       </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">

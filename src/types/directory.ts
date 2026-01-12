@@ -17,6 +17,7 @@ export interface Professional {
 }
 
 export interface SearchFilters {
+  search?: string
   category?: string
   profession?: string
   location?: string
