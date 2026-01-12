@@ -7,7 +7,7 @@ import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Search, CheckCircle, Star, Clock, MapPin } from 'lucide-react'
+import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Home() {
@@ -207,6 +207,127 @@ export default function Home() {
           </main>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 mt-16">
+        <div className="container mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Company Info */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Siscora Connect</h3>
+              <p className="text-sm text-gray-600 mb-4">Connecting trusted professionals with communities worldwide.</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span>San Francisco, CA</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Mail className="h-4 w-4" />
+                  <span>contact@siscora.com</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Browse Professionals
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/add-profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Add Your Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Categories */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/?category=doctor" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Doctors & Healthcare
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/?category=engineer" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Engineers & Tech
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/?category=plumber" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Plumbers & Home Services
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/?category=electrician" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Electricians & Electrical
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Cookie Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-200 pt-8 mt-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-gray-600">
+                © 2024 Siscora Connect. All rights reserved.
+              </p>
+              <div className="flex items-center gap-4">
+                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                  Privacy
+                </Link>
+                <span className="text-gray-400">•</span>
+                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                  Terms
+                </Link>
+                <span className="text-gray-400">•</span>
+                <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                  Contact
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
