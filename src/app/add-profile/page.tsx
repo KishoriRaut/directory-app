@@ -129,7 +129,7 @@ export default function AddProfilePage() {
       }
 
       // Insert services
-      if (formData.services.length > 0) {
+      if (formData.services.length > 0 && professionalData) {
         const servicesToInsert = formData.services.map(service => ({
           professional_id: professionalData.id,
           service_name: service
