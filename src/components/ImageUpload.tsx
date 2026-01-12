@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Upload, X, Camera, Loader2 } from 'lucide-react'
 import { StorageService } from '@/lib/storage'
+import { supabase } from '@/lib/supabase'
 
 interface ImageUploadProps {
   currentImage?: string
@@ -34,11 +35,15 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
       // Compress image
       const compressedFile = await StorageService.compressImage(file)
       
-      // Generate unique filename
-      const fileName = `profile-${Date.now()}.${file.name.split('.').pop()}`
+      // Get current user ID for filename
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        alert('You must be logged in to upload images')
+        return
+      }
       
-      // Upload to Supabase
-      const result = await StorageService.uploadProfileImage(compressedFile, fileName)
+      // Upload to Supabase with user ID
+      const result = await StorageService.uploadProfileImage(compressedFile, session.user.id)
       
       if (result.error) {
         alert('Upload failed: ' + result.error)
@@ -108,6 +113,8 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
               onChange={handleFileSelect}
               className="hidden"
               id="image-upload"
+              aria-label="Upload profile image"
+              title="Upload profile image"
             />
             
             <Button

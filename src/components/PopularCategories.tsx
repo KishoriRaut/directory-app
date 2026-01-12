@@ -10,7 +10,8 @@ import {
   Briefcase, 
   Heart, 
   Scale, 
-  Calculator 
+  Calculator,
+  Sparkles
 } from 'lucide-react'
 
 const categories = [
@@ -41,6 +42,13 @@ const categories = [
     description: 'Engineering solutions',
     count: '987',
     href: '#engineers'
+  },
+  {
+    name: 'Maids & Cleaners',
+    icon: Sparkles,
+    description: 'Cleaning & home services',
+    count: '2,156',
+    href: '/?category=maid'
   },
   {
     name: 'Designers',

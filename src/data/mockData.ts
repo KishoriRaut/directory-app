@@ -160,6 +160,54 @@ export const mockProfessionals: Professional[] = [
     availability: 'Mon-Fri: 9AM-5PM',
     verified: true,
     createdAt: '2024-02-15T14:20:00Z'
+  },
+  {
+    id: '11',
+    name: 'Maria Garcia',
+    profession: 'Professional Maid',
+    category: 'maid',
+    email: 'maria.garcia@email.com',
+    phone: '+1 (555) 123-7890',
+    location: 'Miami, FL',
+    experience: 8,
+    rating: 4.9,
+    description: 'Experienced cleaning professional specializing in residential and commercial cleaning services.',
+    services: ['Deep Cleaning', 'Regular Maintenance', 'Window Cleaning', 'Organizational Services'],
+    availability: 'Mon-Sat: 8AM-6PM',
+    verified: true,
+    createdAt: '2024-01-20T10:15:00Z'
+  },
+  {
+    id: '12',
+    name: 'Linda Thompson',
+    profession: 'House Cleaning Specialist',
+    category: 'maid',
+    email: 'linda.thompson@email.com',
+    phone: '+1 (555) 234-8901',
+    location: 'Dallas, TX',
+    experience: 6,
+    rating: 4.7,
+    description: 'Detail-oriented cleaning professional with expertise in eco-friendly cleaning solutions.',
+    services: ['Eco-Friendly Cleaning', 'Post-Construction Cleaning', 'Move-In/Out Cleaning', 'Carpet Cleaning'],
+    availability: 'Mon-Fri: 7AM-5PM',
+    verified: true,
+    createdAt: '2024-02-10T13:30:00Z'
+  },
+  {
+    id: '13',
+    name: 'Sophie Martin',
+    profession: 'Maid & Organizer',
+    category: 'maid',
+    email: 'sophie.martin@email.com',
+    phone: '+1 (555) 345-9012',
+    location: 'Portland, OR',
+    experience: 5,
+    rating: 4.8,
+    description: 'Professional maid and home organizer helping clients create clean, organized living spaces.',
+    services: ['Home Organization', 'Decluttering', 'Regular Cleaning', 'Laundry Services'],
+    availability: 'Tue-Sun: 9AM-7PM',
+    verified: false,
+    createdAt: '2024-03-05T11:45:00Z'
   }
 ]
 
@@ -169,6 +217,7 @@ export const categories = [
   { value: 'engineer', label: 'Engineers' },
   { value: 'plumber', label: 'Plumbers' },
   { value: 'electrician', label: 'Electricians' },
+  { value: 'maid', label: 'Maids & Cleaners' },
   { value: 'other', label: 'Other' }
 ]
 
@@ -183,5 +232,8 @@ export const professions = [
   'Master Plumber',
   'Journeyman Plumber',
   'Master Electrician',
-  'Residential Electrician'
+  'Residential Electrician',
+  'Professional Maid',
+  'House Cleaning Specialist',
+  'Maid & Organizer'
 ]

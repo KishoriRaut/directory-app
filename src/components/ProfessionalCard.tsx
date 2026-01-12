@@ -23,6 +23,7 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
       engineer: 'bg-green-100 text-green-800 border-green-200',
       plumber: 'bg-orange-100 text-orange-800 border-orange-200',
       electrician: 'bg-purple-100 text-purple-800 border-purple-200',
+      maid: 'bg-pink-100 text-pink-800 border-pink-200',
       other: 'bg-gray-100 text-gray-800 border-gray-200'
     }
     return colors[category as keyof typeof colors] || colors.other

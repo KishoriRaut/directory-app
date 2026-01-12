@@ -236,7 +236,8 @@ export default function Home() {
                           {filters.category === 'doctor' ? 'Doctors' : 
                            filters.category === 'engineer' ? 'Engineers' :
                            filters.category === 'plumber' ? 'Plumbers' :
-                           filters.category === 'electrician' ? 'Electricians' : 'Other'}
+                           filters.category === 'electrician' ? 'Electricians' :
+                           filters.category === 'maid' ? 'Maids & Cleaners' : 'Other'}
                         </Badge>
                       </span>
                     )}
@@ -430,6 +431,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                 <li>
                   <Link href="/?category=electrician" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                     Electricians & Electrical
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/?category=maid" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Maids & Cleaning Services
                   </Link>
                 </li>
               </ul>
