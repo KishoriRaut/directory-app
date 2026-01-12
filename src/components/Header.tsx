@@ -91,7 +91,6 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Khojix
                 </h1>
-                <p className="text-xs text-gray-500">by Siscora.com</p>
               </div>
             </Link>
 
