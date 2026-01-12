@@ -254,6 +254,9 @@ export default function HowItWorksPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Header */}
       <Header user={user} onSignOut={handleSignOut} />
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-20">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-6">
