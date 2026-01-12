@@ -368,8 +368,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Siscora Connect</h3>
-              <p className="text-sm text-gray-600 mb-4">Connecting trusted professionals with communities worldwide.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Khojix</h3>
+              <p className="text-sm text-gray-600 mb-2">Connecting trusted professionals with communities worldwide.</p>
+              <p className="text-xs text-gray-500 mb-4">by Siscora.com</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <MapPin className="h-4 w-4" />
@@ -468,7 +469,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="border-t border-gray-200 pt-8 mt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-600">
-                2024 Siscora Connect. All rights reserved.
+                2024 Khojix. All rights reserved.
               </p>
               <div className="flex items-center gap-4">
                 <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">

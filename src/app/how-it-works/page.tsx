@@ -198,7 +198,7 @@ const pricingInfo = {
 const faqs = [
   {
     question: 'How do I know if a professional is trustworthy?',
-    answer: 'All professionals on Siscora Connect go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
+    answer: 'All professionals on Khojix go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
   },
   {
     question: 'Is it really free for customers?',
@@ -260,7 +260,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              How Siscora Connect Works
+              How Khojix Works
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               Get connected with trusted professionals in 4 simple steps. 
@@ -314,7 +314,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Trust Siscora Connect?
+              Why Trust Khojix?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We go above and beyond to ensure your safety and satisfaction
@@ -503,7 +503,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Siscora Connect?
+              Why Choose Khojix?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We're committed to making professional services accessible, safe, and reliable
@@ -536,7 +536,7 @@ export default function HowItWorksPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Got questions? We've got answers. Here are some common questions about using Siscora Connect.
+              Got questions? We've got answers. Here are some common questions about using Khojix.
             </p>
           </div>
 
@@ -571,7 +571,7 @@ export default function HowItWorksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Take Siscora Connect Anywhere
+                Take Khojix Anywhere
               </h2>
               <p className="text-xl text-gray-300 mb-8">
                 Manage your professional services on the go with our mobile app. Search, book, and pay—all from your pocket.
@@ -656,7 +656,7 @@ export default function HowItWorksPage() {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-white/90 mb-8">
-              Join thousands of satisfied customers who found their perfect professional through Siscora Connect
+              Join thousands of satisfied customers who found their perfect professional through Khojix
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/#results-section">

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Siscora Connect - Professional Directory",
+  title: "Khojix - Professional Directory",
   description: "Connect with trusted professionals in your area. Find doctors, engineers, plumbers, electricians and more.",
-  keywords: "professional directory, find professionals, local services, siscora connect",
+  keywords: "professional directory, find professionals, local services, khojix",
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",

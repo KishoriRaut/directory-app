@@ -85,12 +85,13 @@ export function Header({ user, onSignOut }: HeaderProps) {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-                <span className="text-white font-bold text-lg">S</span>
+                <span className="text-white font-bold text-lg">K</span>
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Siscora Connect
+                  Khojix
                 </h1>
+                <p className="text-xs text-gray-500">by Siscora.com</p>
               </div>
             </Link>
 
