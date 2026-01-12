@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Plus, X } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 const categories = [
   { value: 'doctor', label: 'Doctor' },
@@ -34,6 +35,7 @@ export default function AddProfilePage() {
     newService: ''
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validateForm = () => {
@@ -55,45 +57,79 @@ export default function AddProfilePage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!validateForm()) return
 
-    const newProfessional: Professional = {
-      id: Date.now().toString(),
-      name: formData.name,
-      profession: formData.profession,
-      category: formData.category,
-      email: formData.email,
-      phone: formData.phone,
-      location: formData.location,
-      experience: parseInt(formData.experience),
-      rating: 0,
-      description: formData.description,
-      services: formData.services,
-      availability: formData.availability,
-      verified: false,
-      createdAt: new Date().toISOString()
-    }
+    setIsSubmitting(true)
 
-    console.log('New professional:', newProfessional)
-    alert('Profile submitted successfully! (Check console for data)')
-    
-    // Reset form
-    setFormData({
-      name: '',
-      profession: '',
-      category: 'doctor',
-      email: '',
-      phone: '',
-      location: '',
-      experience: '',
-      description: '',
-      availability: '',
-      services: [],
-      newService: ''
-    })
+    try {
+      // Insert professional data
+      const { data: professionalData, error: professionalError } = await supabase
+        .from('professionals')
+        .insert({
+          name: formData.name,
+          profession: formData.profession,
+          category: formData.category,
+          email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
+          experience: parseInt(formData.experience),
+          rating: 0,
+          description: formData.description,
+          availability: formData.availability,
+          verified: false
+        })
+        .select()
+        .single()
+
+      if (professionalError) {
+        console.error('Error creating professional:', professionalError)
+        alert('Error creating profile. Please try again.')
+        return
+      }
+
+      // Insert services
+      if (formData.services.length > 0) {
+        const servicesToInsert = formData.services.map(service => ({
+          professional_id: professionalData.id,
+          service_name: service
+        }))
+
+        const { error: servicesError } = await supabase
+          .from('services')
+          .insert(servicesToInsert)
+
+        if (servicesError) {
+          console.error('Error adding services:', servicesError)
+          alert('Profile created but there was an error adding services.')
+        }
+      }
+
+      alert('Profile submitted successfully!')
+      
+      // Reset form
+      setFormData({
+        name: '',
+        profession: '',
+        category: 'doctor',
+        email: '',
+        phone: '',
+        location: '',
+        experience: '',
+        description: '',
+        availability: '',
+        services: [],
+        newService: ''
+      })
+      
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      alert('An unexpected error occurred. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const addService = () => {
@@ -305,8 +341,12 @@ export default function AddProfilePage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm">
-                  Submit Profile
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Profile'}
                 </Button>
               </form>
             </CardContent>

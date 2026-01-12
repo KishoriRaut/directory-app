@@ -1,144 +1,114 @@
--- Siscora Connect Professional Directory Database Schema
--- Compatible with Supabase PostgreSQL
+-- Drop existing tables if they exist (clean slate)
+DROP TABLE IF EXISTS services CASCADE;
+DROP TABLE IF EXISTS professionals CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
 
--- Enable UUID extension for unique identifiers
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Categories table for professional categories
+-- Create categories table
 CREATE TABLE categories (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name VARCHAR(100) NOT NULL UNIQUE,
-  slug VARCHAR(100) NOT NULL UNIQUE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
   description TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  icon TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Professionals table for professional profiles
+-- Create professionals table (matches the Professional interface from add-profile form)
 CREATE TABLE professionals (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  profession VARCHAR(255) NOT NULL,
-  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  phone VARCHAR(50) NOT NULL,
-  location VARCHAR(255) NOT NULL,
-  experience_years INTEGER NOT NULL CHECK (experience_years >= 0),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  profession TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('doctor', 'engineer', 'plumber', 'electrician', 'other')),
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  location TEXT NOT NULL,
+  experience INTEGER NOT NULL CHECK (experience >= 0),
   rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
-  description TEXT,
-  availability VARCHAR(255),
+  description TEXT NOT NULL,
+  availability TEXT NOT NULL,
+  image_url TEXT,
   verified BOOLEAN DEFAULT FALSE,
-  avatar_url VARCHAR(500),
-  website VARCHAR(500),
-  linkedin VARCHAR(500),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Services table for professional services
+-- Create services table for the services array
 CREATE TABLE services (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  professional_id UUID REFERENCES professionals(id) ON DELETE CASCADE,
-  service_name VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Reviews table for professional reviews
-CREATE TABLE reviews (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  professional_id UUID REFERENCES professionals(id) ON DELETE CASCADE,
-  reviewer_name VARCHAR(255) NOT NULL,
-  reviewer_email VARCHAR(255) NOT NULL,
-  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-  comment TEXT,
-  verified BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  professional_id UUID NOT NULL REFERENCES professionals(id) ON DELETE CASCADE,
+  service_name TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Insert default categories
-INSERT INTO categories (name, slug, description) VALUES
-('Doctor', 'doctor', 'Medical professionals and healthcare providers'),
-('Engineer', 'engineer', 'Engineering and technical professionals'),
-('Plumber', 'plumber', 'Plumbing and home service professionals'),
-('Electrician', 'electrician', 'Electrical and wiring professionals'),
-('Other', 'other', 'Other professional services');
+INSERT INTO categories (slug, name, description, icon) VALUES
+('doctor', 'Doctors', 'Medical professionals and healthcare providers', 'stethoscope'),
+('engineer', 'Engineers', 'Engineering and technical professionals', 'wrench'),
+('plumber', 'Plumbers', 'Plumbing and drainage specialists', 'pipe'),
+('electrician', 'Electricians', 'Electrical and wiring professionals', 'bolt'),
+('other', 'Other', 'Other professional services', 'briefcase');
 
--- Create indexes for better performance
-CREATE INDEX idx_professionals_category_id ON professionals(category_id);
+-- Create indexes for performance
+CREATE INDEX idx_professionals_category ON professionals(category);
+CREATE INDEX idx_professionals_location ON professionals(location);
 CREATE INDEX idx_professionals_rating ON professionals(rating DESC);
 CREATE INDEX idx_professionals_verified ON professionals(verified);
-CREATE INDEX idx_professionals_location ON professionals(location);
+CREATE INDEX idx_professionals_created_at ON professionals(created_at DESC);
 CREATE INDEX idx_services_professional_id ON services(professional_id);
-CREATE INDEX idx_reviews_professional_id ON reviews(professional_id);
+
+-- Enable Row Level Security
+ALTER TABLE professionals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies
+-- Anyone can read professionals data
+CREATE POLICY "Professionals are viewable by everyone" ON professionals
+  FOR SELECT USING (true);
+
+-- Anyone can insert professionals (for profile submissions)
+CREATE POLICY "Anyone can create professionals" ON professionals
+  FOR INSERT WITH CHECK (true);
+
+-- Profile owners can update their own data
+CREATE POLICY "Users can update own professionals" ON professionals
+  FOR UPDATE USING (auth.uid()::text = id::text);
+
+-- Anyone can read services
+CREATE POLICY "Services are viewable by everyone" ON services
+  FOR SELECT USING (true);
+
+-- Anyone can insert services (when creating professional profile)
+CREATE POLICY "Anyone can create services" ON services
+  FOR INSERT WITH CHECK (true);
+
+-- Service owners can update their own services
+CREATE POLICY "Users can update own services" ON services
+  FOR UPDATE USING (
+  EXISTS (
+    SELECT 1 FROM professionals 
+    WHERE professionals.id = services.professional_id 
+    AND auth.uid()::text = professionals.id::text
+  )
+);
+
+-- Anyone can read categories
+CREATE POLICY "Categories are viewable by everyone" ON categories
+  FOR SELECT USING (true);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
+  NEW.updated_at = NOW();
+  RETURN NEW;
 END;
 $$ language 'plpgsql';
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_professionals_updated_at BEFORE UPDATE ON professionals
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Row Level Security (RLS) Policies
-ALTER TABLE professionals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE services ENABLE ROW LEVEL SECURITY;
-ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
-
--- Allow public read access to professionals
-CREATE POLICY "Professionals are viewable by everyone" ON professionals
-    FOR SELECT USING (true);
-
--- Allow public read access to categories
-CREATE POLICY "Categories are viewable by everyone" ON categories
-    FOR SELECT USING (true);
-
--- Allow public read access to services
-CREATE POLICY "Services are viewable by everyone" ON services
-    FOR SELECT USING (true);
-
--- Allow public read access to reviews
-CREATE POLICY "Reviews are viewable by everyone" ON reviews
-    FOR SELECT USING (true);
-
--- Allow authenticated users to insert professionals
-CREATE POLICY "Authenticated users can insert professionals" ON professionals
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
--- Allow users to update their own professionals
-CREATE POLICY "Users can update own professionals" ON professionals
-    FOR UPDATE USING (auth.uid()::text = created_by::text);
-
--- Allow authenticated users to insert reviews
-CREATE POLICY "Authenticated users can insert reviews" ON reviews
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
--- Storage bucket for avatars
-INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true);
-
--- Storage policies for avatars
-CREATE POLICY "Avatar images are publicly accessible" ON storage.objects
-    FOR SELECT USING (bucket_id = 'avatars');
-
-CREATE POLICY "Anyone can upload avatars" ON storage.objects
-    FOR INSERT WITH CHECK (bucket_id = 'avatars');
-
--- Add created_by column for ownership tracking
-ALTER TABLE professionals ADD COLUMN created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
-ALTER TABLE reviews ADD COLUMN created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
-
--- Update policies to use created_by
-DROP POLICY IF EXISTS "Users can update own professionals" ON professionals;
-CREATE POLICY "Users can update own professionals" ON professionals
-    FOR UPDATE USING (auth.uid() = created_by);
-
-DROP POLICY IF EXISTS "Authenticated users can insert reviews" ON reviews;
-CREATE POLICY "Authenticated users can insert reviews" ON reviews
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = created_by);
+CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

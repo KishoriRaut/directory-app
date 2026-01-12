@@ -3,12 +3,12 @@
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Professional } from '@/types/directory'
-import { mockProfessionals } from '@/data/mockData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 export default function ProfilePage() {
   const params = useParams()
@@ -17,9 +17,56 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const foundProfessional = mockProfessionals.find(p => p.id === params.id)
-    setProfessional(foundProfessional || null)
-    setLoading(false)
+    const fetchProfessional = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('professionals')
+          .select(`
+            *,
+            services (
+              service_name
+            )
+          `)
+          .eq('id', params.id)
+          .single()
+
+        if (error) {
+          console.error('Error fetching professional:', error)
+          setProfessional(null)
+          return
+        }
+
+        // Transform data to match Professional interface
+        const transformedProfessional: Professional = {
+          id: data.id,
+          name: data.name,
+          profession: data.profession,
+          category: data.category,
+          email: data.email,
+          phone: data.phone,
+          location: data.location,
+          experience: data.experience,
+          rating: data.rating,
+          description: data.description,
+          services: data.services?.map((s: any) => s.service_name) || [],
+          availability: data.availability,
+          imageUrl: data.image_url,
+          verified: data.verified,
+          createdAt: data.created_at
+        }
+
+        setProfessional(transformedProfessional)
+      } catch (error) {
+        console.error('Error:', error)
+        setProfessional(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (params.id) {
+      fetchProfessional()
+    }
   }, [params.id])
 
   if (loading) {

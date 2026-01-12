@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { mockProfessionals, categories } from '@/data/mockData'
+import { useState, useMemo, useEffect } from 'react'
+import { Professional } from '@/types/directory'
 import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
@@ -9,12 +9,64 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
   const [filters, setFilters] = useState<SearchFiltersType>({})
+  const [professionals, setProfessionals] = useState<Professional[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch professionals from Supabase
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('professionals')
+          .select(`
+            *,
+            services (
+              service_name
+            )
+          `)
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching professionals:', error)
+          return
+        }
+
+        // Transform data to match Professional interface
+        const transformedData: Professional[] = data.map(prof => ({
+          id: prof.id,
+          name: prof.name,
+          profession: prof.profession,
+          category: prof.category,
+          email: prof.email,
+          phone: prof.phone,
+          location: prof.location,
+          experience: prof.experience,
+          rating: prof.rating,
+          description: prof.description,
+          services: prof.services?.map((s: any) => s.service_name) || [],
+          availability: prof.availability,
+          imageUrl: prof.image_url,
+          verified: prof.verified,
+          createdAt: prof.created_at
+        }))
+
+        setProfessionals(transformedData)
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProfessionals()
+  }, [])
 
   const filteredProfessionals = useMemo(() => {
-    return mockProfessionals.filter(professional => {
+    return professionals.filter((professional: Professional) => {
       if (filters.category && filters.category !== 'all' && professional.category !== filters.category) {
         return false
       }
@@ -32,7 +84,7 @@ export default function Home() {
       }
       return true
     })
-  }, [filters])
+  }, [professionals, filters])
 
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== undefined && value !== '' && value !== false
@@ -124,7 +176,10 @@ export default function Home() {
                     {filters.category && filters.category !== 'all' && (
                       <span className="inline-flex items-center gap-1">
                         <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-100">
-                          {categories.find(c => c.value === filters.category)?.label}
+                          {filters.category === 'doctor' ? 'Doctors' : 
+                           filters.category === 'engineer' ? 'Engineers' :
+                           filters.category === 'plumber' ? 'Plumbers' :
+                           filters.category === 'electrician' ? 'Electricians' : 'Other'}
                         </Badge>
                       </span>
                     )}
@@ -162,7 +217,17 @@ export default function Home() {
             </div>
 
             {/* Results Grid */}
-            {filteredProfessionals.length === 0 ? (
+            {loading ? (
+              <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
+                <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600"></div>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Loading Professionals</h3>
+                <p className="text-gray-600 max-w-lg mx-auto text-lg">
+                  Fetching the latest professionals from our database...
+                </p>
+              </div>
+            ) : filteredProfessionals.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
                 <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8">
                   <Search className="h-16 w-16 text-gray-400" />

@@ -1,13 +1,12 @@
 -- Sample data for Siscora Connect Professional Directory
--- Insert sample professionals with services and reviews
+-- Insert sample professionals with services
 
--- Insert sample professionals
-INSERT INTO professionals (id, name, profession, category_id, email, phone, location, experience_years, rating, description, availability, verified, created_by) VALUES
+-- Insert sample professionals (matching the Professional interface from add-profile form)
+INSERT INTO professionals (name, profession, category, email, phone, location, experience, rating, description, availability, verified) VALUES
 (
-  uuid_generate_v4(),
   'Dr. Sarah Johnson',
   'Cardiologist',
-  (SELECT id FROM categories WHERE slug = 'doctor'),
+  'doctor',
   'sarah.johnson@email.com',
   '+1 (555) 123-4567',
   'New York, NY',
@@ -15,14 +14,12 @@ INSERT INTO professionals (id, name, profession, category_id, email, phone, loca
   4.8,
   'Experienced cardiologist specializing in heart disease prevention and treatment. Board-certified with over 12 years of clinical experience in cardiovascular medicine.',
   'Mon-Fri: 9AM-5PM',
-  true,
-  uuid_generate_v4()
+  true
 ),
 (
-  uuid_generate_v4(),
   'Michael Chen',
   'Software Engineer',
-  (SELECT id FROM categories WHERE slug = 'engineer'),
+  'engineer',
   'michael.chen@email.com',
   '+1 (555) 234-5678',
   'San Francisco, CA',
@@ -30,14 +27,12 @@ INSERT INTO professionals (id, name, profession, category_id, email, phone, loca
   4.9,
   'Full-stack software engineer with expertise in React, Node.js, and cloud architecture. Specializing in scalable web applications and API development.',
   'Mon-Fri: 10AM-6PM',
-  true,
-  uuid_generate_v4()
+  true
 ),
 (
-  uuid_generate_v4(),
   'Robert Martinez',
   'Master Plumber',
-  (SELECT id FROM categories WHERE slug = 'plumber'),
+  'plumber',
   'robert.martinez@email.com',
   '+1 (555) 345-6789',
   'Los Angeles, CA',
@@ -45,14 +40,12 @@ INSERT INTO professionals (id, name, profession, category_id, email, phone, loca
   4.7,
   'Licensed master plumber with 15+ years of experience in residential and commercial plumbing. Emergency services available 24/7.',
   '24/7 Emergency Service',
-  true,
-  uuid_generate_v4()
+  true
 ),
 (
-  uuid_generate_v4(),
   'Emily Thompson',
   'Electrical Engineer',
-  (SELECT id FROM categories WHERE slug = 'electrician'),
+  'electrician',
   'emily.thompson@email.com',
   '+1 (555) 456-7890',
   'Chicago, IL',
@@ -60,14 +53,12 @@ INSERT INTO professionals (id, name, profession, category_id, email, phone, loca
   4.6,
   'Certified electrical engineer specializing in residential and commercial electrical systems. Expert in smart home automation and energy-efficient solutions.',
   'Mon-Sat: 8AM-6PM',
-  true,
-  uuid_generate_v4()
+  true
 ),
 (
-  uuid_generate_v4(),
   'Dr. James Wilson',
   'General Practitioner',
-  (SELECT id FROM categories WHERE slug = 'doctor'),
+  'doctor',
   'james.wilson@email.com',
   '+1 (555) 567-8901',
   'Boston, MA',
@@ -75,8 +66,72 @@ INSERT INTO professionals (id, name, profession, category_id, email, phone, loca
   4.9,
   'Board-certified family physician providing comprehensive healthcare for all ages. Emphasis on preventive care and patient education.',
   'Mon-Fri: 8AM-7PM, Sat: 9AM-1PM',
-  true,
-  uuid_generate_v4()
+  true
+),
+(
+  'John Smith',
+  'Civil Engineer',
+  'engineer',
+  'john.smith@email.com',
+  '+1 (555) 678-9012',
+  'Seattle, WA',
+  6,
+  4.7,
+  'Civil engineer with expertise in structural design and project management. Specializing in commercial building projects.',
+  'Mon-Fri: 9AM-5PM',
+  true
+),
+(
+  'David Lee',
+  'Journeyman Plumber',
+  'plumber',
+  'david.lee@email.com',
+  '+1 (555) 789-0123',
+  'Phoenix, AZ',
+  7,
+  4.4,
+  'Reliable plumber specializing in residential plumbing repairs and installations. Licensed and insured.',
+  'Mon-Sat: 7AM-6PM',
+  false
+),
+(
+  'James Anderson',
+  'Residential Electrician',
+  'electrician',
+  'james.anderson@email.com',
+  '+1 (555) 890-1234',
+  'San Antonio, TX',
+  5,
+  4.3,
+  'Electrician specializing in home electrical repairs and installations. Expert in residential wiring and panel upgrades.',
+  'Mon-Sat: 8AM-6PM',
+  false
+),
+(
+  'Dr. Lisa Wang',
+  'Dentist',
+  'doctor',
+  'lisa.wang@email.com',
+  '+1 (555) 901-2345',
+  'Portland, OR',
+  9,
+  4.7,
+  'General dentist providing comprehensive dental care for the whole family. Specializing in cosmetic dentistry.',
+  'Mon-Fri: 9AM-6PM, Sat: 9AM-2PM',
+  true
+),
+(
+  'Alex Turner',
+  'Mechanical Engineer',
+  'engineer',
+  'alex.turner@email.com',
+  '+1 (555) 012-3456',
+  'Denver, CO',
+  11,
+  4.6,
+  'Mechanical engineer specializing in HVAC systems and energy efficiency. Expert in sustainable building design.',
+  'Mon-Fri: 9AM-5PM',
+  true
 );
 
 -- Insert services for each professional
@@ -115,24 +170,37 @@ INSERT INTO services (professional_id, service_name) VALUES
 ((SELECT id FROM professionals WHERE email = 'james.wilson@email.com'), 'Health Screenings'),
 ((SELECT id FROM professionals WHERE email = 'james.wilson@email.com'), 'Chronic Disease Management');
 
--- Insert sample reviews
-INSERT INTO reviews (professional_id, reviewer_name, reviewer_email, rating, comment, verified, created_by) VALUES
--- Reviews for Dr. Sarah Johnson
-((SELECT id FROM professionals WHERE email = 'sarah.johnson@email.com'), 'John Doe', 'john.doe@email.com', 5, 'Excellent cardiologist! Very thorough and caring. Took time to explain everything clearly.', true, uuid_generate_v4()),
-((SELECT id FROM professionals WHERE email = 'sarah.johnson@email.com'), 'Jane Smith', 'jane.smith@email.com', 4, 'Great experience overall. Wait time was a bit long but the care was excellent.', true, uuid_generate_v4()),
+-- John Smith's services
+INSERT INTO services (professional_id, service_name) VALUES
+((SELECT id FROM professionals WHERE email = 'john.smith@email.com'), 'Structural Analysis'),
+((SELECT id FROM professionals WHERE email = 'john.smith@email.com'), 'Project Management'),
+((SELECT id FROM professionals WHERE email = 'john.smith@email.com'), 'Site Planning'),
+((SELECT id FROM professionals WHERE email = 'john.smith@email.com'), 'Construction Oversight');
 
--- Reviews for Michael Chen
-((SELECT id FROM professionals WHERE email = 'michael.chen@email.com'), 'Alex Johnson', 'alex.j@email.com', 5, 'Outstanding developer! Delivered our project on time and exceeded expectations.', true, uuid_generate_v4()),
-((SELECT id FROM professionals WHERE email = 'michael.chen@email.com'), 'Sarah Lee', 'sarah.lee@email.com', 5, 'Michael is a genius! He solved our complex technical issues quickly.', true, uuid_generate_v4()),
+-- David Lee's services
+INSERT INTO services (professional_id, service_name) VALUES
+((SELECT id FROM professionals WHERE email = 'david.lee@email.com'), 'Leak Detection'),
+((SELECT id FROM professionals WHERE email = 'david.lee@email.com'), 'Fixture Installation'),
+((SELECT id FROM professionals WHERE email = 'david.lee@email.com'), 'Pipe Repair'),
+((SELECT id FROM professionals WHERE email = 'david.lee@email.com'), 'Bathroom Renovation');
 
--- Reviews for Robert Martinez
-((SELECT id FROM professionals WHERE email = 'robert.martinez@email.com'), 'Tom Brown', 'tom.b@email.com', 4, 'Reliable and professional. Fixed our emergency plumbing issue quickly.', true, uuid_generate_v4()),
-((SELECT id FROM professionals WHERE email = 'robert.martinez@email.com'), 'Lisa Davis', 'lisa.d@email.com', 5, 'Best plumber in LA! Fair prices and excellent work.', true, uuid_generate_v4()),
+-- James Anderson's services
+INSERT INTO services (professional_id, service_name) VALUES
+((SELECT id FROM professionals WHERE email = 'james.anderson@email.com'), 'Outlet Installation'),
+((SELECT id FROM professionals WHERE email = 'james.anderson@email.com'), 'Lighting'),
+((SELECT id FROM professionals WHERE email = 'james.anderson@email.com'), 'Circuit Repair'),
+((SELECT id FROM professionals WHERE email = 'james.anderson@email.com'), 'Home Inspections');
 
--- Reviews for Emily Thompson
-((SELECT id FROM professionals WHERE email = 'emily.thompson@email.com'), 'Mark Wilson', 'mark.w@email.com', 5, 'Emily is amazing! She installed our smart home system perfectly.', true, uuid_generate_v4()),
-((SELECT id FROM professionals WHERE email = 'emily.thompson@email.com'), 'Amy Chen', 'amy.chen@email.com', 4, 'Very knowledgeable and professional. Great electrical work.', true, uuid_generate_v4()),
+-- Dr. Lisa Wang's services
+INSERT INTO services (professional_id, service_name) VALUES
+((SELECT id FROM professionals WHERE email = 'lisa.wang@email.com'), 'Dental Check-ups'),
+((SELECT id FROM professionals WHERE email = 'lisa.wang@email.com'), 'Teeth Cleaning'),
+((SELECT id FROM professionals WHERE email = 'lisa.wang@email.com'), 'Fillings'),
+((SELECT id FROM professionals WHERE email = 'lisa.wang@email.com'), 'Cosmetic Dentistry');
 
--- Reviews for Dr. James Wilson
-((SELECT id FROM professionals WHERE email = 'james.wilson@email.com'), 'Robert Taylor', 'robert.t@email.com', 5, 'Dr. Wilson is the best family doctor! Very thorough and caring.', true, uuid_generate_v4()),
-((SELECT id FROM professionals WHERE email = 'james.wilson@email.com'), 'Maria Garcia', 'maria.g@email.com', 5, 'Excellent physician! Always takes time to listen and explain things.', true, uuid_generate_v4());
+-- Alex Turner's services
+INSERT INTO services (professional_id, service_name) VALUES
+((SELECT id FROM professionals WHERE email = 'alex.turner@email.com'), 'HVAC Design'),
+((SELECT id FROM professionals WHERE email = 'alex.turner@email.com'), 'Energy Audits'),
+((SELECT id FROM professionals WHERE email = 'alex.turner@email.com'), 'System Optimization'),
+((SELECT id FROM professionals WHERE email = 'alex.turner@email.com'), 'Project Management');
