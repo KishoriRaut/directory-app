@@ -7,18 +7,42 @@ import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail } from 'lucide-react'
+import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function Home() {
   const [filters, setFilters] = useState<SearchFiltersType>({})
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user || null)
+    }
+    
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   // Fetch professionals from Supabase
   useEffect(() => {
     const fetchProfessionals = async () => {
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured()) {
+        console.warn('Supabase is not configured. Please set up your environment variables.')
+        setLoading(false)
+        return
+      }
+
       try {
         const { data, error } = await supabase
           .from('professionals')
@@ -32,11 +56,17 @@ export default function Home() {
 
         if (error) {
           console.error('Error fetching professionals:', error)
+          setLoading(false)
           return
         }
 
+        console.log('Fetched data:', data) // Debug log
+
+        // Type assertion for the data
+        const professionalsData = data as any[]
+
         // Transform data to match Professional interface
-        const transformedData: Professional[] = data.map(prof => ({
+        const transformedData: Professional[] = professionalsData.map(prof => ({
           id: prof.id,
           name: prof.name,
           profession: prof.profession,
@@ -54,6 +84,7 @@ export default function Home() {
           createdAt: prof.created_at
         }))
 
+        console.log('Transformed data:', transformedData) // Debug log
         setProfessionals(transformedData)
       } catch (error) {
         console.error('Error:', error)
@@ -90,6 +121,11 @@ export default function Home() {
     value !== undefined && value !== '' && value !== false
   )
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
+
   const handleViewProfile = (id: string) => {
     window.location.href = `/profile/${id}`
   }
@@ -108,15 +144,87 @@ export default function Home() {
               </Link>
               <p className="text-gray-600 mt-2 text-lg">Connect with trusted professionals in your area</p>
             </div>
-            <Link href="/add-profile">
-              <Button className="modern-button group">
-                <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
-                Add Your Profile
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.email?.split('@')[0]}
+                    </span>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleSignOut} className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/signin">
+                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button className="modern-button group">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+              <Link href="/add-profile">
+                <Button className="modern-button group">
+                  <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
+                  Add Your Profile
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
+
+      {/* Free Profile Banner */}
+      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex-1">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                🎉 Add Your Professional Profile for FREE!
+              </h2>
+              <p className="text-lg text-indigo-100 mb-4">
+                Join thousands of trusted professionals. Get discovered by clients looking for your expertise.
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Free forever</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>No hidden fees</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Instant setup</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link href="/add-profile">
+                <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 border-white hover:border-gray-200 font-semibold px-8">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Your Profile
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600 font-semibold px-8">
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Trust Signals Section */}
       <section className="bg-white border-b border-gray-100">
@@ -228,6 +336,32 @@ export default function Home() {
                 <p className="text-gray-600 max-w-lg mx-auto text-lg">
                   Fetching the latest professionals from our database...
                 </p>
+              </div>
+            ) : !isSupabaseConfigured() ? (
+              <div className="text-center py-20 bg-yellow-50 rounded-2xl border border-yellow-200">
+                <div className="w-32 h-32 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <span className="text-4xl">⚠️</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Database Not Configured</h3>
+                <p className="text-gray-700 max-w-lg mx-auto text-lg mb-6">
+                  Please set up your Supabase environment variables to connect to the database.
+                </p>
+                <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 max-w-md mx-auto">
+                  <h4 className="font-semibold text-gray-900 mb-2">Setup Instructions:</h4>
+                  <ol className="text-left text-sm text-gray-700 space-y-2 list-decimal">
+                    <li>Go to <a href="https://supabase.com" target="_blank" className="text-indigo-600 hover:text-indigo-700">supabase.com</a></li>
+                    <li>Create a new project or use your existing one</li>
+                    <li>Go to Settings → API</li>
+                    <li>Copy your Project URL and Anon Key</li>
+                    <li>Create a <code>.env.local</code> file in your project root</li>
+                    <li>Add these lines:
+                      <pre className="bg-gray-800 text-green-400 p-2 rounded text-xs overflow-x-auto">
+{`NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
+                    </li>
+                    <li>Restart your development server</li>
+                  </ol>
+                </div>
               </div>
             ) : filteredProfessionals.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
@@ -376,7 +510,7 @@ export default function Home() {
           <div className="border-t border-gray-200 pt-8 mt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-600">
-                © 2024 Siscora Connect. All rights reserved.
+                2024 Siscora Connect. All rights reserved.
               </p>
               <div className="flex items-center gap-4">
                 <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
@@ -389,6 +523,19 @@ export default function Home() {
                 <span className="text-gray-400">•</span>
                 <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                   Contact
+                </Link>
+              </div>
+            </div>
+            {/* Free Profile CTA */}
+            <div className="border-t border-gray-200 pt-6 mt-6 text-center">
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
+                <p className="text-sm text-gray-700 mb-3">
+                  <span className="font-semibold text-indigo-900"> Ready to grow your business?</span>
+                </p>
+                <Link href="/add-profile">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 text-sm px-6">
+                    Add Your Free Profile
+                  </Button>
                 </Link>
               </div>
             </div>

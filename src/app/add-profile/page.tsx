@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Professional } from '@/types/directory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,8 @@ const categories = [
 ]
 
 export default function AddProfilePage() {
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
   const [formData, setFormData] = useState({
     name: '',
     profession: '',
@@ -39,6 +42,38 @@ export default function AddProfilePage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Check authentication
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.push('/auth/signin?redirect=/add-profile')
+        return
+      }
+      setUser(session.user)
+
+      // Pre-fill email from authenticated user
+      if (session.user?.email) {
+        setFormData(prev => ({ ...prev, email: session.user.email || '' }))
+      }
+    }
+    
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push('/auth/signin?redirect=/add-profile')
+      } else {
+        setUser(session.user)
+        if (session.user?.email) {
+          setFormData(prev => ({ ...prev, email: session.user.email || '' }))
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [router])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
