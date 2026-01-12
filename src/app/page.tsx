@@ -5,6 +5,7 @@ import { Professional } from '@/types/directory'
 import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
+import { Pagination } from '@/components/Pagination'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut } from 'lucide-react'
@@ -16,6 +17,9 @@ export default function Home() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
 
   // Check authentication status
   useEffect(() => {
@@ -33,7 +37,7 @@ export default function Home() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Fetch professionals from Supabase
+  // Fetch professionals from Supabase with pagination
   useEffect(() => {
     const fetchProfessionals = async () => {
       // Check if Supabase is configured
@@ -43,16 +47,39 @@ export default function Home() {
         return
       }
 
+      setLoading(true)
+
       try {
-        const { data, error } = await supabase
+        // Build query with filters
+        let query = supabase
           .from('professionals')
           .select(`
             *,
             services (
               service_name
             )
-          `)
+          `, { count: 'exact' }) // Get total count for pagination
+
+        // Apply filters
+        if (filters.category && filters.category !== 'all') {
+          query = query.eq('category', filters.category)
+        }
+        
+        if (filters.profession) {
+          query = query.ilike('profession', `%${filters.profession}%`)
+        }
+        
+        if (filters.location) {
+          query = query.ilike('location', `%${filters.location}%`)
+        }
+
+        // Apply pagination
+        const from = (currentPage - 1) * itemsPerPage
+        const to = from + itemsPerPage - 1
+        
+        const { data, error, count } = await query
           .order('created_at', { ascending: false })
+          .range(from, to)
 
         if (error) {
           console.error('Error fetching professionals:', error)
@@ -61,6 +88,7 @@ export default function Home() {
         }
 
         console.log('Fetched data:', data) // Debug log
+        console.log('Total count:', count) // Debug log
 
         // Type assertion for the data
         const professionalsData = data as any[]
@@ -86,6 +114,7 @@ export default function Home() {
 
         console.log('Transformed data:', transformedData) // Debug log
         setProfessionals(transformedData)
+        setTotalItems(count || 0)
       } catch (error) {
         console.error('Error:', error)
       } finally {
@@ -94,32 +123,18 @@ export default function Home() {
     }
 
     fetchProfessionals()
-  }, [])
+  }, [currentPage, itemsPerPage, filters])
 
-  const filteredProfessionals = useMemo(() => {
-    return professionals.filter((professional: Professional) => {
-      if (filters.category && filters.category !== 'all' && professional.category !== filters.category) {
-        return false
-      }
-      if (filters.profession && !professional.profession.toLowerCase().includes(filters.profession.toLowerCase())) {
-        return false
-      }
-      if (filters.location && !professional.location.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false
-      }
-      if (filters.minRating && professional.rating < filters.minRating) {
-        return false
-      }
-      if (filters.verified && !professional.verified) {
-        return false
-      }
-      return true
-    })
-  }, [professionals, filters])
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
 
-  const hasActiveFilters = Object.values(filters).some(value => 
-    value !== undefined && value !== '' && value !== false
-  )
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1) // Reset to first page when changing items per page
+  }
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -129,6 +144,10 @@ export default function Home() {
   const handleViewProfile = (id: string) => {
     window.location.href = `/profile/${id}`
   }
+
+  const hasActiveFilters = Object.values(filters).some(value => 
+    value !== undefined && value !== '' && value !== false
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -280,7 +299,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    {filteredProfessionals.length} Professional{filteredProfessionals.length !== 1 ? 's' : ''} Found
+                    {totalItems} Professional{totalItems !== 1 ? 's' : ''} Found
                   </h2>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     {filters.category && filters.category !== 'all' && (
@@ -363,7 +382,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                   </ol>
                 </div>
               </div>
-            ) : filteredProfessionals.length === 0 ? (
+            ) : professionals.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
                 <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8">
                   <Search className="h-16 w-16 text-gray-400" />
@@ -387,7 +406,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {filteredProfessionals.map((professional) => (
+                {professionals.map((professional: Professional) => (
                   <ProfessionalCard
                     key={professional.id}
                     professional={professional}
@@ -397,12 +416,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
               </div>
             )}
 
-            {/* Load More / Pagination */}
-            {filteredProfessionals.length > 0 && (
-              <div className="mt-12 text-center">
-                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
-                  Load More Professionals
-                </Button>
+            {/* Pagination */}
+            {professionals.length > 0 && (
+              <div className="mt-12">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                />
               </div>
             )}
           </main>
