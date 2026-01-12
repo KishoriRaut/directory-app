@@ -29,11 +29,13 @@ export const validateField = (field: string, value: any): ValidationResult => {
       }
       if (profession.length > VALIDATION_RULES.profession.maxLength) {
         return { isValid: false, error: `Profession must be less than ${VALIDATION_RULES.profession.maxLength} characters` }
+      }
       return { isValid: true }
     
     case 'email':
       if (!value || typeof value !== 'string') {
         return { isValid: false, error: 'Email is required' }
+      }
       const email = value.trim()
       if (!VALIDATION_RULES.email.pattern.test(email)) {
         return { isValid: false, error: 'Please enter a valid email address' }
@@ -44,6 +46,7 @@ export const validateField = (field: string, value: any): ValidationResult => {
       if (value && typeof value === 'string') {
         if (!VALIDATION_RULES.phone.pattern.test(value)) {
           return { isValid: false, error: 'Please enter a valid phone number' }
+        }
       }
       return { isValid: true }
     
@@ -52,6 +55,7 @@ export const validateField = (field: string, value: any): ValidationResult => {
         if (value < VALIDATION_RULES.experience.min || value > VALIDATION_RULES.experience.max) {
           return { isValid: false, error: `Experience must be between ${VALIDATION_RULES.experience.min} and ${VALIDATION_RULES.experience.max} years` }
         }
+      }
       return { isValid: true }
     
     case 'rating':
@@ -59,6 +63,7 @@ export const validateField = (field: string, value: any): ValidationResult => {
         if (value < VALIDATION_RULES.rating.min || value > VALIDATION_RULES.rating.max) {
           return { isValid: false, error: `Rating must be between ${VALIDATION_RULES.rating.min} and ${VALIDATION_RULES.rating.max}` }
         }
+      }
       return { isValid: true }
     
     case 'description':
@@ -66,11 +71,14 @@ export const validateField = (field: string, value: any): ValidationResult => {
         if (value.length > VALIDATION_RULES.description.maxLength) {
           return { isValid: false, error: `Description must be less than ${VALIDATION_RULES.description.maxLength} characters` }
         }
+      }
       return { isValid: true }
     
     case 'website':
-      if (value && typeof value === 'string' && !VALIDATION_RULES.website.pattern.test(value)) {
-        return { isValid: false, error: 'Please enter a valid website URL (e.g., https://example.com)' }
+      if (value && typeof value === 'string') {
+        if (!VALIDATION_RULES.website.pattern.test(value)) {
+          return { isValid: false, error: 'Please enter a valid website URL (e.g., https://example.com)' }
+        }
       }
       return { isValid: true }
     
