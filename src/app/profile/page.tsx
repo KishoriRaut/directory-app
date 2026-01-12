@@ -38,6 +38,8 @@ import {
 } from 'lucide-react'
 import { ImageUpload } from '@/components/ImageUpload'
 import { supabase } from '@/lib/supabase'
+import { validateField as validateFieldUtil, validateForm as validateFormUtil } from '@/lib/validation'
+import { VALIDATION_RULES } from '@/lib/constants'
 
 interface ProfileData {
   id: string
@@ -229,39 +231,10 @@ export default function MyProfilePage() {
     router.push('/')
   }
 
-  // Helper function to validate website URLs
-const isValidWebsite = (url: string): boolean => {
-  try {
-    new URL(url)
-    return true
-  } catch {
-      return false
-    }
-  }
-  
-  // Validation functions
-
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-    
-    // Required fields
-    const requiredFields = ['name', 'profession', 'email']
-    requiredFields.forEach(field => {
-      const error = validateField(field, formData[field])
-      if (error) newErrors[field] = error
-    })
-
-    // Optional fields
-    const optionalFields = ['phone', 'experience', 'rating', 'description', 'website']
-    optionalFields.forEach(field => {
-      if (formData[field] !== undefined && formData[field] !== '') {
-        const error = validateField(field, formData[field])
-        if (error) newErrors[field] = error
-      }
-    })
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    const result = validateFormUtil(formData)
+    setErrors(result.errors)
+    return result.isValid
   }
 
   const startEditing = () => {

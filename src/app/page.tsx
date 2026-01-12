@@ -6,6 +6,7 @@ import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Pagination } from '@/components/Pagination'
+import { debounce } from '@/lib/performance'
 import { Header } from '@/components/Header'
 import { HeroSearch } from '@/components/HeroSearch'
 import { PopularCategories } from '@/components/PopularCategories'
@@ -152,7 +153,7 @@ export default function Home() {
     window.location.href = `/profile/${id}`
   }
 
-  const handleHeroSearch = (query: string, category: string, location: string) => {
+  const handleHeroSearch = debounce((query: string, category: string, location: string) => {
     const newFilters: SearchFiltersType = {}
     if (query) newFilters.search = query
     if (category && category !== 'all') newFilters.category = category
@@ -166,7 +167,7 @@ export default function Home() {
     if (resultsSection) {
       resultsSection.scrollIntoView({ behavior: 'smooth' })
     }
-  }
+  }, 300)
 
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== undefined && value !== '' && value !== false

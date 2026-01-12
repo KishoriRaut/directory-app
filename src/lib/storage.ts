@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { BUCKET_NAME, MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from './constants'
 
 export interface UploadResult {
   publicUrl: string | null
@@ -6,8 +7,6 @@ export interface UploadResult {
 }
 
 export class StorageService {
-  private static readonly BUCKET_NAME = 'my-photo' // Your existing bucket name
-
   /**
    * Upload a profile image to Supabase Storage
    */
@@ -18,15 +17,13 @@ export class StorageService {
         return { publicUrl: null, error: 'No file provided' }
       }
 
-      // Check file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      if (file.size > maxSize) {
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
         return { publicUrl: null, error: 'File size must be less than 5MB' }
       }
 
       // Check file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-      if (!allowedTypes.includes(file.type)) {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         return { publicUrl: null, error: 'Only JPEG, PNG, WebP, and GIF images are allowed' }
       }
 
@@ -41,12 +38,12 @@ export class StorageService {
         return { publicUrl: null, error: 'You must be logged in to upload images' }
       }
 
-      console.log('Uploading to bucket:', this.BUCKET_NAME)
+      console.log('Uploading to bucket:', BUCKET_NAME)
       console.log('File path:', filePath)
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from(this.BUCKET_NAME)
+        .from(BUCKET_NAME)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
@@ -61,7 +58,7 @@ export class StorageService {
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from(this.BUCKET_NAME)
+        .from(BUCKET_NAME)
         .getPublicUrl(filePath)
 
       console.log('Public URL:', publicUrl)
@@ -90,7 +87,7 @@ export class StorageService {
 
       // Delete from Supabase Storage
       const { error } = await supabase.storage
-        .from(this.BUCKET_NAME)
+        .from(BUCKET_NAME)
         .remove([filePath])
 
       if (error) {
@@ -137,7 +134,7 @@ export class StorageService {
    */
   static getDefaultAvatarUrl(): string {
     const { data: { publicUrl } } = supabase.storage
-      .from(this.BUCKET_NAME)
+      .from(BUCKET_NAME)
       .getPublicUrl('default-avatar.png')
     
     return publicUrl
