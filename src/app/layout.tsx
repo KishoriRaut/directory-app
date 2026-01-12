@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Professional Directory",
-  description: "Find trusted professionals in your area",
+  title: "Siscora Connect - Professional Directory",
+  description: "Connect with trusted professionals in your area. Find doctors, engineers, plumbers, electricians and more.",
+  keywords: "professional directory, find professionals, local services, siscora connect",
+  authors: [{ name: "Siscora" }],
+  creator: "Siscora",
+  publisher: "Siscora",
 };
 
 export default function RootLayout({

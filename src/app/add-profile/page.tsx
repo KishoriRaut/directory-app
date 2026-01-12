@@ -132,8 +132,10 @@ export default function AddProfilePage() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Add Your Profile</h1>
-              <p className="text-sm text-gray-600 mt-1">Join our professional directory</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Add Your Profile to Siscora Connect
+              </h1>
+              <p className="text-gray-600 mt-2">Join our community of trusted professionals</p>
             </div>
           </div>
         </div>
