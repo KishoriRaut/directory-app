@@ -83,7 +83,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
           {/* Main Navigation */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
                 <span className="text-white font-bold text-xl">K</span>
               </div>
@@ -91,7 +91,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Khojix
                 </h1>
-                <p className="text-sm text-gray-600 font-medium">by Siscora.com</p>
+                <p className="text-xs text-gray-500">by Siscora.com</p>
               </div>
             </Link>
 

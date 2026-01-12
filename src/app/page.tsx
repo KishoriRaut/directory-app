@@ -368,11 +368,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
             <div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              <div className="mb-4">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
                   Khojix
                 </h3>
-                <p className="text-sm text-gray-500 font-medium">by Siscora.com</p>
+                <p className="text-xs text-gray-500">by Siscora.com</p>
               </div>
               <p className="text-sm text-gray-600 mb-4">Connecting trusted professionals with communities worldwide.</p>
               <div className="space-y-2">
