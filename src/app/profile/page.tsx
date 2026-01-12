@@ -184,10 +184,10 @@ export default function MyProfilePage() {
 
       // Use insert or update based on whether profile exists
       if (profile) {
-        const { error } = await supabase
+        const { error } = await (supabase
           .from('professionals')
-          .update(profileData as any)
-          .eq('id', user?.id)
+          .update(profileData)
+          .eq('id', user?.id) as any)
 
         if (error) {
           console.error('Error updating profile:', error)
@@ -196,9 +196,9 @@ export default function MyProfilePage() {
           return
         }
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase
           .from('professionals')
-          .insert(profileData as any)
+          .insert(profileData) as any)
 
         if (error) {
           console.error('Error creating profile:', error)
