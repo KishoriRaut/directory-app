@@ -186,7 +186,7 @@ export default function MyProfilePage() {
       if (profile) {
         const { error } = await supabase
           .from('professionals')
-          .update(profileData)
+          .update(profileData as any)
           .eq('id', user?.id)
 
         if (error) {
@@ -198,7 +198,7 @@ export default function MyProfilePage() {
       } else {
         const { error } = await supabase
           .from('professionals')
-          .insert(profileData)
+          .insert(profileData as any)
 
         if (error) {
           console.error('Error creating profile:', error)
