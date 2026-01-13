@@ -23,7 +23,7 @@ export function FeaturedProfessionals() {
 
       try {
         // Fetch top 3 professionals based on:
-        // 1. Verified status (priority)
+        // 1. Verified status (priority - verified first)
         // 2. Newest first (latest professionals)
         // 3. Highest rating (tie-breaker)
         const { data, error } = await supabase
@@ -34,8 +34,8 @@ export function FeaturedProfessionals() {
               service_name
             )
           `)
-          .eq('verified', true) // Only verified professionals
-          .order('created_at', { ascending: false }) // Newest first
+          .order('verified', { ascending: false }) // Verified professionals first
+          .order('created_at', { ascending: false }) // Then newest first
           .order('rating', { ascending: false }) // Then by rating
           .limit(3)
 
