@@ -163,8 +163,10 @@ export default function ProfilePage() {
           const hasCode = !!error.code
           const hasDetails = !!error.details
           const hasHint = !!error.hint
-          const hasStatusCode = !!error.statusCode
-          const hasStatus = !!error.status
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hasStatusCode = !!(error as any).statusCode
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hasStatus = !!(error as any).status
           
           // Only log if at least one error property exists
           if (hasMessage || hasCode || hasDetails || hasHint || hasStatusCode || hasStatus) {
@@ -173,8 +175,10 @@ export default function ProfilePage() {
               code: error.code,
               details: error.details,
               hint: error.hint,
-              statusCode: error.statusCode,
-              status: error.status,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              statusCode: (error as any).statusCode,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              status: (error as any).status,
               fullError: error
             })
             setProfessional(null)
