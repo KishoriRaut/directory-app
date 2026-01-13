@@ -10,6 +10,53 @@ import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle, User, Briefca
 import Link from 'next/link'
 import Image from 'next/image'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { StructuredData } from '@/components/StructuredData'
+import { Metadata } from 'next'
+import { createClient } from '@supabase/supabase-js'
+
+// Generate metadata for SEO (runs on server)
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const id = Array.isArray(params.id) ? params.id[0] : params.id
+  
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return {
+      title: 'Professional Profile | Khojix',
+    }
+  }
+
+  try {
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    const { data } = await supabaseClient
+      .from('professionals')
+      .select('name, profession, description, location, rating')
+      .eq('id', id)
+      .single()
+
+    if (data) {
+      return {
+        title: `${data.name} - ${data.profession} in ${data.location} | Khojix`,
+        description: data.description || `${data.name} is a ${data.profession} in ${data.location}. ${data.rating > 0 ? `Rated ${data.rating}/5.` : ''} Contact for professional services.`,
+        openGraph: {
+          title: `${data.name} - ${data.profession}`,
+          description: data.description || `${data.name} is a ${data.profession} in ${data.location}`,
+          type: 'profile',
+        },
+        alternates: {
+          canonical: `/profile/${id}`,
+        },
+      }
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+  }
+
+  return {
+    title: 'Professional Profile | Khojix',
+  }
+}
 
 export default function ProfilePage() {
   const params = useParams()
@@ -260,8 +307,24 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+    <>
+      {/* Structured Data for SEO */}
+      {professional && (
+        <StructuredData 
+          type="LocalBusiness" 
+          data={{
+            name: professional.name,
+            description: professional.description,
+            location: professional.location,
+            phone: professional.phone,
+            email: professional.email,
+            rating: professional.rating
+          }}
+        />
+      )}
+      
+      <div className="min-h-screen bg-background">
+        <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <Link href="/">
             <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm">
@@ -516,6 +579,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

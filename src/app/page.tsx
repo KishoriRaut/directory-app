@@ -21,6 +21,7 @@ import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut, 
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { StructuredData } from '@/components/StructuredData'
 
 type SortOption = 'rating-desc' | 'verified-first' | 'newest' | 'experience-desc'
 
@@ -323,9 +324,15 @@ function HomeContent({
   handleItemsPerPageChange: (items: number) => void
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Professional Header */}
-      <Header user={user} onSignOut={handleSignOut} />
+    <>
+      {/* Structured Data for SEO */}
+      <StructuredData type="Organization" />
+      <StructuredData type="WebSite" />
+      <StructuredData type="ItemList" professionals={professionals.slice(0, 10)} />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        {/* Professional Header */}
+        <Header user={user} onSignOut={handleSignOut} />
 
       {/* Hero Section with Search */}
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-16">
@@ -654,6 +661,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }

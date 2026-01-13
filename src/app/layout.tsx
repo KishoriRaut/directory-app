@@ -2,14 +2,54 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Khojix - Professional Directory",
-  description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
-  keywords: "professional directory, find professionals, local services, khojix",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'),
+  title: {
+    default: "Khojix - Professional Directory | Find Trusted Professionals Near You",
+    template: "%s | Khojix"
+  },
+  description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, lawyers, accountants, and more. Browse verified professionals with ratings and reviews.",
+  keywords: ["professional directory", "find professionals", "local services", "khojix", "directory app", "service providers", "verified professionals", "local business directory"],
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",
   manifest: "/manifest.json",
   themeColor: "#4f46e5",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Khojix",
+    title: "Khojix - Professional Directory | Find Trusted Professionals Near You",
+    description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
+    images: [
+      {
+        url: "/og-image.png", // You'll need to create this
+        width: 1200,
+        height: 630,
+        alt: "Khojix - Professional Directory",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Khojix - Professional Directory",
+    description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
+    images: ["/og-image.png"], // You'll need to create this
+  },
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
