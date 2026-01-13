@@ -26,7 +26,6 @@ import { StructuredData } from '@/components/StructuredData'
 type SortOption = 'rating-desc' | 'verified-first' | 'newest' | 'experience-desc'
 
 export default function Home() {
-  const searchParams = useSearchParams()
   const [filters, setFilters] = useState<SearchFiltersType>({})
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,36 +34,6 @@ export default function Home() {
   const [totalItems, setTotalItems] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(12)
   const [sortBy, setSortBy] = useState<SortOption>('newest') // Default: Newest First
-
-  // Parse URL parameters on mount and when they change
-  useEffect(() => {
-    const category = searchParams?.get('category')
-    const location = searchParams?.get('location')
-    const search = searchParams?.get('search')
-    
-    if (category || location || search) {
-      const newFilters: SearchFiltersType = {}
-      if (category && category !== 'all') {
-        newFilters.category = category as any
-      }
-      if (location) {
-        newFilters.location = location
-      }
-      if (search) {
-        newFilters.search = search
-      }
-      setFilters(newFilters)
-      setCurrentPage(1)
-      
-      // Scroll to results section after a short delay
-      setTimeout(() => {
-        const resultsSection = document.getElementById('results-section')
-        if (resultsSection) {
-          resultsSection.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 100)
-    }
-  }, [searchParams])
 
   // Check authentication status
   useEffect(() => {
