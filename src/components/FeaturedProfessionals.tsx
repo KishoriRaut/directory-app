@@ -78,10 +78,10 @@ export function FeaturedProfessionals() {
                 </div>
               )}
 
-              {/* Image Section */}
-              <div className="relative h-48 overflow-hidden bg-gray-100">
+              {/* Image Section - Industry Standard: Square aspect ratio for profile photos */}
+              <div className="relative w-full aspect-square overflow-hidden bg-gray-100">
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center">
+                  <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-2xl font-semibold text-white">
                       {getInitials(professional.name)}
                     </span>

@@ -49,13 +49,14 @@ export default function ProfilePage() {
 
       try {
         // Helper function to check if error is meaningful
+        // Only return true if error has actual error properties (message, code, etc.)
+        // Empty objects {} or objects without error properties should be treated as no error
         const hasError = (err: any): boolean => {
           if (!err) return false
-          // Check if error has any meaningful properties
-          if (err.message || err.code || err.details || err.hint) return true
-          // Check if error object has any keys
-          if (Object.keys(err).length > 0) return true
-          return false
+          // Check if it has any meaningful error properties
+          // If none exist, it's not a real error (even if it's an object)
+          const hasErrorProperty = !!(err.message || err.code || err.details || err.hint || err.statusCode || err.status)
+          return hasErrorProperty
         }
 
         // First try with services join
@@ -81,46 +82,103 @@ export default function ProfilePage() {
             .eq('id', idString)
             .maybeSingle()
 
-          if (hasError(professionalError)) {
+          // If we have data, use it (ignore any error objects)
+          if (professionalData) {
+            data = professionalData
+            // Fetch services separately
+            const { data: servicesData } = await supabase
+              .from('services')
+              .select('service_name')
+              .eq('professional_id', idString)
+            
+            if (data) {
+              (data as any).services = servicesData?.map((s: any) => s.service_name) || []
+            }
+            error = null // Clear error since we successfully fetched
+          } else if (professionalError) {
+            // CRITICAL: First check if error object is empty using multiple methods
+            const errorKeys = Object.keys(professionalError)
+            const errorStringified = JSON.stringify(professionalError)
+            const isEmptyByKeys = errorKeys.length === 0
+            const isEmptyByString = errorStringified === '{}'
+            
+            // If it's empty by any measure, skip ALL error handling
+            if (isEmptyByKeys && isEmptyByString) {
+              // Definitely empty object {} - treat as "not found", don't log anything
+              // Continue to "not found" handling below
+            } else {
+              // Only check for error properties if it's NOT empty
+              // Use 'in' operator to check for property existence
+              const hasMessage = 'message' in professionalError && professionalError.message != null
+              const hasCode = 'code' in professionalError && professionalError.code != null
+              const hasDetails = 'details' in professionalError && professionalError.details != null
+              const hasHint = 'hint' in professionalError && professionalError.hint != null
+              const hasStatusCode = 'statusCode' in professionalError && professionalError.statusCode != null
+              const hasStatus = 'status' in professionalError && professionalError.status != null
+              
+              // Only log if it has at least one error property AND is not empty
+              // Final safety check: verify it's not empty right before logging
+              const finalCheck = (hasMessage || hasCode || hasDetails || hasHint || hasStatusCode || hasStatus) && 
+                                !isEmptyByKeys && 
+                                errorKeys.length > 0 &&
+                                errorStringified !== '{}'
+              
+              if (finalCheck) {
+                // One more check: verify at least one property actually has a value
+                const hasActualValue = (
+                  (hasMessage && professionalError.message) ||
+                  (hasCode && professionalError.code) ||
+                  (hasDetails && professionalError.details) ||
+                  (hasHint && professionalError.hint) ||
+                  (hasStatusCode && professionalError.statusCode) ||
+                  (hasStatus && professionalError.status)
+                )
+                
+                if (hasActualValue) {
+                  console.error('Error fetching professional:', {
+                    message: professionalError.message,
+                    code: professionalError.code,
+                    details: professionalError.details,
+                    hint: professionalError.hint,
+                    statusCode: professionalError.statusCode,
+                    status: professionalError.status,
+                    fullError: professionalError
+                  })
+                  setProfessional(null)
+                  setLoading(false)
+                  return
+                }
+              }
+              // If no error properties exist, treat as "not found" and continue
+            }
+          }
+          // If no data and no error, continue to "not found" handling below
+        } else if (error && !data) {
+          // Handle error from initial query - only if we have an error AND no data
+          // Check directly for error properties (same logic as fallback)
+          const hasMessage = !!error.message
+          const hasCode = !!error.code
+          const hasDetails = !!error.details
+          const hasHint = !!error.hint
+          const hasStatusCode = !!error.statusCode
+          const hasStatus = !!error.status
+          
+          // Only log if at least one error property exists
+          if (hasMessage || hasCode || hasDetails || hasHint || hasStatusCode || hasStatus) {
             console.error('Error fetching professional:', {
-              message: professionalError?.message,
-              code: professionalError?.code,
-              details: professionalError?.details,
-              hint: professionalError?.hint,
-              fullError: professionalError
+              message: error.message,
+              code: error.code,
+              details: error.details,
+              hint: error.hint,
+              statusCode: error.statusCode,
+              status: error.status,
+              fullError: error
             })
             setProfessional(null)
             setLoading(false)
             return
           }
-
-          // Fetch services separately
-          const { data: servicesData, error: servicesError } = await supabase
-            .from('services')
-            .select('service_name')
-            .eq('professional_id', idString)
-
-          if (hasError(servicesError)) {
-            console.warn('Error fetching services (non-critical):', servicesError)
-          }
-
-          data = professionalData
-          if (data) {
-            (data as any).services = servicesData?.map((s: any) => s.service_name) || []
-          }
-          error = null // Clear error since we successfully fetched
-        } else if (hasError(error)) {
-          // Handle error from initial query
-          console.error('Error fetching professional:', {
-            message: error?.message,
-            code: error?.code,
-            details: error?.details,
-            hint: error?.hint,
-            fullError: error
-          })
-          setProfessional(null)
-          setLoading(false)
-          return
+          // If no error properties exist (empty object {}), treat as "not found" and continue
         }
 
         if (!data) {
