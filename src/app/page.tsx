@@ -16,9 +16,12 @@ import { Testimonials } from '@/components/Testimonials'
 import { Statistics } from '@/components/Statistics'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut } from 'lucide-react'
+import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut, ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
+type SortOption = 'rating-desc' | 'verified-first' | 'newest' | 'experience-desc'
 
 export default function Home() {
   const [filters, setFilters] = useState<SearchFiltersType>({})
@@ -28,6 +31,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(12)
+  const [sortBy, setSortBy] = useState<SortOption>('rating-desc') // Default: Highest Rated
 
   // Check authentication status
   useEffect(() => {
@@ -73,12 +77,55 @@ export default function Home() {
           query = query.eq('category', filters.category)
         }
         
-        if (filters.profession) {
-          query = query.ilike('profession', `%${filters.profession}%`)
+        // Minimum rating filter
+        if (filters.minRating) {
+          query = query.gte('rating', filters.minRating)
         }
         
-        if (filters.location) {
+        // Verified filter
+        if (filters.verified) {
+          query = query.eq('verified', true)
+        }
+        
+        // Improved search: search across name, profession, description, and location
+        if (filters.search || filters.profession) {
+          const searchTerm = filters.search || filters.profession || ''
+          // Use OR filter to search across multiple fields
+          // Format: field1.ilike.term,field2.ilike.term
+          query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
+        } else if (filters.location) {
+          // If only location filter (no search), search location field
           query = query.ilike('location', `%${filters.location}%`)
+        }
+
+        // Apply sorting based on sortBy state
+        switch (sortBy) {
+          case 'rating-desc':
+            // Highest Rated: Verified first, then by rating
+            query = query.order('verified', { ascending: false })
+                        .order('rating', { ascending: false })
+                        .order('created_at', { ascending: false })
+            break
+          case 'verified-first':
+            // Verified First: Verified professionals first, then by rating
+            query = query.order('verified', { ascending: false })
+                        .order('rating', { ascending: false })
+                        .order('experience', { ascending: false })
+            break
+          case 'newest':
+            // Newest First
+            query = query.order('created_at', { ascending: false })
+            break
+          case 'experience-desc':
+            // Most Experienced
+            query = query.order('experience', { ascending: false })
+                        .order('rating', { ascending: false })
+            break
+          default:
+            // Default: Highest Rated
+            query = query.order('verified', { ascending: false })
+                        .order('rating', { ascending: false })
+                        .order('created_at', { ascending: false })
         }
 
         // Apply pagination
@@ -86,7 +133,6 @@ export default function Home() {
         const to = from + itemsPerPage - 1
         
         const { data, error, count } = await query
-          .order('created_at', { ascending: false })
           .range(from, to)
 
         if (error) {
@@ -131,7 +177,7 @@ export default function Home() {
     }
 
     fetchProfessionals()
-  }, [currentPage, itemsPerPage, filters])
+  }, [currentPage, itemsPerPage, filters, sortBy])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -168,6 +214,11 @@ export default function Home() {
       resultsSection.scrollIntoView({ behavior: 'smooth' })
     }
   }, 300)
+
+  const handleSortChange = (value: SortOption) => {
+    setSortBy(value)
+    setCurrentPage(1) // Reset to first page when sorting changes
+  }
 
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== undefined && value !== '' && value !== false
@@ -225,12 +276,54 @@ export default function Home() {
             <main className="lg:col-span-3">
             {/* Results Header */}
             <div className="mb-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    {totalItems} Professional{totalItems !== 1 ? 's' : ''} Found
-                  </h2>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                      {totalItems} Professional{totalItems !== 1 ? 's' : ''} Found
+                    </h2>
+                    {/* Sort Dropdown */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 hidden sm:block">Sort:</label>
+                      <Select value={sortBy} onValueChange={handleSortChange}>
+                        <SelectTrigger className="w-full sm:w-[200px] h-9 text-sm border-gray-300 bg-white hover:bg-gray-50">
+                          <SelectValue>
+                            {sortBy === 'rating-desc' && '⭐ Highest Rated'}
+                            {sortBy === 'verified-first' && '✓ Verified First'}
+                            {sortBy === 'experience-desc' && '🏆 Most Experienced'}
+                            {sortBy === 'newest' && '🕐 Newest First'}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rating-desc">
+                            <div className="flex items-center gap-2">
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              <span>Highest Rated</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="verified-first">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                              <span>Verified First</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="experience-desc">
+                            <div className="flex items-center gap-2">
+                              <Star className="h-4 w-4 text-indigo-600" />
+                              <span>Most Experienced</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="newest">
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-gray-600" />
+                              <span>Newest First</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
                     {filters.category && filters.category !== 'all' && (
                       <span className="inline-flex items-center gap-1">
                         <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-100">
@@ -242,10 +335,10 @@ export default function Home() {
                         </Badge>
                       </span>
                     )}
-                    {filters.location && (
+                    {(filters.location || filters.search || filters.profession) && (
                       <span className="inline-flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
-                        {filters.location}
+                        {filters.location || filters.search || filters.profession}
                       </span>
                     )}
                     {filters.minRating && (
@@ -265,8 +358,11 @@ export default function Home() {
                 {hasActiveFilters && (
                   <Button 
                     variant="outline" 
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50 group"
-                    onClick={() => setFilters({})}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 group self-start sm:self-auto"
+                    onClick={() => {
+                      setFilters({})
+                      setCurrentPage(1)
+                    }}
                   >
                     <X className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-200" />
                     Clear Filters
