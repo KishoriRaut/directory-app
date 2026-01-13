@@ -34,3 +34,37 @@ export const ANIMATION_DURATION = {
   normal: 300,
   slow: 500
 }
+
+// Category constants
+export const categories = [
+  { value: 'all', label: 'All Categories' },
+  { value: 'doctor', label: 'Doctors' },
+  { value: 'engineer', label: 'Engineers' },
+  { value: 'plumber', label: 'Plumbers' },
+  { value: 'electrician', label: 'Electricians' },
+  { value: 'maid', label: 'Maids & Cleaners' },
+  { value: 'designer', label: 'Designers' },
+  { value: 'consultant', label: 'Consultants' },
+  { value: 'therapist', label: 'Therapists' },
+  { value: 'lawyer', label: 'Lawyers' },
+  { value: 'accountant', label: 'Accountants' },
+  { value: 'other', label: 'Other' }
+]
+
+// Profession constants
+export const professions = [
+  'All Professions',
+  'Cardiologist',
+  'General Practitioner',
+  'Dentist',
+  'Software Engineer',
+  'Civil Engineer',
+  'Mechanical Engineer',
+  'Master Plumber',
+  'Journeyman Plumber',
+  'Master Electrician',
+  'Residential Electrician',
+  'Professional Maid',
+  'House Cleaning Specialist',
+  'Maid & Organizer'
+]

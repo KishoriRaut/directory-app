@@ -335,11 +335,11 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Hero Image Section */}
-            <div className="relative h-64 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl overflow-hidden border border-gray-200">
+            <div className="relative h-48 sm:h-56 md:h-64 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20"></div>

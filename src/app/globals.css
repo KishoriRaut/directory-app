@@ -166,6 +166,22 @@
     transform: translateY(-2px) !important;
   }
   
+  /* Touch target improvements for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Responsive text improvements */
+  @media (max-width: 640px) {
+    body {
+      font-size: 14px !important;
+    }
+    h1 { font-size: 1.75em !important; }
+    h2 { font-size: 1.5em !important; }
+    h3 { font-size: 1.25em !important; }
+  }
+
   .modern-button {
     background: var(--primary) !important;
     color: var(--primary-foreground) !important;

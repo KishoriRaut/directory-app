@@ -362,8 +362,8 @@ function HomeContent({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-            <aside className="lg:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            <aside className="lg:col-span-1 order-2 lg:order-1">
               <div className="sticky top-20 lg:top-24">
                 <SearchFilters 
                   filters={filters} 
@@ -372,7 +372,7 @@ function HomeContent({
               </div>
             </aside>
 
-            <main className="lg:col-span-3">
+            <main className="lg:col-span-3 order-1 lg:order-2">
             {/* Results Header */}
             <div className="mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -477,9 +477,9 @@ function HomeContent({
 
             {/* Results Grid */}
             {loading ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
-                <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600"></div>
+              <div className="text-center py-12 sm:py-20 bg-white rounded-xl sm:rounded-2xl border border-gray-200">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8">
+                  <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-indigo-600"></div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Loading Professionals</h3>
                 <p className="text-gray-600 max-w-lg mx-auto text-lg">
@@ -535,7 +535,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {professionals.map((professional: Professional) => (
                   <ProfessionalCard
                     key={professional.id}

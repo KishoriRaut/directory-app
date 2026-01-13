@@ -1,7 +1,7 @@
 'use client'
 
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
-import { categories, professions } from '@/data/mockData'
+import { categories, professions } from '@/lib/constants'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -32,13 +32,13 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow-sm">
       {/* Header with Active Filter Count */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Search Filters</h3>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">Search Filters</h3>
           {hasActiveFilters && (
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
               {getActiveFiltersCount()} filter{getActiveFiltersCount() !== 1 ? 's' : ''} applied
             </p>
           )}
@@ -48,7 +48,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
             variant="outline"
             size="sm"
             onClick={clearFilters}
-            className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+            className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors touch-target w-full sm:w-auto"
           >
             <X className="h-4 w-4 mr-1" />
             Clear All
@@ -81,14 +81,14 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
       </div>
 
       {/* Category Filter */}
-      <div className="space-y-3">
-        <label className="text-sm font-semibold text-gray-900">Category</label>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-2 sm:space-y-3">
+        <label className="text-xs sm:text-sm font-semibold text-gray-900">Category</label>
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
           {categories.map((category) => (
             <Badge
               key={category.value}
               variant={filters.category === category.value ? "default" : "outline"}
-              className={`cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+              className={`cursor-pointer rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all touch-target ${
                 filters.category === category.value 
                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' 
                   : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
@@ -118,14 +118,14 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
         </div>
 
       {/* Rating Filter */}
-      <div className="space-y-3">
-        <label className="text-sm font-semibold text-gray-900">Minimum Rating</label>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-2 sm:space-y-3">
+        <label className="text-xs sm:text-sm font-semibold text-gray-900">Minimum Rating</label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[3, 4, 4.5, 5].map((rating) => (
             <Badge
               key={rating}
               variant={filters.minRating === rating ? "default" : "outline"}
-              className={`cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+              className={`cursor-pointer rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all touch-target ${
                 filters.minRating === rating 
                   ? 'bg-yellow-500 text-white border-yellow-500 shadow-sm' 
                   : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
@@ -134,7 +134,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                 filters.minRating === rating ? undefined : rating
               )}
             >
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 justify-center">
                 <Star className="h-3 w-3 fill-current" />
                 <span>{rating}+</span>
               </div>

@@ -209,27 +209,27 @@ export default function AddProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm touch-target">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Directory
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Add Your Profile to Siscora Connect
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Add Your Profile
               </h1>
-              <p className="text-gray-600 mt-2">Join our community of trusted professionals</p>
+              <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Join our community of trusted professionals</p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Basic Information Section */}
             <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader className="border-b border-gray-200 bg-gray-50">
