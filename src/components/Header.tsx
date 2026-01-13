@@ -58,7 +58,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
   }, [])
 
   const navigationItems = [
-    { name: 'Find Professionals', href: '/#results-section', icon: Search },
+    { name: 'Browse', href: '/#results-section', icon: Search },
     { name: 'Categories', href: '/#categories', icon: Briefcase },
     { name: 'How It Works', href: '/how-it-works', icon: Shield },
   ]
@@ -78,14 +78,14 @@ export function Header({ user, onSignOut }: HeaderProps) {
       }`}>
         <div className="container mx-auto px-4">
           {/* Main Navigation */}
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-14">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
-                <span className="text-white font-bold text-lg sm:text-xl">K</span>
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg flex-shrink-0">
+                <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">K</span>
               </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="h-8 sm:h-10 flex items-center">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none m-0">
                   Khojix
                 </h1>
               </div>
@@ -109,6 +109,14 @@ export function Header({ user, onSignOut }: HeaderProps) {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
+                  {/* For Professionals CTA - Only show when logged in */}
+                  <Link href="/add-profile">
+                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      For Professionals
+                    </Button>
+                  </Link>
+                  
                   {/* User Dropdown */}
                   <div className="relative dropdown-menu">
                     <button
@@ -116,14 +124,11 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         e.stopPropagation()
                         setIsDropdownOpen(!isDropdownOpen)
                       }}
-                      className="dropdown-trigger flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="dropdown-trigger flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-white" />
+                      <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white">
+                        <User className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">
-                        {user.email?.split('@')[0]}
-                      </span>
                       <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
@@ -140,6 +145,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                           <Link
                             key={item.name}
                             href={item.href}
+                            onClick={() => setIsDropdownOpen(false)}
                             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                           >
                             <item.icon className="h-4 w-4 text-gray-500" />
@@ -167,18 +173,18 @@ export function Header({ user, onSignOut }: HeaderProps) {
                     </Button>
                   </Link>
                   <Link href="/auth/signup">
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                       Sign Up
+                    </Button>
+                  </Link>
+                  <Link href="/add-profile">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      For Professionals
                     </Button>
                   </Link>
                 </>
               )}
-              <Link href="/add-profile">
-                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  Add Profile
-                </Button>
-              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -219,7 +225,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 {user ? (
                   <>
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white">
                         <User className="h-5 w-5 text-white" />
                       </div>
                       <div>
@@ -229,6 +235,12 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
+                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)} className="mb-4 block">
+                      <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        For Professionals
+                      </Button>
+                    </Link>
                     <div className="space-y-1 mb-4">
                       {dropdownItems.map((item) => (
                         <Link
@@ -261,34 +273,18 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                         Sign Up
+                      </Button>
+                    </Link>
+                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        For Professionals
                       </Button>
                     </Link>
                   </div>
                 )}
-                <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                    <Briefcase className="h-4 w-4 mr-2" />
-                    Add Profile
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Mobile Contact Info */}
-              <div className="mt-6 pt-6 border-t border-gray-100 space-y-3">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Phone className="h-4 w-4" />
-                  <span>1-800-PROS</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Mail className="h-4 w-4" />
-                  <span>support@siscora.com</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <MapPin className="h-4 w-4" />
-                  <span>Serving nationwide</span>
-                </div>
               </div>
             </div>
           </div>
