@@ -21,10 +21,11 @@ declare module 'next-pwa' {
         cacheableResponse?: {
           statuses?: number[]
         }
+        networkTimeoutSeconds?: number
       }
     }>
   }
   
-  function withPWA(config: NextConfig): (nextConfig: NextConfig) => NextConfig
+  function withPWA(pwaConfig: PWAConfig): (nextConfig: NextConfig) => NextConfig
   export default withPWA
 }
