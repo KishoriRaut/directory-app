@@ -141,8 +141,10 @@ export default function ProfilePage() {
                     code: professionalError.code,
                     details: professionalError.details,
                     hint: professionalError.hint,
-                    statusCode: professionalError.statusCode,
-                    status: professionalError.status,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    statusCode: (professionalError as any).statusCode,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    status: (professionalError as any).status,
                     fullError: professionalError
                   })
                   setProfessional(null)
