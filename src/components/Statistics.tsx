@@ -1,26 +1,90 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Users, Star, Shield } from 'lucide-react'
-
-const stats = [
-  {
-    icon: Users,
-    value: '25,000+',
-    label: 'Verified Professionals'
-  },
-  {
-    icon: Star,
-    value: '4.8/5',
-    label: 'Average Rating'
-  },
-  {
-    icon: Shield,
-    value: '100%',
-    label: 'Free to Use'
-  }
-]
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export function Statistics() {
+  const [totalProfessionals, setTotalProfessionals] = useState<number>(0)
+  const [verifiedCount, setVerifiedCount] = useState<number>(0)
+  const [averageRating, setAverageRating] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      if (!isSupabaseConfigured()) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        // Fetch total count of professionals
+        const { count: totalCount } = await supabase
+          .from('professionals')
+          .select('*', { count: 'exact', head: true })
+
+        // Fetch verified professionals count
+        const { count: verifiedProfessionalsCount } = await supabase
+          .from('professionals')
+          .select('*', { count: 'exact', head: true })
+          .eq('verified', true)
+
+        // Fetch average rating
+        const { data: ratingData } = await supabase
+          .from('professionals')
+          .select('rating')
+          .not('rating', 'is', null)
+          .gt('rating', 0)
+
+        if (totalCount !== null) {
+          setTotalProfessionals(totalCount)
+        }
+
+        if (verifiedProfessionalsCount !== null) {
+          setVerifiedCount(verifiedProfessionalsCount)
+        }
+
+        // Calculate average rating
+        if (ratingData && ratingData.length > 0) {
+          const sum = ratingData.reduce((acc, prof) => acc + (Number(prof.rating) || 0), 0)
+          const avg = sum / ratingData.length
+          setAverageRating(Math.round(avg * 10) / 10) // Round to 1 decimal place
+        }
+      } catch (error) {
+        console.error('Error fetching statistics:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStatistics()
+  }, [])
+
+  const formatCount = (count: number) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K+`
+    }
+    return `${count}+`
+  }
+
+  const stats = [
+    {
+      icon: Users,
+      value: loading ? '...' : formatCount(verifiedCount || totalProfessionals),
+      label: verifiedCount > 0 ? 'Verified Professionals' : 'Total Professionals'
+    },
+    {
+      icon: Star,
+      value: loading ? '...' : averageRating > 0 ? `${averageRating}/5` : 'N/A',
+      label: 'Average Rating'
+    },
+    {
+      icon: Shield,
+      value: '100%',
+      label: 'Free to Use'
+    }
+  ]
+
   return (
     <section className="py-12 sm:py-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
       <div className="container mx-auto px-6">
