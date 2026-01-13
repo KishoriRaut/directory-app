@@ -33,13 +33,16 @@ export class StorageService {
       const filePath = `profiles/${fileName}`
 
       // Check authentication status
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       if (!session) {
+        console.error('No session found:', sessionError)
         return { publicUrl: null, error: 'You must be logged in to upload images' }
       }
 
       console.log('Uploading to bucket:', BUCKET_NAME)
       console.log('File path:', filePath)
+      console.log('User ID:', session.user.id)
+      console.log('User role:', session.user.role || 'authenticated')
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
@@ -51,6 +54,17 @@ export class StorageService {
 
       if (error) {
         console.error('Upload error details:', error)
+        console.error('Error code:', error.statusCode)
+        console.error('Error message:', error.message)
+        
+        // Provide more helpful error messages
+        if (error.message.includes('row-level security')) {
+          return { 
+            publicUrl: null, 
+            error: 'Storage permission error. Please check RLS policies in Supabase Dashboard. See STORAGE_FIX_INSTRUCTIONS.md for help.' 
+          }
+        }
+        
         return { publicUrl: null, error: `Upload failed: ${error.message}` }
       }
 
