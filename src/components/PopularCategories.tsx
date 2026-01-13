@@ -109,7 +109,7 @@ const categories = [
 export function PopularCategories() {
   // Show all categories
   return (
-    <section className="py-12 sm:py-16 bg-white">
+    <section id="categories" className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
