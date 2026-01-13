@@ -2,7 +2,7 @@ export interface Professional {
   id: string
   name: string
   profession: string
-  category: 'doctor' | 'engineer' | 'plumber' | 'electrician' | 'maid' | 'other'
+  category: 'doctor' | 'engineer' | 'plumber' | 'electrician' | 'maid' | 'designer' | 'consultant' | 'therapist' | 'lawyer' | 'accountant' | 'other'
   email: string
   phone: string
   location: string

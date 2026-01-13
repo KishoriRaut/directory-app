@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Plus, X } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ArrowLeft, Plus, X, User, Briefcase, Mail, Phone, MapPin, Clock, FileText, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { ImageUpload } from '@/components/ImageUpload'
@@ -19,6 +20,12 @@ const categories = [
   { value: 'engineer', label: 'Engineer' },
   { value: 'plumber', label: 'Plumber' },
   { value: 'electrician', label: 'Electrician' },
+  { value: 'maid', label: 'Maid & Cleaner' },
+  { value: 'designer', label: 'Designer' },
+  { value: 'consultant', label: 'Consultant' },
+  { value: 'therapist', label: 'Therapist' },
+  { value: 'lawyer', label: 'Lawyer' },
+  { value: 'accountant', label: 'Accountant' },
   { value: 'other', label: 'Other' }
 ]
 
@@ -220,17 +227,23 @@ export default function AddProfilePage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="max-w-2xl mx-auto">
-          <Card className="bg-white border border-gray-200 rounded-sm">
-            <CardHeader className="border-b border-gray-200">
-              <CardTitle className="text-lg font-semibold text-gray-900">Professional Information</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information Section */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <User className="h-5 w-5 text-indigo-600" />
+                  Basic Information
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">Tell us about yourself</p>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                {/* Profile Photo */}
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Profile Photo</Label>
-                  <p className="text-xs text-gray-500 mt-1 mb-2">Upload a professional photo (optional but recommended)</p>
+                  <Label className="text-sm font-medium text-gray-900">Profile Photo</Label>
+                  <p className="text-xs text-gray-500 mt-1 mb-3">Upload a professional photo to help clients recognize you</p>
                   <div className="mt-2">
                     <ImageUpload
                       currentImage={formData.imageUrl}
@@ -240,174 +253,252 @@ export default function AddProfilePage() {
                   </div>
                 </div>
 
+                {/* Name and Profession */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <User className="h-4 w-4 text-gray-500" />
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => updateField('name', e.target.value)}
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
+                      placeholder="Enter your full name"
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+                    {errors.name && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.name}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="profession" className="text-sm font-medium text-gray-700">Profession *</Label>
+                    <Label htmlFor="profession" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-gray-500" />
+                      Profession <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="profession"
                       value={formData.profession}
                       onChange={(e) => updateField('profession', e.target.value)}
                       placeholder="e.g., Software Engineer, Plumber, Designer"
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.profession ? 'border-red-500' : ''}`}
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.profession ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.profession && <p className="text-sm text-red-500 mt-1">{errors.profession}</p>}
+                    {errors.profession && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.profession}</p>}
                   </div>
                 </div>
 
+                {/* Category */}
                 <div>
-                  <Label htmlFor="category" className="text-sm font-medium text-gray-700">Category *</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {categories.map((cat) => (
-                      <Badge
-                        key={cat.value}
-                        variant={formData.category === cat.value ? "default" : "outline"}
-                        className={`cursor-pointer rounded-sm ${
-                          formData.category === cat.value 
-                            ? 'bg-blue-600 text-white border-blue-600' 
-                            : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                        }`}
-                        onClick={() => updateField('category', cat.value)}
-                      >
-                        {cat.label}
-                      </Badge>
-                    ))}
-                  </div>
+                  <Label className="text-sm font-medium text-gray-900 flex items-center gap-2 mb-2">
+                    <Briefcase className="h-4 w-4 text-gray-500" />
+                    Category <span className="text-red-500">*</span>
+                  </Label>
+                  <Select value={formData.category} onValueChange={(value) => updateField('category', value)}>
+                    <SelectTrigger className={`h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.category ? 'border-red-500' : ''}`}>
+                      <SelectValue placeholder="Select your category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && <p className="text-sm text-red-600 mt-1.5">{errors.category}</p>}
                 </div>
+              </CardContent>
+            </Card>
 
+            {/* Contact Information Section */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-indigo-600" />
+                  Contact Information
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">How clients can reach you</p>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-500" />
+                      Email <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
+                      placeholder="your.email@example.com"
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+                    {errors.email && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.email}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone *</Label>
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-500" />
+                      Phone <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => updateField('phone', e.target.value)}
                       placeholder="e.g., +1 (555) 123-4567"
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+                    {errors.phone && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.phone}</p>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="location" className="text-sm font-medium text-gray-700">Location *</Label>
+                    <Label htmlFor="location" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-gray-500" />
+                      Location <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="location"
                       value={formData.location}
                       onChange={(e) => updateField('location', e.target.value)}
                       placeholder="City, State"
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.location ? 'border-red-500' : ''}`}
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.location ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.location && <p className="text-sm text-red-500 mt-1">{errors.location}</p>}
+                    {errors.location && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.location}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="experience" className="text-sm font-medium text-gray-700">Years of Experience *</Label>
+                    <Label htmlFor="experience" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-gray-500" />
+                      Years of Experience <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="experience"
                       type="number"
                       min="0"
                       value={formData.experience}
                       onChange={(e) => updateField('experience', e.target.value)}
-                      className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.experience ? 'border-red-500' : ''}`}
+                      placeholder="e.g., 5"
+                      className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.experience ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                     />
-                    {errors.experience && <p className="text-sm text-red-500 mt-1">{errors.experience}</p>}
+                    {errors.experience && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.experience}</p>}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
+            {/* Professional Details Section */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-indigo-600" />
+                  Professional Details
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">Describe your services and availability</p>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
                 <div>
-                  <Label htmlFor="description" className="text-sm font-medium text-gray-700">Description *</Label>
+                  <Label htmlFor="description" className="text-sm font-medium text-gray-900 flex items-center gap-2 mb-2">
+                    <FileText className="h-4 w-4 text-gray-500" />
+                    Professional Description <span className="text-red-500">*</span>
+                  </Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => updateField('description', e.target.value)}
-                    placeholder="Describe your professional background and expertise..."
-                    rows={4}
-                    className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.description ? 'border-red-500' : ''}`}
+                    placeholder="Describe your professional background, expertise, and what makes you stand out..."
+                    rows={5}
+                    className={`mt-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 resize-none ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   />
-                  {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
+                  <p className="text-xs text-gray-500 mt-1.5">Minimum 50 characters recommended</p>
+                  {errors.description && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.description}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="availability" className="text-sm font-medium text-gray-700">Availability *</Label>
+                  <Label htmlFor="availability" className="text-sm font-medium text-gray-900 flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    Availability <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="availability"
                     value={formData.availability}
                     onChange={(e) => updateField('availability', e.target.value)}
-                    placeholder="e.g., Mon-Fri: 9AM-5PM"
-                    className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.availability ? 'border-red-500' : ''}`}
+                    placeholder="e.g., Mon-Fri: 9AM-5PM, Weekends: 10AM-2PM"
+                    className={`mt-2 h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 ${errors.availability ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   />
-                  {errors.availability && <p className="text-sm text-red-500 mt-1">{errors.availability}</p>}
+                  {errors.availability && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.availability}</p>}
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Services *</Label>
-                  <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-900 flex items-center gap-2 mb-2">
+                    <Sparkles className="h-4 w-4 text-gray-500" />
+                    Services Offered <span className="text-red-500">*</span>
+                  </Label>
+                  <p className="text-xs text-gray-500 mb-3">Add at least one service you offer</p>
+                  <div className="space-y-3">
                     <div className="flex gap-2">
                       <Input
                         value={formData.newService}
                         onChange={(e) => updateField('newService', e.target.value)}
-                        placeholder="Add a service you offer"
+                        placeholder="e.g., Web Development, Plumbing Repair, Logo Design"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addService())}
-                        className="border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="h-11 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500"
                       />
-                      <Button type="button" onClick={addService} className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm">
-                        <Plus className="h-4 w-4" />
+                      <Button 
+                        type="button" 
+                        onClick={addService} 
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 rounded-lg px-4"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add
                       </Button>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {formData.services.map((service) => (
-                        <Badge key={service} variant="secondary" className="pr-1 bg-gray-50 border-gray-200 text-gray-700">
-                          {service}
-                          <button
-                            type="button"
-                            onClick={() => removeService(service)}
-                            className="ml-2 hover:text-red-500"
-                            aria-label={`Remove ${service}`}
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                    {errors.services && <p className="text-sm text-red-500 mt-1">{errors.services}</p>}
+                    {formData.services.length > 0 && (
+                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {formData.services.map((service) => (
+                          <Badge key={service} variant="secondary" className="pr-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+                            {service}
+                            <button
+                              type="button"
+                              onClick={() => removeService(service)}
+                              className="ml-2 hover:text-red-600 transition-colors"
+                              aria-label={`Remove ${service}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  {errors.services && <p className="text-sm text-red-600 mt-1.5 flex items-center gap-1">{errors.services}</p>}
                 </div>
+              </CardContent>
+            </Card>
 
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 rounded-sm"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit Profile'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+            {/* Submit Button */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between pt-4">
+              <p className="text-sm text-gray-600">
+                <span className="text-red-500">*</span> Required fields
+              </p>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full sm:w-auto min-w-[200px] bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 rounded-lg h-12 text-base font-medium"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit Profile'
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

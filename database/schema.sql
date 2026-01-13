@@ -19,7 +19,7 @@ CREATE TABLE professionals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   profession TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('doctor', 'engineer', 'plumber', 'electrician', 'other')),
+  category TEXT NOT NULL CHECK (category IN ('doctor', 'engineer', 'plumber', 'electrician', 'maid', 'designer', 'consultant', 'therapist', 'lawyer', 'accountant', 'other')),
   email TEXT NOT NULL,
   phone TEXT NOT NULL,
   location TEXT NOT NULL,
@@ -47,6 +47,12 @@ INSERT INTO categories (slug, name, description, icon) VALUES
 ('engineer', 'Engineers', 'Engineering and technical professionals', 'wrench'),
 ('plumber', 'Plumbers', 'Plumbing and drainage specialists', 'pipe'),
 ('electrician', 'Electricians', 'Electrical and wiring professionals', 'bolt'),
+('maid', 'Maids & Cleaners', 'Cleaning and home services', 'sparkles'),
+('designer', 'Designers', 'Creative professionals', 'palette'),
+('consultant', 'Consultants', 'Business consulting', 'briefcase'),
+('therapist', 'Therapists', 'Mental health experts', 'heart'),
+('lawyer', 'Lawyers', 'Legal services', 'scale'),
+('accountant', 'Accountants', 'Financial experts', 'calculator'),
 ('other', 'Other', 'Other professional services', 'briefcase');
 
 -- Create indexes for performance

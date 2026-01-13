@@ -323,7 +323,12 @@ export default function Home() {
                            filters.category === 'engineer' ? 'Engineers' :
                            filters.category === 'plumber' ? 'Plumbers' :
                            filters.category === 'electrician' ? 'Electricians' :
-                           filters.category === 'maid' ? 'Maids & Cleaners' : 'Other'}
+                           filters.category === 'maid' ? 'Maids & Cleaners' :
+                           filters.category === 'designer' ? 'Designers' :
+                           filters.category === 'consultant' ? 'Consultants' :
+                           filters.category === 'therapist' ? 'Therapists' :
+                           filters.category === 'lawyer' ? 'Lawyers' :
+                           filters.category === 'accountant' ? 'Accountants' : 'Other'}
                         </Badge>
                       </span>
                     )}
