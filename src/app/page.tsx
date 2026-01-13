@@ -239,19 +239,13 @@ export default function Home() {
       {/* Popular Categories */}
       <PopularCategories />
 
-      {/* How It Works */}
-      <HowItWorks />
-
-      {/* Featured Professionals */}
-      <FeaturedProfessionals />
-
-      {/* Statistics */}
+      {/* Statistics - Moved up for early trust building */}
       <Statistics />
 
-      {/* Testimonials */}
-      <Testimonials />
+      {/* Featured Professionals - Moved up for social proof */}
+      <FeaturedProfessionals />
 
-      {/* Main Search Results Section */}
+      {/* Main Search Results Section - Moved up before How It Works (industry standard) */}
       <section id="results-section" className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-8 sm:mb-12">
@@ -459,34 +453,27 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
       </div>
       </section>
 
+      {/* How It Works - Moved down after results (industry standard) */}
+      <HowItWorks />
+
+      {/* Testimonials */}
+      <Testimonials />
+
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-16">
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+      <footer className="bg-white border-t border-gray-200 mt-12">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
             {/* Company Info */}
-            <div>
-              <div className="mb-4">
-                <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
-                  Khojix
-                </h3>
-                <p className="text-xs text-gray-500">by Siscora.com</p>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">Connecting trusted professionals with communities worldwide.</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MapPin className="h-4 w-4" />
-                  <span>San Francisco, CA</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Mail className="h-4 w-4" />
-                  <span>contact@siscora.com</span>
-                </div>
-              </div>
+            <div className="col-span-2 md:col-span-1">
+              <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                Khojix
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">Connecting trusted professionals worldwide.</p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="/" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
@@ -499,45 +486,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                  <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                     How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Pricing
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Categories */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/?category=doctor" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Doctors & Healthcare
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/?category=engineer" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Engineers & Tech
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/?category=plumber" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Plumbers & Home Services
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/?category=electrician" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Electricians & Electrical
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/?category=maid" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Maids & Cleaning Services
                   </Link>
                 </li>
               </ul>
@@ -545,7 +495,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
 
             {/* Legal */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Legal</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Legal</h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
@@ -559,7 +509,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                 </li>
                 <li>
                   <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Cookie Policy
+                    Contact
                   </Link>
                 </li>
               </ul>
@@ -567,35 +517,14 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-200 pt-6 sm:pt-8 mt-6 sm:mt-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs sm:text-sm text-gray-600">
-                2024 Khojix. All rights reserved.
+          <div className="border-t border-gray-200 pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-gray-600">
+                © 2024 Khojix. All rights reserved.
               </p>
-              <div className="flex items-center gap-2 sm:gap-4">
-                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                  Privacy
-                </Link>
-                <span className="text-gray-400">•</span>
-                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                  Terms
-                </Link>
-                <span className="text-gray-400">•</span>
-                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                  Contact
-                </Link>
-              </div>
-            </div>
-            {/* Free Profile CTA */}
-            <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-4 sm:mt-6 text-center">
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 sm:p-4 border border-indigo-200">
-                <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3">
-                  <span className="font-semibold text-indigo-900"> Ready to grow your business?</span>
-                </p>
-                <Link href="/add-profile">
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 text-xs sm:text-sm px-4 sm:px-6">
-                    Add Your Free Profile
-                  </Button>
+              <div className="flex items-center gap-3">
+                <Link href="/add-profile" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                  Add Your Profile
                 </Link>
               </div>
             </div>

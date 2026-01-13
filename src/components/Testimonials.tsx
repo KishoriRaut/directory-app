@@ -66,21 +66,24 @@ const testimonials = [
 ]
 
 export function Testimonials() {
+  // Show top 3 testimonials for cleaner layout
+  const topTestimonials = testimonials.slice(0, 3)
+  
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             What Our Customers Say
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Real reviews from real customers who found trusted professionals through Siscora Connect
+          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
+            Real reviews from satisfied customers
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {topTestimonials.map((testimonial) => (
+            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-6 border border-gray-100">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -94,46 +97,16 @@ export function Testimonials() {
                 ))}
               </div>
 
-              <div className="relative mb-4">
-                <Quote className="absolute -top-2 -left-2 h-8 w-8 text-indigo-200" />
-                <p className="text-gray-700 leading-relaxed pl-6">
-                  {testimonial.text}
-                </p>
-              </div>
+              <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                {testimonial.text}
+              </p>
 
               <div className="border-t border-gray-200 pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-sm text-gray-600">{testimonial.location}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{testimonial.service}</p>
-                    <p className="text-xs text-gray-500">{testimonial.date}</p>
-                  </div>
-                </div>
+                <p className="font-semibold text-gray-900 text-sm">{testimonial.name}</p>
+                <p className="text-xs text-gray-500">{testimonial.location}</p>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <div className="bg-indigo-50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-2">50,000+</div>
-                <p className="text-gray-600">Happy Customers</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-2">4.8/5</div>
-                <p className="text-gray-600">Average Rating</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-2">10,000+</div>
-                <p className="text-gray-600">Reviews</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

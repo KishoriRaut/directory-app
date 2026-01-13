@@ -88,49 +88,36 @@ const categories = [
 ]
 
 export function PopularCategories() {
+  // Show top 6 categories for cleaner layout
+  const topCategories = categories.slice(0, 6)
+  
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Browse by Category
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Find the perfect professional for your needs from our verified categories
+          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
+            Find trusted professionals in your area
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+          {topCategories.map((category) => (
             <Link
               key={category.name}
               href={category.href}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group"
+              className="bg-white rounded-lg p-4 border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all group text-center"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                  <category.icon className="h-6 w-6 text-indigo-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-2">{category.description}</p>
-                  <p className="text-sm font-medium text-indigo-600">
-                    {category.count} professionals
-                  </p>
-                </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-200 transition-colors">
+                <category.icon className="h-6 w-6 text-indigo-600" />
               </div>
+              <h3 className="text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                {category.name}
+              </h3>
             </Link>
           ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Link href="#categories">
-            <button className="px-6 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-700">
-              View All Categories
-            </button>
-          </Link>
         </div>
       </div>
     </section>
