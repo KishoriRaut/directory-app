@@ -23,10 +23,10 @@ const commonCities = [
 const popularSearches = [
   { term: 'Plumbers', icon: '🔧', category: 'plumber' },
   { term: 'Electricians', icon: '⚡', category: 'electrician' },
-  { term: 'Doctors', icon: '👨‍⚕️', category: 'doctor' },
   { term: 'Engineers', icon: '👷', category: 'engineer' },
   { term: 'Designers', icon: '🎨', category: 'designer' },
-  { term: 'Lawyers', icon: '⚖️', category: 'lawyer' }
+  { term: 'Lawyers', icon: '⚖️', category: 'lawyer' },
+  { term: 'Doctors', icon: '👨‍⚕️', category: 'doctor' }
 ]
 
 export function HeroSearch({ onSearch }: HeroSearchProps) {

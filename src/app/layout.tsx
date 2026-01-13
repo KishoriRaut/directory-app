@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Khojix - Professional Directory",
-  description: "Connect with trusted professionals in your area. Find doctors, engineers, plumbers, electricians and more.",
+  description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
   keywords: "professional directory, find professionals, local services, khojix",
   authors: [{ name: "Siscora" }],
   creator: "Siscora",

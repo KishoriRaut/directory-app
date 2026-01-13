@@ -31,7 +31,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(12)
-  const [sortBy, setSortBy] = useState<SortOption>('rating-desc') // Default: Highest Rated
+  const [sortBy, setSortBy] = useState<SortOption>('newest') // Default: Newest First
 
   // Check authentication status
   useEffect(() => {
@@ -122,10 +122,8 @@ export default function Home() {
                         .order('rating', { ascending: false })
             break
           default:
-            // Default: Highest Rated
-            query = query.order('verified', { ascending: false })
-                        .order('rating', { ascending: false })
-                        .order('created_at', { ascending: false })
+            // Default: Newest First
+            query = query.order('created_at', { ascending: false })
         }
 
         // Apply pagination
@@ -282,13 +280,19 @@ export default function Home() {
                       <Select value={sortBy} onValueChange={handleSortChange}>
                         <SelectTrigger className="w-full sm:w-[200px] h-9 text-sm border-gray-300 bg-white hover:bg-gray-50">
                           <SelectValue>
+                            {sortBy === 'newest' && '🕐 Newest First'}
                             {sortBy === 'rating-desc' && '⭐ Highest Rated'}
                             {sortBy === 'verified-first' && '✓ Verified First'}
                             {sortBy === 'experience-desc' && '🏆 Most Experienced'}
-                            {sortBy === 'newest' && '🕐 Newest First'}
                           </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="newest">
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-gray-600" />
+                              <span>Newest First</span>
+                            </div>
+                          </SelectItem>
                           <SelectItem value="rating-desc">
                             <div className="flex items-center gap-2">
                               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -305,12 +309,6 @@ export default function Home() {
                             <div className="flex items-center gap-2">
                               <Star className="h-4 w-4 text-indigo-600" />
                               <span>Most Experienced</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="newest">
-                            <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-gray-600" />
-                              <span>Newest First</span>
                             </div>
                           </SelectItem>
                         </SelectContent>

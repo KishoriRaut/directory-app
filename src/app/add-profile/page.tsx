@@ -28,7 +28,7 @@ export default function AddProfilePage() {
   const [formData, setFormData] = useState({
     name: '',
     profession: '',
-    category: 'doctor' as Professional['category'],
+    category: 'other' as Professional['category'],
     email: '',
     phone: '',
     location: '',
@@ -151,7 +151,7 @@ export default function AddProfilePage() {
       setFormData({
         name: '',
         profession: '',
-        category: 'doctor',
+        category: 'other',
         email: '',
         phone: '',
         location: '',
@@ -230,6 +230,7 @@ export default function AddProfilePage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Profile Photo</Label>
+                  <p className="text-xs text-gray-500 mt-1 mb-2">Upload a professional photo (optional but recommended)</p>
                   <div className="mt-2">
                     <ImageUpload
                       currentImage={formData.imageUrl}
@@ -257,7 +258,7 @@ export default function AddProfilePage() {
                       id="profession"
                       value={formData.profession}
                       onChange={(e) => updateField('profession', e.target.value)}
-                      placeholder="e.g., Cardiologist, Software Engineer"
+                      placeholder="e.g., Software Engineer, Plumber, Designer"
                       className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.profession ? 'border-red-500' : ''}`}
                     />
                     {errors.profession && <p className="text-sm text-red-500 mt-1">{errors.profession}</p>}
@@ -301,8 +302,10 @@ export default function AddProfilePage() {
                     <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone *</Label>
                     <Input
                       id="phone"
+                      type="tel"
                       value={formData.phone}
                       onChange={(e) => updateField('phone', e.target.value)}
+                      placeholder="e.g., +1 (555) 123-4567"
                       className={`mt-1 border-gray-300 rounded-sm focus:border-blue-500 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
                     />
                     {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
