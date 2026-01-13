@@ -46,7 +46,8 @@ export function Statistics() {
 
         // Calculate average rating
         if (ratingData && ratingData.length > 0) {
-          const sum = ratingData.reduce((acc, prof) => acc + (Number(prof.rating) || 0), 0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const sum = (ratingData as any[]).reduce((acc: number, prof: any) => acc + (Number(prof.rating) || 0), 0)
           const avg = sum / ratingData.length
           setAverageRating(Math.round(avg * 10) / 10) // Round to 1 decimal place
         }
