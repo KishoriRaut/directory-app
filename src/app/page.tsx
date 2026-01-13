@@ -563,29 +563,28 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
       <Testimonials />
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
+      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
+        <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             {/* Company Info */}
             <div className="col-span-2 md:col-span-1">
-              <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                Khojix
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">Connecting trusted professionals worldwide.</p>
+              <Link href="/" className="inline-block mb-3">
+                <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Khojix
+                </h3>
+              </Link>
+              <p className="text-sm text-gray-600 mb-4">
+                Connect with trusted professionals in your area. Find the best experts for your needs.
+              </p>
             </div>
 
-            {/* Quick Links */}
+            {/* For Users */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Links</h3>
-              <ul className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">For Users</h3>
+              <ul className="space-y-2.5">
                 <li>
                   <Link href="/" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
                     Browse Professionals
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Add Your Profile
                   </Link>
                 </li>
                 <li>
@@ -593,27 +592,50 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                     How It Works
                   </Link>
                 </li>
+                <li>
+                  <Link href="/profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    My Profile
+                  </Link>
+                </li>
               </ul>
             </div>
 
-            {/* Legal */}
+            {/* For Professionals */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Legal</h3>
-              <ul className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">For Professionals</h3>
+              <ul className="space-y-2.5">
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Terms of Service
+                  <Link href="/add-profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Add Your Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Privacy Policy
+                  <Link href="/profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Manage Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
-                    Contact
+                  <Link href="/settings" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Settings
                   </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal & Support */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal & Support</h3>
+              <ul className="space-y-2.5">
+                <li>
+                  <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <span className="text-sm text-gray-500">Terms of Service</span>
+                </li>
+                <li>
+                  <span className="text-sm text-gray-500">Privacy Policy</span>
                 </li>
               </ul>
             </div>
@@ -622,14 +644,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           {/* Bottom Bar */}
           <div className="border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-gray-600">
-                © 2024 Khojix. All rights reserved.
+              <p className="text-xs text-gray-500">
+                © {new Date().getFullYear()} Khojix. All rights reserved.
               </p>
-              <div className="flex items-center gap-3">
-                <Link href="/add-profile" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                  Add Your Profile
-                </Link>
-              </div>
+              <p className="text-xs text-gray-500">
+                Connecting professionals worldwide
+              </p>
             </div>
           </div>
         </div>
