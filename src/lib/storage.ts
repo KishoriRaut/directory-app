@@ -54,7 +54,8 @@ export class StorageService {
 
       if (error) {
         console.error('Upload error details:', error)
-        console.error('Error code:', error.statusCode)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        console.error('Error code:', (error as any).statusCode)
         console.error('Error message:', error.message)
         
         // Provide more helpful error messages
