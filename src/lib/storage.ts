@@ -113,6 +113,7 @@ export class StorageService {
     try {
       const { error } = await supabase
         .from('professionals')
+        // @ts-ignore
         .update({ image_url: imageUrl })
         .eq('id', professionalId)
 

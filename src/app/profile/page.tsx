@@ -77,6 +77,8 @@ interface ProfileData {
   updated_at?: string
 }
 
+type UpdateData = Omit<ProfileData, 'id' | 'createdAt' | 'rating' | 'verified' | 'stats'>
+
 export default function MyProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
@@ -176,9 +178,21 @@ export default function MyProfilePage() {
         return
       }
 
-      const profileData: any = {
-        ...formData,
-        id: user?.id,
+      const profileData = {
+        name: formData.name || '',
+        profession: formData.profession || '',
+        category: formData.category || 'other',
+        email: formData.email || '',
+        phone: formData.phone || '',
+        location: formData.location || '',
+        experience: formData.experience || 0,
+        description: formData.description || '',
+        services: formData.services || [],
+        availability: formData.availability || '',
+        imageUrl: formData.imageUrl,
+        website: formData.website,
+        socialLinks: formData.socialLinks,
+        pricing: formData.pricing,
         updated_at: new Date().toISOString()
       }
 
@@ -186,8 +200,9 @@ export default function MyProfilePage() {
       if (profile) {
         const { error } = await (supabase
           .from('professionals')
+          // @ts-ignore
           .update(profileData)
-          .eq('id', user?.id) as any)
+          .eq('id', user?.id))
 
         if (error) {
           console.error('Error updating profile:', error)
@@ -198,7 +213,8 @@ export default function MyProfilePage() {
       } else {
         const { error } = await (supabase
           .from('professionals')
-          .insert(profileData) as any)
+          // @ts-ignore
+          .insert({ ...profileData, id: user?.id }))
 
         if (error) {
           console.error('Error creating profile:', error)
@@ -253,7 +269,7 @@ export default function MyProfilePage() {
     setSavingStatus('idle')
   }
 
-  const handleFieldChange = (field: string, value: any) => {
+  const handleFieldChange = (field: keyof ProfileData, value: any) => {
     setFormData({ ...formData, [field]: value })
     
     // Clear error for this field when user starts typing
@@ -263,7 +279,7 @@ export default function MyProfilePage() {
     
     // Check if there are changes
     const hasFieldChanged = JSON.stringify(formData[field]) !== JSON.stringify(originalData[field])
-    setHasChanges(hasFieldChanged || Object.keys(formData).some(key => 
+    setHasChanges(hasFieldChanged || (Object.keys(formData) as Array<keyof ProfileData>).some(key => 
       JSON.stringify(formData[key]) !== JSON.stringify(originalData[key])
     ))
   }
