@@ -31,7 +31,6 @@ const categories = [
 
 export default function AddProfilePage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
   const [formData, setFormData] = useState({
     name: '',
     profession: '',
@@ -58,7 +57,6 @@ export default function AddProfilePage() {
         router.push('/auth/signin?redirect=/add-profile')
         return
       }
-      setUser(session.user)
 
       // Pre-fill email from authenticated user
       if (session.user?.email) {
@@ -72,7 +70,6 @@ export default function AddProfilePage() {
       if (!session) {
         router.push('/auth/signin?redirect=/add-profile')
       } else {
-        setUser(session.user)
         if (session.user?.email) {
           setFormData(prev => ({ ...prev, email: session.user.email || '' }))
         }
@@ -110,24 +107,27 @@ export default function AddProfilePage() {
 
     try {
       // Insert professional data
-      const { data: professionalData, error: professionalError } = await supabase
+      const insertData = {
+        name: formData.name,
+        profession: formData.profession,
+        category: formData.category,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        experience: parseInt(formData.experience),
+        rating: 0,
+        description: formData.description,
+        availability: formData.availability,
+        image_url: formData.imageUrl || null,
+        verified: false
+      }
+      const { data: professionalData, error: professionalError } = await (supabase
         .from('professionals')
-        .insert({
-          name: formData.name,
-          profession: formData.profession,
-          category: formData.category,
-          email: formData.email,
-          phone: formData.phone,
-          location: formData.location,
-          experience: parseInt(formData.experience),
-          rating: 0,
-          description: formData.description,
-          availability: formData.availability,
-          image_url: formData.imageUrl || null,
-          verified: false
-        } as any)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert(insertData as any)
         .select()
-        .single() as { data: { id: string } | null; error: any }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .single() as any) as { data: { id: string } | null; error: Error | null }
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
@@ -144,6 +144,7 @@ export default function AddProfilePage() {
 
         const { error: servicesError } = await supabase
           .from('services')
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .insert(servicesToInsert as any)
 
         if (servicesError) {
@@ -195,7 +196,7 @@ export default function AddProfilePage() {
     }))
   }
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof formData, value: string | string[] | Professional['category']) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
