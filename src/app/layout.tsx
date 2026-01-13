@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   creator: "Siscora",
   publisher: "Siscora",
   manifest: "/manifest.json",
-  themeColor: "#4f46e5",
   robots: {
     index: true,
     follow: true,
@@ -64,6 +63,14 @@ export const metadata: Metadata = {
       { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
     ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#4f46e5",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
