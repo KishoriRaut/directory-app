@@ -32,15 +32,25 @@ export function Header({ user, onSignOut }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Handle scroll effect
   useEffect(() => {
+    if (!mounted) return
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
+    // Check initial scroll position
+    handleScroll()
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [mounted])
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -71,10 +81,8 @@ export function Header({ user, onSignOut }: HeaderProps) {
   return (
     <>
       {/* Main Header */}
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white shadow-md' 
-          : 'bg-white'
+      <header className={`sticky top-0 z-50 transition-all duration-300 bg-white ${
+        mounted && isScrolled ? 'shadow-md' : ''
       }`}>
         <div className="container mx-auto px-4">
           {/* Main Navigation */}
