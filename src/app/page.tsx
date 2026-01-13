@@ -292,6 +292,39 @@ function HomeContent({
   handlePageChange: (page: number) => void
   handleItemsPerPageChange: (items: number) => void
 }) {
+  const searchParams = useSearchParams()
+
+  // Parse URL parameters on mount and when they change
+  useEffect(() => {
+    const category = searchParams?.get('category')
+    const location = searchParams?.get('location')
+    const search = searchParams?.get('search')
+    
+    if (category || location || search) {
+      const newFilters: SearchFiltersType = {}
+      if (category && category !== 'all') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        newFilters.category = category as any
+      }
+      if (location) {
+        newFilters.location = location
+      }
+      if (search) {
+        newFilters.search = search
+      }
+      setFilters(newFilters)
+      setCurrentPage(1)
+      
+      // Scroll to results section after a short delay
+      setTimeout(() => {
+        const resultsSection = document.getElementById('results-section')
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    }
+  }, [searchParams, setFilters, setCurrentPage])
+
   return (
     <>
       {/* Structured Data for SEO */}
