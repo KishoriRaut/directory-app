@@ -65,10 +65,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
   const dropdownItems = [
     { name: 'My Profile', href: '/profile', icon: User },
-    { name: 'My Listings', href: '/my-listings', icon: Briefcase },
-    { name: 'Messages', href: '/messages', icon: Mail },
     { name: 'Settings', href: '/settings', icon: Shield },
-    { name: 'Help Center', href: '/help', icon: Building },
   ]
 
   return (
