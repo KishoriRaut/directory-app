@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle, User, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function ProfilePage() {
   const params = useParams()
@@ -30,8 +30,36 @@ export default function ProfilePage() {
         return
       }
 
+      // Extract and validate ID
+      const idString = Array.isArray(params.id) ? params.id[0] : params.id
+      if (!idString || idString.trim().length === 0) {
+        console.error('Invalid ID: ID is empty or undefined')
+        setProfessional(null)
+        setLoading(false)
+        return
+      }
+
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured()) {
+        console.error('Supabase is not configured. Please set up environment variables.')
+        setProfessional(null)
+        setLoading(false)
+        return
+      }
+
       try {
-        const { data, error } = await supabase
+        // Helper function to check if error is meaningful
+        const hasError = (err: any): boolean => {
+          if (!err) return false
+          // Check if error has any meaningful properties
+          if (err.message || err.code || err.details || err.hint) return true
+          // Check if error object has any keys
+          if (Object.keys(err).length > 0) return true
+          return false
+        }
+
+        // First try with services join
+        let { data, error } = await supabase
           .from('professionals')
           .select(`
             *,
@@ -39,18 +67,66 @@ export default function ProfilePage() {
               service_name
             )
           `)
-          .eq('id', params.id)
+          .eq('id', idString)
           .maybeSingle()
 
-        if (error) {
-          console.error('Error fetching professional:', error)
+        // If error with services join, try without it
+        if (hasError(error)) {
+          console.warn('Error with services join, trying without:', error)
+          
+          // Fallback: fetch professional without services
+          const { data: professionalData, error: professionalError } = await supabase
+            .from('professionals')
+            .select('*')
+            .eq('id', idString)
+            .maybeSingle()
+
+          if (hasError(professionalError)) {
+            console.error('Error fetching professional:', {
+              message: professionalError?.message,
+              code: professionalError?.code,
+              details: professionalError?.details,
+              hint: professionalError?.hint,
+              fullError: professionalError
+            })
+            setProfessional(null)
+            setLoading(false)
+            return
+          }
+
+          // Fetch services separately
+          const { data: servicesData, error: servicesError } = await supabase
+            .from('services')
+            .select('service_name')
+            .eq('professional_id', idString)
+
+          if (hasError(servicesError)) {
+            console.warn('Error fetching services (non-critical):', servicesError)
+          }
+
+          data = professionalData
+          if (data) {
+            (data as any).services = servicesData?.map((s: any) => s.service_name) || []
+          }
+          error = null // Clear error since we successfully fetched
+        } else if (hasError(error)) {
+          // Handle error from initial query
+          console.error('Error fetching professional:', {
+            message: error?.message,
+            code: error?.code,
+            details: error?.details,
+            hint: error?.hint,
+            fullError: error
+          })
           setProfessional(null)
+          setLoading(false)
           return
         }
 
         if (!data) {
-          console.log('No professional found with ID:', params.id)
+          console.log('No professional found with ID:', idString)
           setProfessional(null)
+          setLoading(false)
           return
         }
 
@@ -78,7 +154,7 @@ export default function ProfilePage() {
 
         setProfessional(transformedProfessional)
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Unexpected error fetching professional:', error)
         setProfessional(null)
       } finally {
         setLoading(false)
