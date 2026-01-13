@@ -218,6 +218,11 @@ export const categories = [
   { value: 'plumber', label: 'Plumbers' },
   { value: 'electrician', label: 'Electricians' },
   { value: 'maid', label: 'Maids & Cleaners' },
+  { value: 'designer', label: 'Designers' },
+  { value: 'consultant', label: 'Consultants' },
+  { value: 'therapist', label: 'Therapists' },
+  { value: 'lawyer', label: 'Lawyers' },
+  { value: 'accountant', label: 'Accountants' },
   { value: 'other', label: 'Other' }
 ]
 

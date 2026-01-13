@@ -171,45 +171,83 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-10">
-        {/* Simplified Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            Khojix
-          </h1>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-            Find Trusted Professionals Near You
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Connect with verified experts in your area
-          </p>
-        </div>
-        
-        {/* Single Trust Indicator - Simplified */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <span className="text-sm text-gray-600">25,000+ Verified Professionals</span>
-        </div>
+    <div className="max-w-5xl mx-auto">
+      <div className="text-center mb-8">
+        {/* Minimal Header */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          Find Your Perfect Professional
+        </h1>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-5">
+      <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10 border border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           {/* Service Search */}
-          <div className="relative">
-            <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+          <div className="relative lg:col-span-2">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
-              placeholder="What service do you need?"
+              placeholder="Search for professionals, services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="pl-10 h-10 sm:h-12 text-sm sm:text-lg border-gray-300 focus:border-indigo-500"
+              className="pl-12 h-14 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl"
             />
           </div>
 
-          {/* Category Select */}
+          {/* Location Input with Autocomplete */}
+          <div className="relative">
+            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+            <Input
+              ref={locationInputRef}
+              placeholder="Location"
+              value={location}
+              onChange={(e) => handleLocationChange(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onFocus={() => location.length > 0 && setShowSuggestions(true)}
+              className="pl-12 pr-20 h-14 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl"
+            />
+            {/* Use My Location Button */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleUseMyLocation}
+              disabled={isGettingLocation}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-9 px-3 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg"
+              title="Use my current location"
+            >
+              {isGettingLocation ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Navigation className="h-4 w-4" />
+              )}
+            </Button>
+            
+            {/* Location Autocomplete Suggestions */}
+            {showSuggestions && locationSuggestions.length > 0 && (
+              <div
+                ref={suggestionsRef}
+                className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-48 overflow-y-auto"
+              >
+                {locationSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleLocationSelect(suggestion)}
+                    className="w-full text-left px-4 py-3 hover:bg-indigo-50 flex items-center gap-3 text-sm transition-colors"
+                  >
+                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <span>{suggestion}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Category Filter Row */}
+        <div className="mb-6">
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-lg border-gray-300 focus:border-indigo-500">
+            <SelectTrigger className="h-14 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -225,92 +263,29 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
               <SelectItem value="accountant">Accountants</SelectItem>
             </SelectContent>
           </Select>
+        </div>
 
-          {/* Location Input with Autocomplete */}
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10" />
-            <Input
-              ref={locationInputRef}
-              placeholder="City or ZIP code"
-              value={location}
-              onChange={(e) => handleLocationChange(e.target.value)}
-              onKeyPress={handleKeyPress}
-              onFocus={() => location.length > 0 && setShowSuggestions(true)}
-              className="pl-10 pr-24 h-10 sm:h-12 text-sm sm:text-lg border-gray-300 focus:border-indigo-500"
-            />
-            {/* Use My Location Button */}
-            <Button
+        {/* Search Button */}
+        <Button 
+          onClick={handleSearch}
+          className="w-full h-14 text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all"
+        >
+          <Search className="h-5 w-5 mr-2" />
+          Search
+        </Button>
+
+        {/* Minimal Popular Searches */}
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          {popularSearches.slice(0, 6).map((item) => (
+            <button
+              key={item.term}
               type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleUseMyLocation}
-              disabled={isGettingLocation}
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 px-2 sm:px-3 text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-              title="Use my current location"
+              onClick={() => handlePopularSearch(item.term, item.category)}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
             >
-              {isGettingLocation ? (
-                <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
-              ) : (
-                <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
-              )}
-              <span className="hidden sm:inline ml-1">Near me</span>
-            </Button>
-            
-            {/* Location Autocomplete Suggestions */}
-            {showSuggestions && locationSuggestions.length > 0 && (
-              <div
-                ref={suggestionsRef}
-                className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
-              >
-                {locationSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleLocationSelect(suggestion)}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm"
-                  >
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span>{suggestion}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <Button 
-            onClick={handleSearch}
-            className="w-full sm:flex-1 px-6 sm:px-8 py-3 text-base sm:text-lg font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-          >
-            <Search className="h-5 w-5 mr-2" />
-            Search Professionals
-          </Button>
-          
-          {/* Secondary CTA - Moved here, less prominent */}
-          <Link href="/add-profile" className="w-full sm:w-auto">
-            <Button variant="outline" className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base">
-              <Briefcase className="h-4 w-4 mr-2" />
-              For Professionals
-            </Button>
-          </Link>
-        </div>
-
-        {/* Simplified Popular Searches */}
-        <div className="mt-5 text-center">
-          <p className="text-xs text-gray-500 mb-2">Popular:</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {popularSearches.slice(0, 4).map((item) => (
-              <button
-                key={item.term}
-                type="button"
-                onClick={() => handlePopularSearch(item.term, item.category)}
-                className="px-3 py-1.5 text-xs sm:text-sm bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg text-gray-700 hover:text-indigo-700 transition-colors"
-              >
-                {item.term}
-              </button>
-            ))}
-          </div>
+              {item.term}
+            </button>
+          ))}
         </div>
       </div>
     </div>

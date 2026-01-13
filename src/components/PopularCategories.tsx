@@ -11,7 +11,8 @@ import {
   Heart, 
   Scale, 
   Calculator,
-  Sparkles
+  Sparkles,
+  MoreHorizontal
 } from 'lucide-react'
 
 const categories = [
@@ -20,77 +21,93 @@ const categories = [
     icon: Stethoscope,
     description: 'Medical professionals',
     count: '2,847',
-    href: '#doctors'
+    href: '/?category=doctor',
+    category: 'doctor'
   },
   {
     name: 'Plumbers',
     icon: Wrench,
     description: 'Pipe & drainage experts',
     count: '1,523',
-    href: '#plumbers'
+    href: '/?category=plumber',
+    category: 'plumber'
   },
   {
     name: 'Electricians',
     icon: Zap,
     description: 'Electrical services',
     count: '1,892',
-    href: '#electricians'
+    href: '/?category=electrician',
+    category: 'electrician'
   },
   {
     name: 'Engineers',
     icon: HardHat,
     description: 'Engineering solutions',
     count: '987',
-    href: '#engineers'
+    href: '/?category=engineer',
+    category: 'engineer'
   },
   {
     name: 'Maids & Cleaners',
     icon: Sparkles,
     description: 'Cleaning & home services',
     count: '2,156',
-    href: '/?category=maid'
+    href: '/?category=maid',
+    category: 'maid'
   },
   {
     name: 'Designers',
     icon: Palette,
     description: 'Creative professionals',
     count: '1,234',
-    href: '#designers'
+    href: '/?category=designer',
+    category: 'designer'
   },
   {
     name: 'Consultants',
     icon: Briefcase,
     description: 'Business consulting',
     count: '756',
-    href: '#consultants'
+    href: '/?category=consultant',
+    category: 'consultant'
   },
   {
     name: 'Therapists',
     icon: Heart,
     description: 'Mental health experts',
     count: '432',
-    href: '#therapists'
+    href: '/?category=therapist',
+    category: 'therapist'
   },
   {
     name: 'Lawyers',
     icon: Scale,
     description: 'Legal services',
     count: '621',
-    href: '#lawyers'
+    href: '/?category=lawyer',
+    category: 'lawyer'
   },
   {
     name: 'Accountants',
     icon: Calculator,
     description: 'Financial experts',
     count: '543',
-    href: '#accountants'
+    href: '/?category=accountant',
+    category: 'accountant'
+  },
+  {
+    name: 'Other',
+    icon: MoreHorizontal,
+    description: 'Other professionals',
+    count: '1,200',
+    href: '/?category=other',
+    category: 'other'
   }
 ]
 
 export function PopularCategories() {
-  // Show top 6 categories for cleaner layout
-  const topCategories = categories.slice(0, 6)
-  
+  // Show all categories
   return (
     <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
@@ -103,11 +120,11 @@ export function PopularCategories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
-          {topCategories.map((category) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-7xl mx-auto">
+          {categories.map((category) => (
             <Link
               key={category.name}
-              href={category.href}
+              href={`/?category=${category.category}`}
               className="bg-white rounded-lg p-5 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 group text-center"
             >
               <div className="w-14 h-14 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-100 transition-colors">

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Professional } from '@/types/directory'
 import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
@@ -24,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type SortOption = 'rating-desc' | 'verified-first' | 'newest' | 'experience-desc'
 
 export default function Home() {
+  const searchParams = useSearchParams()
   const [filters, setFilters] = useState<SearchFiltersType>({})
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,6 +34,36 @@ export default function Home() {
   const [totalItems, setTotalItems] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(12)
   const [sortBy, setSortBy] = useState<SortOption>('newest') // Default: Newest First
+
+  // Parse URL parameters on mount and when they change
+  useEffect(() => {
+    const category = searchParams?.get('category')
+    const location = searchParams?.get('location')
+    const search = searchParams?.get('search')
+    
+    if (category || location || search) {
+      const newFilters: SearchFiltersType = {}
+      if (category && category !== 'all') {
+        newFilters.category = category as any
+      }
+      if (location) {
+        newFilters.location = location
+      }
+      if (search) {
+        newFilters.search = search
+      }
+      setFilters(newFilters)
+      setCurrentPage(1)
+      
+      // Scroll to results section after a short delay
+      setTimeout(() => {
+        const resultsSection = document.getElementById('results-section')
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    }
+  }, [searchParams])
 
   // Check authentication status
   useEffect(() => {
@@ -222,6 +254,74 @@ export default function Home() {
     value !== undefined && value !== '' && value !== false
   )
 
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>}>
+      <HomeContent 
+        filters={filters}
+        setFilters={setFilters}
+        professionals={professionals}
+        loading={loading}
+        user={user}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        handleSignOut={handleSignOut}
+        handleViewProfile={handleViewProfile}
+        handleHeroSearch={handleHeroSearch}
+        handleSortChange={handleSortChange}
+        hasActiveFilters={hasActiveFilters}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+        handleItemsPerPageChange={handleItemsPerPageChange}
+      />
+    </Suspense>
+  )
+}
+
+function HomeContent({
+  filters,
+  setFilters,
+  professionals,
+  loading,
+  user,
+  currentPage,
+  setCurrentPage,
+  totalItems,
+  itemsPerPage,
+  sortBy,
+  setSortBy,
+  handleSignOut,
+  handleViewProfile,
+  handleHeroSearch,
+  handleSortChange,
+  hasActiveFilters,
+  totalPages,
+  handlePageChange,
+  handleItemsPerPageChange
+}: {
+  filters: SearchFiltersType
+  setFilters: (filters: SearchFiltersType) => void
+  professionals: Professional[]
+  loading: boolean
+  user: any
+  currentPage: number
+  setCurrentPage: (page: number) => void
+  totalItems: number
+  itemsPerPage: number
+  sortBy: SortOption
+  setSortBy: (sort: SortOption) => void
+  handleSignOut: () => void
+  handleViewProfile: (id: string) => void
+  handleHeroSearch: (query: string, category: string, location: string) => void
+  handleSortChange: (value: SortOption) => void
+  hasActiveFilters: boolean
+  totalPages: number
+  handlePageChange: (page: number) => void
+  handleItemsPerPageChange: (items: number) => void
+}) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Professional Header */}
