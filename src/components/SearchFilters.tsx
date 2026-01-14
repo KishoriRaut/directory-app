@@ -40,10 +40,10 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
       {/* Header with Active Filter Count */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-gray-900">Search Filters</h3>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">Filters</h3>
           {hasActiveFilters && (
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">
-              {getActiveFiltersCount} filter{getActiveFiltersCount !== 1 ? 's' : ''} applied
+            <p className="text-xs text-gray-600 mt-1">
+              {getActiveFiltersCount} active
             </p>
           )}
         </div>
@@ -55,22 +55,21 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
             className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors touch-target w-full sm:w-auto"
           >
             <X className="h-4 w-4 mr-1" />
-            Clear All
+            Clear
           </Button>
         )}
       </div>
 
       {/* Search Input */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-900">Search Professionals</label>
+        <label className="text-sm font-bold text-gray-900">Search</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by name, profession, description, or location..."
+            placeholder="Search professionals..."
             value={filters.search || filters.profession || ''}
             onChange={(e) => {
               const value = e.target.value
-              // Use search field, but also update profession for backward compatibility
               updateFilter('search', value)
               if (value) {
                 updateFilter('profession', value)
@@ -81,7 +80,6 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
             className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
           />
         </div>
-        <p className="text-xs text-gray-500">Searches across name, profession, description, and location</p>
       </div>
 
       {/* Category Filter */}
@@ -109,17 +107,17 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
 
       {/* Location Filter */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-900">Location</label>
+        <label className="text-sm font-bold text-gray-900">Location</label>
         <div className="relative">
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="City, state, or zip code..."
+            placeholder="City or location"
             value={filters.location || ''}
             onChange={(e) => updateFilter('location', e.target.value)}
             className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
           />
         </div>
-        </div>
+      </div>
 
       {/* Rating Filter */}
       <div className="space-y-2 sm:space-y-3">
@@ -149,28 +147,25 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
 
       {/* Additional Filters */}
       <div className="space-y-3">
-        <label className="text-sm font-semibold text-gray-900">Additional Options</label>
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <input
-              type="checkbox"
-              id="verified"
-              checked={filters.verified || false}
-              onChange={(e) => updateFilter('verified', e.target.checked)}
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-            />
-            <label htmlFor="verified" className="text-sm font-medium cursor-pointer text-gray-900 flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              Verified Professionals Only
-            </label>
-          </div>
+        <label className="text-sm font-bold text-gray-900">Options</label>
+        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <input
+            type="checkbox"
+            id="verified"
+            checked={filters.verified || false}
+            onChange={(e) => updateFilter('verified', e.target.checked)}
+            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+          />
+          <label htmlFor="verified" className="text-sm font-medium cursor-pointer text-gray-900 flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            Verified Only
+          </label>
         </div>
       </div>
 
       {/* Active Filters Summary */}
       {hasActiveFilters && (
-        <div className="space-y-3 pt-4 border-t border-gray-200">
-          <label className="text-sm font-semibold text-gray-900">Active Filters</label>
+        <div className="pt-4 border-t border-gray-200">
           <div className="flex flex-wrap gap-2">
             {filters.category && filters.category !== 'all' && (
               <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">

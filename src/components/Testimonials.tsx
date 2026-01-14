@@ -1,6 +1,6 @@
 'use client'
 
-import { Star, Quote } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 const testimonials = [
   {
@@ -70,20 +70,17 @@ export function Testimonials() {
   const topTestimonials = testimonials.slice(0, 3)
   
   return (
-    <section className="py-12 sm:py-16 bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            What Our Customers Say
+    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-gray-50/50 to-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Testimonials
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Real reviews from satisfied customers
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {topTestimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 shadow-sm">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -102,7 +99,7 @@ export function Testimonials() {
               </p>
 
               <div className="border-t border-gray-200 pt-4">
-                <p className="font-semibold text-gray-900 text-sm">{testimonial.name}</p>
+                <p className="font-bold text-gray-900 text-sm">{testimonial.name}</p>
                 <p className="text-xs text-gray-500">{testimonial.location}</p>
               </div>
             </div>

@@ -82,17 +82,17 @@ export function Pagination({
   if (totalPages <= 1) return null
 
   return (
-    <div className={cn("flex flex-col items-center gap-4", className)}>
+    <div className={cn("flex flex-col items-center gap-4 w-full", className)}>
       {/* Results count */}
       {totalItems && (
-        <div className="text-sm text-gray-600">
+        <div className="text-xs sm:text-sm text-gray-600 text-center px-4">
           Showing {((currentPage - 1) * itemsPerPage) + 1} to{' '}
           {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} professionals
         </div>
       )}
 
       {/* Pagination controls */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 flex-wrap justify-center px-2">
         {/* Previous button */}
         <Button
           variant="outline"
@@ -146,15 +146,15 @@ export function Pagination({
       </div>
 
       {/* Page size selector */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-gray-600">Items per page:</span>
+      <div className="flex flex-col sm:flex-row items-center gap-2 text-xs sm:text-sm px-4">
+        <span className="text-gray-600 whitespace-nowrap">Items per page:</span>
         <select
           value={itemsPerPage}
           onChange={(e) => {
             const newItemsPerPage = parseInt(e.target.value)
             onPageChange(1) // Reset to first page when changing page size
           }}
-          className="rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px] touch-target"
         >
           <option value={12}>12</option>
           <option value={24}>24</option>

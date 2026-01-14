@@ -81,9 +81,9 @@ const nextConfig: NextConfig = {
   
   // Webpack optimizations (used only in production builds with --webpack flag)
   // Turbopack is used by default in dev mode (Next.js 16+)
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Optimize bundle size
-    if (!isServer) {
+    if (!isServer && !dev) {
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
@@ -93,12 +93,13 @@ const nextConfig: NextConfig = {
           cacheGroups: {
             default: false,
             vendors: false,
-            // Vendor chunk
+            // Vendor chunk - only for JS, not CSS
             vendor: {
               name: 'vendor',
               chunks: 'all',
               test: /node_modules/,
               priority: 20,
+              type: 'javascript/auto', // Only JS files
             },
             // Common chunk
             common: {

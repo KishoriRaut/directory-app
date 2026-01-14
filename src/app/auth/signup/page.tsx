@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { normalizeEmail } from '@/lib/utils'
 
 function SignUpPageContent() {
   const router = useRouter()
@@ -102,7 +103,7 @@ function SignUpPageContent() {
           // User is signed in - create minimal profile and redirect to onboarding
           try {
             // Auto-create minimal profile with pre-filled data (industry best practice)
-            const normalizedEmail = formData.email.toLowerCase().trim()
+            const normalizedEmail = normalizeEmail(formData.email)
             const profileData = {
               name: formData.name,
               profession: '',

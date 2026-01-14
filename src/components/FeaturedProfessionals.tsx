@@ -7,9 +7,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import Image from 'next/image'
-import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
+import { isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Professional } from '@/types/directory'
-import { getInitials } from '@/lib/utils'
+import { getDeterministicCount, getInitials } from '@/lib/utils'
 
 export function FeaturedProfessionals() {
   const [featuredProfessionals, setFeaturedProfessionals] = useState<Professional[]>([])
@@ -123,8 +123,8 @@ export function FeaturedProfessionals() {
   // Show loading state or empty state
   if (loading) {
     return (
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="container mx-auto px-6">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-gray-50/50 to-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
               Featured Professionals
@@ -148,15 +148,12 @@ export function FeaturedProfessionals() {
   }
   
   return (
-    <section className="py-12 sm:py-16 bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Featured Professionals
+    <section className="py-12 sm:py-16 lg:py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Featured
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Top-rated professionals trusted by thousands
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -197,7 +194,7 @@ export function FeaturedProfessionals() {
                       }}
                     />
                     {/* Avatar Fallback */}
-                    <div className="avatar-fallback hidden absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <div className="avatar-fallback hidden absolute inset-0 items-center justify-center bg-gray-100">
                       <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                         <span className="text-2xl font-semibold text-white">
                           {getInitials(professional.name)}
@@ -220,7 +217,7 @@ export function FeaturedProfessionals() {
               <CardContent className="p-5 space-y-3">
                 {/* Header */}
                 <div className="space-y-1">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                  <h3 className="text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
                     {professional.name}
                   </h3>
                   <p className="text-sm text-gray-600 truncate">{professional.profession}</p>
@@ -230,12 +227,12 @@ export function FeaturedProfessionals() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-semibold text-gray-900">{professional.rating}</span>
-                    <span className="text-sm text-gray-500">({Math.floor(Math.random() * 100 + 10)})</span>
+                    <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
+                  <span className="text-sm text-gray-500">({getDeterministicCount(professional.id)})</span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <MapPin className="h-3.5 w-3.5" />
-                    <span className="truncate max-w-[120px]">{professional.location}</span>
+                  <div className="flex items-center gap-1 text-sm text-gray-600 min-w-0 flex-1">
+                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="truncate">{professional.location}</span>
                   </div>
                 </div>
 

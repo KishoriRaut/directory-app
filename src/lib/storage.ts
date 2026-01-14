@@ -69,7 +69,7 @@ export class StorageService {
         if (error.message.includes('row-level security')) {
           return { 
             publicUrl: null, 
-            error: 'Storage permission error. Please check RLS policies in Supabase Dashboard. See STORAGE_FIX_INSTRUCTIONS.md for help.' 
+            error: 'Storage permission error. Please check RLS policies in Supabase Dashboard. Run database/storage-policies.sql migration.' 
           }
         }
         

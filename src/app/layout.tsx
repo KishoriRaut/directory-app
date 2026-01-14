@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { initPerformanceMonitor } from "@/lib/performance-monitor";
 import "./globals.css";
 
@@ -9,23 +9,23 @@ if (typeof window !== 'undefined') {
 }
 
 // Optimize font loading with next/font
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
   preload: true,
-  variable: "--font-plus-jakarta-sans",
+  variable: "--font-inter",
   fallback: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "system-ui", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'),
   title: {
-    default: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
-    template: "%s | KhojCity"
+    default: "Siscora Pro - Professional Service Directory | Find Trusted Professionals Near You",
+    template: "%s | Siscora Pro"
   },
   description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, lawyers, accountants, and more. Browse verified professionals with ratings and reviews.",
-  keywords: ["professional directory", "find professionals", "local services", "khojcity", "directory app", "service providers", "verified professionals", "local business directory"],
+  keywords: ["professional directory", "find professionals", "local services", "siscora pro", "directory app", "service providers", "verified professionals", "local business directory"],
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",
@@ -45,21 +45,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    siteName: "KhojCity",
-    title: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
+    siteName: "Siscora Pro",
+    title: "Siscora Pro - Professional Service Directory | Find Trusted Professionals Near You",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: [
       {
         url: "/og-image.png", // You'll need to create this
         width: 1200,
         height: 630,
-        alt: "KhojCity - Professional Directory",
+        alt: "Siscora Pro - Professional Service Directory",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KhojCity - Professional Directory",
+    title: "Siscora Pro - Professional Service Directory",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: ["/og-image.png"], // You'll need to create this
   },
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "KhojCity",
+    title: "Siscora Pro",
   },
   icons: {
     icon: [
@@ -93,14 +93,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
+    <html lang="en" className={inter.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="KhojCity" />
+        <meta name="apple-mobile-web-app-title" content="Siscora Pro" />
         {/* DNS prefetch and preconnect for external resources - Performance optimization */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -126,12 +126,21 @@ export default function RootLayout({
                     document.body.removeAttribute(attr);
                   }
                 });
+                
+                // Unregister any stale service workers that might cause MIME type errors
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+                }
               })();
             `,
           }}
         />
       </head>
-      <body className={`antialiased ${plusJakartaSans.className}`} suppressHydrationWarning>
+      <body className={`antialiased ${inter.className}`} suppressHydrationWarning>
         {children}
       </body>
     </html>

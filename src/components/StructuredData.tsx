@@ -1,5 +1,6 @@
 'use client'
 
+// Structured data for SEO - Siscora Pro
 import { Professional } from '@/types/directory'
 
 interface StructuredDataProps {
@@ -15,10 +16,10 @@ export function StructuredData({ type, data, professionals }: StructuredDataProp
         return {
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "KhojCity",
+          "name": "Siscora Pro",
           "url": process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com",
           "logo": `${process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com"}/vercel.svg`,
-          "description": "Professional directory connecting users with trusted professionals in their area",
+          "description": "Professional Service Directory connecting users with trusted professionals in their area",
           "sameAs": [
             // Add your social media links here when available
           ]
@@ -28,7 +29,7 @@ export function StructuredData({ type, data, professionals }: StructuredDataProp
         return {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "KhojCity",
+          "name": "Siscora Pro",
           "url": process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com",
           "potentialAction": {
             "@type": "SearchAction",
