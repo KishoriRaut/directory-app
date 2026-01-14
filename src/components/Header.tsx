@@ -16,6 +16,7 @@ import {
   MapPin,
   Star,
   Shield,
+  Settings,
   Users,
   Briefcase,
   Building,
@@ -87,7 +88,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
   const dropdownItems = [
     { name: 'My Profile', href: '/profile', icon: User },
-    { name: 'Settings', href: '/settings', icon: Shield },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ]
 
   return (
@@ -182,9 +183,10 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 </>
               ) : (
                 <>
-                  <Link href="/auth/signin">
-                    <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
-                      Log In
+                  <Link href="/add-profile">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Add Your Profile
                     </Button>
                   </Link>
                   <Link href="/auth/signup">
@@ -192,10 +194,9 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       Sign Up
                     </Button>
                   </Link>
-                  <Link href="/add-profile">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
-                      <Briefcase className="h-4 w-4 mr-2" />
-                      Add Your Profile
+                  <Link href="/auth/signin">
+                    <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                      Log In
                     </Button>
                   </Link>
                 </>
@@ -282,9 +283,10 @@ export function Header({ user, onSignOut }: HeaderProps) {
                   </>
                 ) : (
                   <div className="space-y-3 mb-4">
-                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
-                        Log In
+                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        Add Your Profile
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
@@ -292,10 +294,9 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         Sign Up
                       </Button>
                     </Link>
-                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
-                        <Briefcase className="h-4 w-4 mr-2" />
-                        Add Your Profile
+                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                        Log In
                       </Button>
                     </Link>
                   </div>

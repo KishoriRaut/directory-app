@@ -46,9 +46,9 @@ function SignInPageContent() {
 
       if (error) {
         setError(error.message)
-      } else {
-        // Successful sign in
-        router.push(redirectTo)
+      } else if (data?.user) {
+        // Successful sign in - use full page reload to ensure auth state updates
+        window.location.href = redirectTo
       }
     } catch (error) {
       setError('An unexpected error occurred. Please try again.')
