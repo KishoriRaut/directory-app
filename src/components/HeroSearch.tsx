@@ -172,12 +172,12 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
   return (
     <div className="max-w-4xl mx-auto w-full">
       {/* Minimal Header - Industry Standard */}
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 text-center mb-8 leading-tight">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 text-center mb-8 leading-tight">
         Find Your Perfect Professional
       </h1>
 
       {/* Minimal Search Container - Single Row Layout (Airbnb/Zillow Pattern) */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+      <div className="bg-white rounded-xl shadow-xl border-2 border-gray-200 p-4 sm:p-6">
         {/* Search Inputs Row */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           {/* Search Input */}
@@ -267,7 +267,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
         {/* Big Search Button - Full Width on Next Line */}
         <Button 
           onClick={handleSearch}
-          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
+          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
         >
           <Search className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
           Search

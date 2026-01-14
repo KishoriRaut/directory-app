@@ -122,12 +122,12 @@ export function PopularCategories() {
             <Link
               key={category.name}
               href={`/?category=${category.category}`}
-              className="bg-white rounded-lg p-3 sm:p-4 md:p-5 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 group text-center touch-target"
+              className="bg-white rounded-lg p-3 sm:p-4 md:p-5 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 group text-center touch-target shadow-sm"
             >
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:bg-indigo-100 transition-colors">
                 <category.icon className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600" />
               </div>
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
                 {category.name}
               </h3>
             </Link>

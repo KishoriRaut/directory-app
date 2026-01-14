@@ -217,7 +217,7 @@ export function FeaturedProfessionals() {
               <CardContent className="p-5 space-y-3">
                 {/* Header */}
                 <div className="space-y-1">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                  <h3 className="text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
                     {professional.name}
                   </h3>
                   <p className="text-sm text-gray-600 truncate">{professional.profession}</p>
@@ -227,7 +227,7 @@ export function FeaturedProfessionals() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-semibold text-gray-900">{professional.rating}</span>
+                    <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
                     <span className="text-sm text-gray-500">({Math.floor(Math.random() * 100 + 10)})</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600">

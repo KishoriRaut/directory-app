@@ -40,7 +40,7 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
       {/* Header with Active Filter Count */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h3 className="text-base font-bold text-gray-900">Filters</h3>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">Filters</h3>
           {hasActiveFilters && (
             <p className="text-xs text-gray-600 mt-1">
               {getActiveFiltersCount} active
@@ -62,7 +62,7 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
 
       {/* Search Input */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-900">Search</label>
+        <label className="text-sm font-bold text-gray-900">Search</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -107,7 +107,7 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
 
       {/* Location Filter */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-900">Location</label>
+        <label className="text-sm font-bold text-gray-900">Location</label>
         <div className="relative">
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -147,7 +147,7 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
 
       {/* Additional Filters */}
       <div className="space-y-3">
-        <label className="text-sm font-semibold text-gray-900">Options</label>
+        <label className="text-sm font-bold text-gray-900">Options</label>
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <input
             type="checkbox"

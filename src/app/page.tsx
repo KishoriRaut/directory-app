@@ -453,7 +453,7 @@ function HomeContent({
         <Header user={user} onSignOut={handleSignOut} />
 
       {/* Hero Section with Search - Full viewport height on desktop */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/30 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <HeroSearch onSearch={handleHeroSearch} />
         </div>
@@ -479,7 +479,7 @@ function HomeContent({
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    <h2 className="text-xl sm:text-2xl font-bold sm:font-extrabold text-gray-900">
                       {totalItems} Result{totalItems !== 1 ? 's' : ''}
                     </h2>
                     {/* Sort Dropdown */}
@@ -526,7 +526,7 @@ function HomeContent({
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
                     {filters.category && filters.category !== 'all' && (
                       <span className="inline-flex items-center gap-1">
-                        <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-100">
+                        <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-2 border-indigo-200">
                           {filters.category === 'doctor' ? 'Doctors' : 
                            filters.category === 'engineer' ? 'Engineers' :
                            filters.category === 'plumber' ? 'Plumbers' :
@@ -541,19 +541,19 @@ function HomeContent({
                       </span>
                     )}
                     {(filters.location || filters.search || filters.profession) && (
-                      <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-100">
+                      <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-2 border-indigo-200">
                         <MapPin className="h-3 w-3 mr-1" />
                         {filters.location || filters.search || filters.profession}
                       </Badge>
                     )}
                     {filters.minRating && (
-                      <Badge variant="secondary" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-100">
+                      <Badge variant="secondary" className="text-xs bg-yellow-50 text-yellow-700 border-2 border-yellow-200">
                         <Star className="h-3 w-3 mr-1 fill-current" />
                         {filters.minRating}+
                       </Badge>
                     )}
                     {filters.verified && (
-                      <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 border-green-100">
+                      <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 border-2 border-green-200">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Verified
                       </Badge>
@@ -579,7 +579,7 @@ function HomeContent({
 
             {/* Results Grid */}
             {loading ? (
-              <div className="text-center py-12 sm:py-20 bg-white rounded-xl border border-gray-200">
+              <div className="text-center py-12 sm:py-20 bg-white rounded-xl border-2 border-gray-200 shadow-sm">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
                 </div>
@@ -596,7 +596,7 @@ function HomeContent({
                 </p>
               </div>
             ) : professionals.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+              <div className="text-center py-16 bg-white rounded-xl border-2 border-gray-200 shadow-sm">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="h-10 w-10 text-gray-400" />
                 </div>
@@ -658,7 +658,7 @@ function HomeContent({
       <Testimonials />
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-16 lg:mt-20">
+      <footer className="bg-gray-50 border-t-2 border-gray-300 mt-16 lg:mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             {/* Company Info */}
@@ -675,7 +675,7 @@ function HomeContent({
 
             {/* For Users */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">For Users</h3>
+              <h3 className="text-sm font-bold text-gray-900 mb-4">For Users</h3>
               <ul className="space-y-2.5">
                 <li>
                   <Link href="/" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
@@ -719,7 +719,7 @@ function HomeContent({
 
             {/* Legal & Support */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal & Support</h3>
+              <h3 className="text-sm font-bold text-gray-900 mb-4">Legal & Support</h3>
               <ul className="space-y-2.5">
                 <li>
                   <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
@@ -737,7 +737,7 @@ function HomeContent({
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-200 pt-6">
+          <div className="border-t-2 border-gray-300 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500">
                 © {new Date().getFullYear()} Siscora Pro

@@ -217,7 +217,7 @@ const faqs = [
   },
   {
     question: 'Is there a mobile app available?',
-    answer: 'Yes, available for iOS and Android. Search, book, message, and pay from your phone.'
+    answer: 'Currently, we offer a fully responsive web app that works seamlessly on all mobile devices. A native mobile app is coming soon.'
   }
 ]
 
@@ -349,7 +349,7 @@ export default function HowItWorksPage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Siscora Pro
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-1">Professional Service Directory</p>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold mb-1">Professional Service Directory</p>
               <p className="text-xs text-gray-500">by Siscora.com</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
@@ -453,7 +453,7 @@ export default function HowItWorksPage() {
                       </div>
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {step.title}
                   </h3>
                   <p className="text-gray-600 mb-4">
@@ -500,7 +500,7 @@ export default function HowItWorksPage() {
                       </div>
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {step.title}
                   </h3>
                   <p className="text-gray-600 mb-4">
@@ -531,7 +531,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100">
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border-2 border-indigo-200 shadow-md">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-white" />
@@ -553,7 +553,7 @@ export default function HowItWorksPage() {
               </ul>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-purple-200 shadow-md">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <UserIcon className="h-8 w-8 text-white" />
@@ -617,12 +617,12 @@ export default function HowItWorksPage() {
           <div className="max-w-3xl mx-auto">
             <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div key={index} className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-sm">
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                     className="w-full px-6 py-4 text-left bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
                   >
-                    <span className="font-semibold text-gray-900">{faq.question}</span>
+                    <span className="font-bold text-gray-900">{faq.question}</span>
                     <ArrowRight className={`h-5 w-5 text-gray-500 transition-transform ${
                       expandedFaq === index ? 'rotate-90' : ''
                     }`} />
@@ -634,89 +634,6 @@ export default function HowItWorksPage() {
                   )}
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mobile App Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Mobile App
-              </h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Search, book, and pay on the go
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300">Search and book professionals instantly</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300">Real-time messaging with professionals</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300">Secure mobile payments</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300">Push notifications for updates</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button className="px-6 py-3 bg-black hover:bg-gray-900 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
-                  <div className="w-6 h-6 bg-white rounded flex items-center justify-center">
-                    <span className="text-black text-xs font-bold">A</span>
-                  </div>
-                  Download for Android
-                </button>
-                <button className="px-6 py-3 bg-black hover:bg-gray-900 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
-                  <div className="w-6 h-6 bg-white rounded flex items-center justify-center">
-                    <span className="text-black text-xs font-bold">i</span>
-                  </div>
-                  Download for iOS
-                </button>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="bg-gray-800 rounded-3xl p-8 border border-gray-700 shadow-2xl">
-                <div className="bg-gray-900 rounded-2xl p-4 mb-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-indigo-600 rounded-full"></div>
-                    <div className="flex-1">
-                      <div className="h-2 bg-gray-700 rounded w-3/4 mb-2"></div>
-                      <div className="h-2 bg-gray-700 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="h-3 bg-gray-700 rounded"></div>
-                    <div className="h-3 bg-gray-700 rounded w-5/6"></div>
-                    <div className="h-3 bg-gray-700 rounded w-4/6"></div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-indigo-600 rounded-xl p-4 text-center">
-                    <Search className="h-6 w-6 text-white mx-auto mb-2" />
-                    <div className="text-xs text-white">Search</div>
-                  </div>
-                  <div className="bg-purple-600 rounded-xl p-4 text-center">
-                    <MessageCircle className="h-6 w-6 text-white mx-auto mb-2" />
-                    <div className="text-xs text-white">Chat</div>
-                  </div>
-                  <div className="bg-green-600 rounded-xl p-4 text-center">
-                    <CheckCircle className="h-6 w-6 text-white mx-auto mb-2" />
-                    <div className="text-xs text-white">Book</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -737,7 +654,7 @@ export default function HowItWorksPage() {
                 </Button>
               </Link>
               <Link href="/add-profile">
-                <Button className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3 font-semibold">
+                <Button className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3 font-bold">
                   Add Your Profile
                 </Button>
               </Link>
@@ -760,7 +677,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone className="h-6 w-6 text-indigo-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Phone Support</h3>
+              <h3 className="font-bold text-gray-900 mb-2">Phone Support</h3>
               <p className="text-gray-600">1-800-PROS</p>
               <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM EST</p>
             </div>
@@ -769,7 +686,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="h-6 w-6 text-indigo-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Email Support</h3>
+              <h3 className="font-bold text-gray-900 mb-2">Email Support</h3>
               <p className="text-gray-600">support@siscora.com</p>
               <p className="text-sm text-gray-500">Response within 24 hours</p>
             </div>
@@ -778,7 +695,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="h-6 w-6 text-indigo-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Live Chat</h3>
+              <h3 className="font-bold text-gray-900 mb-2">Live Chat</h3>
               <p className="text-gray-600">Available on website</p>
               <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM EST</p>
             </div>
