@@ -462,14 +462,6 @@ function HomeContent({
       {/* Main Search Results Section - Immediately after hero for immediate value */}
       <section id="results-section" className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Browse All Professionals
-            </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-              Search our complete directory of verified professionals
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <aside className="lg:col-span-1 order-2 lg:order-1">
@@ -487,8 +479,8 @@ function HomeContent({
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                      {totalItems} Professional{totalItems !== 1 ? 's' : ''} Found
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                      {totalItems} Result{totalItems !== 1 ? 's' : ''}
                     </h2>
                     {/* Sort Dropdown */}
                     <div className="flex items-center gap-2">
@@ -549,36 +541,37 @@ function HomeContent({
                       </span>
                     )}
                     {(filters.location || filters.search || filters.profession) && (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
+                      <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-100">
+                        <MapPin className="h-3 w-3 mr-1" />
                         {filters.location || filters.search || filters.profession}
-                      </span>
+                      </Badge>
                     )}
                     {filters.minRating && (
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        {filters.minRating}+ Rating
-                      </span>
+                      <Badge variant="secondary" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-100">
+                        <Star className="h-3 w-3 mr-1 fill-current" />
+                        {filters.minRating}+
+                      </Badge>
                     )}
                     {filters.verified && (
-                      <span className="inline-flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3 text-green-600" />
-                        Verified Only
-                      </span>
+                      <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 border-green-100">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
                     )}
                   </div>
                 </div>
                 {hasActiveFilters && (
-                  <Button 
+                    <Button 
                     variant="outline" 
+                    size="sm"
                     className="border-gray-300 text-gray-700 hover:bg-gray-50 group self-start sm:self-auto"
                     onClick={() => {
                       setFilters({})
                       setCurrentPage(1)
                     }}
                   >
-                    <X className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-200" />
-                    Clear Filters
+                    <X className="h-4 w-4 mr-1" />
+                    Clear
                   </Button>
                 )}
               </div>
@@ -586,62 +579,39 @@ function HomeContent({
 
             {/* Results Grid */}
             {loading ? (
-              <div className="text-center py-12 sm:py-20 bg-white rounded-xl sm:rounded-2xl border border-gray-200">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8">
-                  <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-indigo-600"></div>
+              <div className="text-center py-12 sm:py-20 bg-white rounded-xl border border-gray-200">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Loading Professionals</h3>
-                <p className="text-gray-600 max-w-lg mx-auto text-lg">
-                  Fetching the latest professionals from our database...
-                </p>
+                <p className="text-gray-600">Loading...</p>
               </div>
             ) : !isSupabaseConfigured() ? (
-              <div className="text-center py-20 bg-yellow-50 rounded-2xl border border-yellow-200">
-                <div className="w-32 h-32 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <span className="text-4xl">⚠️</span>
+              <div className="text-center py-16 bg-yellow-50 rounded-xl border border-yellow-200">
+                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⚠️</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Database Not Configured</h3>
-                <p className="text-gray-700 max-w-lg mx-auto text-lg mb-6">
-                  Please set up your Supabase environment variables to connect to the database.
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Database Not Configured</h3>
+                <p className="text-sm text-gray-700">
+                  Configure Supabase to connect to the database
                 </p>
-                <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 max-w-md mx-auto">
-                  <h4 className="font-semibold text-gray-900 mb-2">Setup Instructions:</h4>
-                  <ol className="text-left text-sm text-gray-700 space-y-2 list-decimal">
-                    <li>Go to <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700">supabase.com</a></li>
-                    <li>Create a new project or use your existing one</li>
-                    <li>Go to Settings → API</li>
-                    <li>Copy your Project URL and Anon Key</li>
-                    <li>Create a <code>.env.local</code> file in your project root</li>
-                    <li>Add these lines:
-                      <pre className="bg-gray-800 text-green-400 p-2 rounded text-xs overflow-x-auto">
-{`NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
-                    </li>
-                    <li>Restart your development server</li>
-                  </ol>
-                </div>
               </div>
             ) : professionals.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
-                <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <Search className="h-16 w-16 text-gray-400" />
+              <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-10 w-10 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">No professionals found</h3>
-                <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-                  Try adjusting your filters or search criteria to find more professionals. We&apos;re constantly adding new experts to our directory.
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No results found</h3>
+                <p className="text-gray-600 mb-6 text-sm">
+                  Try adjusting your filters
                 </p>
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                    onClick={() => setFilters({})}
-                  >
-                    Clear All Filters
-                  </Button>
-                  <div className="text-sm text-gray-500">
-                    Or <Link href="/add-profile" className="text-indigo-600 hover:text-indigo-700 font-medium">add your profile</Link> to be the first professional in this category
-                  </div>
-                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  onClick={() => setFilters({})}
+                >
+                  Clear Filters
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -770,10 +740,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500">
-                © {new Date().getFullYear()} KhojCity. All rights reserved.
-              </p>
-              <p className="text-xs text-gray-500">
-                Connecting professionals worldwide
+                © {new Date().getFullYear()} KhojCity
               </p>
             </div>
           </div>

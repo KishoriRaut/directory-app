@@ -111,13 +111,10 @@ export function PopularCategories() {
   return (
     <section id="categories" className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Browse by Category
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Categories
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Find trusted professionals in your area
-          </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 max-w-7xl mx-auto">

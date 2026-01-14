@@ -1,6 +1,6 @@
 'use client'
 
-import { Star, Quote } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 const testimonials = [
   {
@@ -72,13 +72,10 @@ export function Testimonials() {
   return (
     <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            What Our Customers Say
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Testimonials
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Real reviews from satisfied customers
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">

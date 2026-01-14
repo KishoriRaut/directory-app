@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import Image from 'next/image'
-import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
+import { isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Professional } from '@/types/directory'
 import { getInitials } from '@/lib/utils'
 
@@ -150,13 +150,10 @@ export function FeaturedProfessionals() {
   return (
     <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Featured Professionals
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Featured
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Top-rated professionals trusted by thousands
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -197,7 +194,7 @@ export function FeaturedProfessionals() {
                       }}
                     />
                     {/* Avatar Fallback */}
-                    <div className="avatar-fallback hidden absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <div className="avatar-fallback hidden absolute inset-0 items-center justify-center bg-gray-100">
                       <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                         <span className="text-2xl font-semibold text-white">
                           {getInitials(professional.name)}

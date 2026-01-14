@@ -9,7 +9,6 @@ import {
   X, 
   User, 
   LogOut, 
-  Search, 
   ChevronDown,
   Phone,
   Mail,
@@ -80,8 +79,8 @@ export function Header({ user, onSignOut }: HeaderProps) {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
+  // Navigation items - minimal design
   const navigationItems = [
-    { name: 'Browse', href: '/#results-section', icon: Search },
     { name: 'Categories', href: '/#categories', icon: Briefcase },
     { name: 'How It Works', href: '/how-it-works', icon: Shield },
   ]

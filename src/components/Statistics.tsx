@@ -72,17 +72,17 @@ export function Statistics() {
     {
       icon: Users,
       value: loading ? '...' : formatCount(verifiedCount || totalProfessionals),
-      label: verifiedCount > 0 ? 'Verified Professionals' : 'Total Professionals'
+      label: verifiedCount > 0 ? 'Verified' : 'Professionals'
     },
     {
       icon: Star,
       value: loading ? '...' : averageRating > 0 ? `${averageRating}/5` : 'N/A',
-      label: 'Average Rating'
+      label: 'Rating'
     },
     {
       icon: Shield,
       value: '100%',
-      label: 'Free to Use'
+      label: 'Free'
     }
   ]
 
