@@ -75,7 +75,7 @@ const steps = [
 
 const providerSteps = [
   {
-    icon: User,
+    icon: UserIcon,
     title: 'Create Your Profile',
     description: 'Build your professional profile with skills, experience, photos, and customer reviews.',
     details: [
