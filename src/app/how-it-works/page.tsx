@@ -24,49 +24,49 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 const steps = [
   {
     icon: Search,
-    title: 'Search & Get Matched',
-    description: 'Our AI-powered algorithm matches you with the best professionals based on your specific needs, location, and budget.',
+    title: 'Search',
+    description: 'Find professionals by category, location, and needs.',
     details: [
-      'Describe your service needs in 2 minutes',
-      'AI matching considers 50+ data points',
-      'Get matched with 3-5 pre-vetted pros',
-      'Compare profiles, reviews, and pricing'
+      'Search by service type',
+      'Filter by location',
+      'Compare profiles',
+      'Read reviews'
     ],
     forCustomer: true
   },
   {
     icon: Shield,
-    title: 'Verified Professionals',
-    description: 'Every professional undergoes rigorous background checks, license verification, and insurance validation.',
+    title: 'Verified',
+    description: 'All professionals are background-checked and verified.',
     details: [
-      'Background checks for all providers',
-      'License and certification verification',
-      'Insurance coverage validation',
-      'Identity verification and screening'
+      'Background checks',
+      'License verification',
+      'Insurance validation',
+      'Identity screening'
     ],
     forCustomer: true
   },
   {
     icon: MessageCircle,
-    title: 'Connect & Book',
-    description: 'Message professionals directly, discuss your project, get quotes, and book with confidence.',
+    title: 'Contact',
+    description: 'Message directly and get quotes.',
     details: [
-      'Secure in-app messaging',
-      'Receive detailed quotes within 24hrs',
-      'Compare pricing and availability',
-      'Book and pay securely through platform'
+      'Secure messaging',
+      'Get quotes',
+      'Compare pricing',
+      'Book service'
     ],
     forCustomer: true
   },
   {
     icon: Star,
-    title: 'Service & Review',
-    description: 'Get your service completed and share your experience to help the community.',
+    title: 'Review',
+    description: 'Complete service and share your experience.',
     details: [
-      'Professional completes the service',
-      'Payment released after completion',
-      'Rate and review your experience',
-      'Build trust in the community'
+      'Service completed',
+      'Payment processed',
+      'Rate experience',
+      'Help others'
     ],
     forCustomer: true
   }
@@ -75,46 +75,46 @@ const steps = [
 const providerSteps = [
   {
     icon: UserIcon,
-    title: 'Create Your Profile',
-    description: 'Build your professional profile with skills, experience, photos, and customer reviews.',
+    title: 'Create Profile',
+    description: 'Build your professional profile with skills and experience.',
     details: [
-      'Complete profile in 10 minutes',
-      'Showcase your skills and experience',
-      'Add photos of completed work',
-      'Set your availability and rates'
+      'Complete in 10 minutes',
+      'Add skills and photos',
+      'Set availability',
+      'Set rates'
     ]
   },
   {
     icon: Shield,
     title: 'Get Verified',
-    description: 'Complete our verification process to build trust and get more job opportunities.',
+    description: 'Complete verification to build trust.',
     details: [
-      'Background check and identity verification',
-      'License and certification upload',
-      'Insurance documentation',
-      'Receive verification badge'
+      'Background check',
+      'Upload licenses',
+      'Insurance docs',
+      'Get verified badge'
     ]
   },
   {
     icon: Search,
-    title: 'Receive Job Matches',
-    description: 'Get matched with relevant jobs in your area and send quotes to interested customers.',
+    title: 'Get Matches',
+    description: 'Receive job matches and send quotes.',
     details: [
-      'AI-powered job matching',
-      'Receive qualified leads daily',
-      'Send custom quotes',
-      'Track your success rate'
+      'AI job matching',
+      'Qualified leads',
+      'Send quotes',
+      'Track success'
     ]
   },
   {
     icon: CheckCircle,
-    title: 'Get Paid & Grow',
-    description: 'Complete jobs, receive secure payments, and build your reputation with reviews.',
+    title: 'Get Paid',
+    description: 'Complete jobs and build reputation.',
     details: [
-      'Secure payment processing',
-      'Build your review portfolio',
-      'Get repeat customers',
-      'Grow your business'
+      'Secure payments',
+      'Build reviews',
+      'Repeat customers',
+      'Grow business'
     ]
   }
 ]
@@ -125,66 +125,66 @@ const trustSignals = [
   {
     icon: Shield,
     title: 'Background Checked',
-    description: 'All professionals undergo comprehensive background checks'
+    description: 'All professionals verified'
   },
   {
     icon: CheckCircle,
     title: 'Licensed & Insured',
-    description: 'Verification of licenses and insurance coverage'
+    description: 'Verified credentials'
   },
   {
     icon: Star,
-    title: 'Reviewed by Real Customers',
-    description: 'Authentic reviews from verified service completions'
+    title: 'Real Reviews',
+    description: 'Authentic customer feedback'
   },
   {
     icon: Users,
-    title: 'Vetted Professionals',
-    description: 'Rigorous screening process for quality assurance'
+    title: 'Vetted',
+    description: 'Quality screening process'
   }
 ]
 
 const features = [
   {
     icon: Shield,
-    title: 'Verified Professionals',
-    description: 'All professionals are background-checked and verified for your safety.'
+    title: 'Verified',
+    description: 'Background-checked professionals'
   },
   {
     icon: Users,
     title: 'Large Network',
-    description: 'Access thousands of trusted professionals across various categories.'
+    description: 'Thousands of professionals'
   },
   {
     icon: Clock,
     title: 'Quick Response',
-    description: 'Get responses from professionals typically within 24 hours.'
+    description: '24-hour response time'
   },
   {
     icon: MapPin,
-    title: 'Local Services',
-    description: 'Find professionals in your local area for convenient service.'
+    title: 'Local',
+    description: 'Find nearby professionals'
   }
 ]
 
 const pricingInfo = {
   forCustomers: {
     title: 'Free for Customers',
-    description: 'Search, compare, and book professionals at no cost. Pay only for the services you receive.',
+    description: 'Search and book free. Pay only for services.',
     features: [
-      'Free search and browsing',
+      'Free search',
       'No booking fees',
-      'Secure payment processing',
-      'Service satisfaction guarantee'
+      'Secure payments',
+      'Satisfaction guarantee'
     ]
   },
   forProfessionals: {
-    title: 'Simple Pricing for Professionals',
-    description: 'Pay only when you get hired. No monthly fees or hidden charges.',
+    title: 'Simple Pricing',
+    description: 'Pay per lead. No monthly fees.',
     features: [
-      'Free profile creation',
-      'Pay per successful lead',
-      'No subscription fees',
+      'Free profile',
+      'Pay per lead',
+      'No subscriptions',
       'Cancel anytime'
     ]
   }
@@ -193,31 +193,31 @@ const pricingInfo = {
 const faqs = [
   {
     question: 'How do I know if a professional is trustworthy?',
-    answer: 'All professionals on Siscora Pro go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
+    answer: 'All professionals are verified through background checks, license verification, and insurance validation. Read authentic reviews from verified customers.'
   },
   {
     question: 'Is it really free for customers?',
-    answer: 'Yes, it\'s completely free to search for professionals, read reviews, and contact them. You only pay for the services you receive. We don\'t charge booking fees or service fees to customers.'
+    answer: 'Yes, search and contact professionals free. Pay only for services received. No booking fees.'
   },
   {
     question: 'How does the matching algorithm work?',
-    answer: 'Our AI-powered algorithm analyzes over 50 data points including your location, service requirements, budget, professional availability, skills, reviews, and past success rates to match you with the most suitable professionals for your specific needs.'
+    answer: 'Our algorithm analyzes location, service needs, budget, availability, skills, and reviews to match you with suitable professionals.'
   },
   {
     question: 'What if I\'m not satisfied with the service?',
-    answer: 'We offer a satisfaction guarantee. If you\'re not satisfied with the service, contact our support team within 7 days of completion. We\'ll help resolve the issue, and if necessary, arrange for rework or provide a refund through our secure payment system.'
+    answer: 'Contact support within 7 days. We\'ll help resolve issues or provide a refund if needed.'
   },
   {
     question: 'How do professionals get paid?',
-    answer: 'Payments are processed securely through our platform. When you book a service, the payment is held in escrow until the service is completed to your satisfaction. Once you approve the work, the payment is released to the professional minus our service fee.'
+    answer: 'Payments are held in escrow until service completion. Once approved, payment is released to the professional.'
   },
   {
     question: 'Can I cancel a booking?',
-    answer: 'Yes, you can cancel bookings according to the professional\'s cancellation policy. Most professionals offer free cancellation up to 24 hours before the scheduled service. If you cancel after the deadline, you may be charged a cancellation fee.'
+    answer: 'Yes, according to the professional\'s policy. Most offer free cancellation up to 24 hours before service.'
   },
   {
     question: 'Is there a mobile app available?',
-    answer: 'Yes! Our mobile app is available for both iOS and Android. You can search for professionals, manage bookings, send messages, and handle payments all from your phone. Download the app for on-the-go access to our entire network.'
+    answer: 'Yes, available for iOS and Android. Search, book, message, and pay from your phone.'
   }
 ]
 
@@ -353,11 +353,10 @@ export default function HowItWorksPage() {
               <p className="text-xs text-gray-500">by Siscora.com</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-              How Siscora Pro Works
+              How It Works
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8">
-              Get connected with trusted professionals in 4 simple steps. 
-              Our platform makes it easy to find, book, and review services.
+              Connect with professionals in 4 steps
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link href="/#results-section">
@@ -383,9 +382,6 @@ export default function HowItWorksPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Trusted by Millions
             </h2>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Join the largest network of verified professionals and satisfied customers
-            </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -436,11 +432,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              4 Simple Steps to Get Started
+              Get Started
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our streamlined process makes it easy to connect with the right professional for your needs
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -486,11 +479,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              For Service Professionals
+              For Professionals
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Grow your business with our platform designed specifically for service professionals
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -536,11 +526,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
+              Pricing
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              No hidden fees. No surprises. Just honest pricing for everyone.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -596,11 +583,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Siscora Pro?
+              Why Choose Us?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We&apos;re committed to making professional services accessible, safe, and reliable
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -626,11 +610,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Frequently Asked Questions
+              FAQ
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Got questions? We&apos;ve got answers. Here are some common questions about using Siscora Pro.
-            </p>
           </div>
 
           <div className="max-w-3xl mx-auto">
@@ -664,10 +645,10 @@ export default function HowItWorksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Take Siscora Pro Anywhere
+                Mobile App
               </h2>
               <p className="text-xl text-gray-300 mb-8">
-                Manage your professional services on the go with our mobile app. Search, book, and pay—all from your pocket.
+                Search, book, and pay on the go
               </p>
               
               <div className="space-y-4 mb-8">
@@ -748,9 +729,6 @@ export default function HowItWorksPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Ready to Get Started?
             </h2>
-            <p className="text-xl text-white/90 mb-8">
-              Join thousands of satisfied customers who found their perfect professional through Siscora Pro
-            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/#results-section">
                 <Button className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3">
@@ -759,7 +737,7 @@ export default function HowItWorksPage() {
                 </Button>
               </Link>
               <Link href="/add-profile">
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3">
+                <Button className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-3 font-semibold">
                   Add Your Profile
                 </Button>
               </Link>
@@ -773,11 +751,8 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Need Help? We're Here for You
+              Support
             </h2>
-            <p className="text-gray-600">
-              Our support team is available to help
-            </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">

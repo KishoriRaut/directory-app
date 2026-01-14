@@ -453,14 +453,14 @@ function HomeContent({
         <Header user={user} onSignOut={handleSignOut} />
 
       {/* Hero Section with Search - Full viewport height on desktop */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/30 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <HeroSearch onSearch={handleHeroSearch} />
         </div>
       </section>
 
       {/* Main Search Results Section - Immediately after hero for immediate value */}
-      <section id="results-section" className="py-12 sm:py-16 lg:py-20 bg-gray-50">
+      <section id="results-section" className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">

@@ -6,28 +6,28 @@ const steps = [
   {
     icon: Search,
     title: 'Search',
-    description: 'Find verified professionals'
+    description: 'Find professionals'
   },
   {
     icon: MessageCircle,
     title: 'Contact',
-    description: 'Discuss your project'
+    description: 'Message directly'
   },
   {
     icon: CheckCircle,
     title: 'Book',
-    description: 'Schedule securely'
+    description: 'Schedule service'
   },
   {
     icon: Star,
     title: 'Review',
-    description: 'Share your experience'
+    description: 'Rate experience'
   }
 ]
 
 export function HowItWorks() {
   return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
+    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-white via-indigo-50/30 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
