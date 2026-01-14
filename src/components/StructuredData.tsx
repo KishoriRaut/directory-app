@@ -1,5 +1,6 @@
 'use client'
 
+// Structured data for SEO - Siscora Pro
 import { Professional } from '@/types/directory'
 
 interface StructuredDataProps {

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { initPerformanceMonitor } from "@/lib/performance-monitor";
 import "./globals.css";
 
@@ -9,12 +9,12 @@ if (typeof window !== 'undefined') {
 }
 
 // Optimize font loading with next/font
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
   preload: true,
-  variable: "--font-plus-jakarta-sans",
+  variable: "--font-inter",
   fallback: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "system-ui", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 
@@ -93,7 +93,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
+    <html lang="en" className={inter.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <link rel="manifest" href="/manifest.json" />
@@ -126,12 +126,21 @@ export default function RootLayout({
                     document.body.removeAttribute(attr);
                   }
                 });
+                
+                // Unregister any stale service workers that might cause MIME type errors
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+                }
               })();
             `,
           }}
         />
       </head>
-      <body className={`antialiased ${plusJakartaSans.className}`} suppressHydrationWarning>
+      <body className={`antialiased ${inter.className}`} suppressHydrationWarning>
         {children}
       </body>
     </html>

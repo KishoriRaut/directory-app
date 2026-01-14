@@ -87,8 +87,8 @@ export function Statistics() {
   ]
 
   return (
-    <section className="py-12 sm:py-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-      <div className="container mx-auto px-6">
+    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">

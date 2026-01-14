@@ -452,16 +452,16 @@ function HomeContent({
         {/* Professional Header */}
         <Header user={user} onSignOut={handleSignOut} />
 
-      {/* Hero Section with Search */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-16">
-        <div className="container mx-auto px-4 sm:px-6">
+      {/* Hero Section with Search - Full viewport height on desktop */}
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <HeroSearch onSearch={handleHeroSearch} />
         </div>
       </section>
 
       {/* Main Search Results Section - Immediately after hero for immediate value */}
-      <section id="results-section" className="py-12 sm:py-16 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6">
+      <section id="results-section" className="py-12 sm:py-16 lg:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <aside className="lg:col-span-1 order-2 lg:order-1">
@@ -658,8 +658,8 @@ function HomeContent({
       <Testimonials />
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
-        <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-12">
+      <footer className="bg-gray-50 border-t border-gray-200 mt-16 lg:mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             {/* Company Info */}
             <div className="col-span-2 md:col-span-1">

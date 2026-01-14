@@ -170,7 +170,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="max-w-4xl mx-auto w-full">
       {/* Minimal Header - Industry Standard */}
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 text-center mb-8 leading-tight">
         Find Your Perfect Professional
