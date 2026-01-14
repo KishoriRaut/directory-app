@@ -94,7 +94,14 @@ export default function Home() {
 
         // CRITICAL: Only show visible profiles in search results (industry best practice)
         // Users can always see their own profile even if hidden (handled by RLS)
-        query = query.eq('is_visible', true)
+        // Check if we've already detected that the column doesn't exist
+        const isVisibleColumnExists = typeof window !== 'undefined' 
+          ? (window as any).__isVisibleColumnExists !== false
+          : true
+        
+        if (isVisibleColumnExists) {
+          query = query.eq('is_visible', true)
+        }
 
         // Apply filters
         if (filters.category && filters.category !== 'all') {
@@ -154,8 +161,80 @@ export default function Home() {
         const from = (currentPage - 1) * itemsPerPage
         const to = from + itemsPerPage - 1
         
-        const { data, error, count } = await query
+        let { data, error, count } = await query
           .range(from, to)
+
+        // If error is due to missing is_visible column, retry without the filter
+        // Check for PostgreSQL error code 42703 (undefined column) or error messages about missing column
+        const isMissingColumnError = error && (
+          error.code === '42703' || 
+          error.message?.includes('is_visible') || 
+          error.message?.includes('column') ||
+          error.message?.includes('does not exist') ||
+          (error as any)?.details?.includes('is_visible') ||
+          (error as any)?.hint?.includes('is_visible')
+        )
+        
+        if (isMissingColumnError) {
+          // Mark that the column doesn't exist so we don't try again
+          if (typeof window !== 'undefined') {
+            (window as any).__isVisibleColumnExists = false
+          }
+          
+          // Only log once per session to avoid console spam
+          if (!(window as any).__isVisibleColumnWarningShown) {
+            console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+            ;(window as any).__isVisibleColumnWarningShown = true
+          }
+          // Rebuild query without is_visible filter
+          query = supabase
+            .from('professionals')
+            .select(`
+              *,
+              services (
+                service_name
+              )
+            `, { count: 'exact' })
+          
+          // Reapply all filters except is_visible
+          if (filters.category && filters.category !== 'all') {
+            query = query.eq('category', filters.category)
+          }
+          if (filters.minRating) {
+            query = query.gte('rating', filters.minRating)
+          }
+          if (filters.verified) {
+            query = query.eq('verified', true)
+          }
+          if (filters.search || filters.profession) {
+            const searchTerm = filters.search || filters.profession || ''
+            query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
+          } else if (filters.location) {
+            query = query.ilike('location', `%${filters.location}%`)
+          }
+          
+          // Reapply sorting
+          switch (sortBy) {
+            case 'rating-desc':
+              query = query.order('verified', { ascending: false })
+                          .order('rating', { ascending: false })
+                          .order('created_at', { ascending: false })
+              break
+            case 'verified-first':
+              query = query.order('verified', { ascending: false })
+                          .order('rating', { ascending: false })
+                          .order('experience', { ascending: false })
+              break
+            default:
+              query = query.order('created_at', { ascending: false })
+          }
+          
+          // Retry query
+          const retryResult = await query.range(from, to)
+          data = retryResult.data
+          error = retryResult.error
+          count = retryResult.count
+        }
 
         if (error) {
           console.error('Error fetching professionals:', error)

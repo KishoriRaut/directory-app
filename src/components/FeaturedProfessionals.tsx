@@ -27,7 +27,12 @@ export function FeaturedProfessionals() {
         // 2. Newest first (latest professionals)
         // 3. Highest rating (tie-breaker)
         // CRITICAL: Only show visible profiles (industry best practice)
-        const { data, error } = await supabase
+        // Check if we've already detected that the column doesn't exist
+        const isVisibleColumnExists = typeof window !== 'undefined' 
+          ? (window as any).__isVisibleColumnExists !== false
+          : true
+        
+        let query = supabase
           .from('professionals')
           .select(`
             *,
@@ -35,11 +40,59 @@ export function FeaturedProfessionals() {
               service_name
             )
           `)
-          .eq('is_visible', true) // Only show visible profiles
+        
+        if (isVisibleColumnExists) {
+          query = query.eq('is_visible', true) // Only show visible profiles
+        }
+        
+        query = query
           .order('verified', { ascending: false }) // Verified professionals first
           .order('created_at', { ascending: false }) // Then newest first
           .order('rating', { ascending: false }) // Then by rating
           .limit(3)
+        
+        let { data, error } = await query
+
+        // If error is due to missing is_visible column, retry without the filter
+        // Check for PostgreSQL error code 42703 (undefined column) or error messages about missing column
+        const isMissingColumnError = error && (
+          error.code === '42703' || 
+          error.message?.includes('is_visible') || 
+          error.message?.includes('column') ||
+          error.message?.includes('does not exist') ||
+          (error as any)?.details?.includes('is_visible') ||
+          (error as any)?.hint?.includes('is_visible')
+        )
+        
+        if (isMissingColumnError) {
+          // Mark that the column doesn't exist so we don't try again
+          if (typeof window !== 'undefined') {
+            (window as any).__isVisibleColumnExists = false
+          }
+          
+          // Only log once per session to avoid console spam
+          if (!(window as any).__isVisibleColumnWarningShown) {
+            console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+            ;(window as any).__isVisibleColumnWarningShown = true
+          }
+          
+          // Retry without is_visible filter
+          const retryResult = await supabase
+            .from('professionals')
+            .select(`
+              *,
+              services (
+                service_name
+              )
+            `)
+            .order('verified', { ascending: false })
+            .order('created_at', { ascending: false })
+            .order('rating', { ascending: false })
+            .limit(3)
+          
+          data = retryResult.data
+          error = retryResult.error
+        }
 
         if (error) {
           console.error('Error fetching featured professionals:', error)

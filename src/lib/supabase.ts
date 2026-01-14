@@ -43,22 +43,18 @@ export const supabase = (() => {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        // Intercept fetch to handle refresh token errors gracefully
-        // We only log and handle refresh token errors, but don't modify responses
-        // This ensures sign-in and other auth flows work normally
+        // Intercept fetch to handle refresh token errors and missing column errors gracefully
         fetch: async (url, options = {}) => {
           try {
             const response = await fetch(url, options)
             
-            // Only check for refresh token errors on token endpoint failures
-            // We check the error message to ensure we don't interfere with sign-in
+            // Handle refresh token errors on auth endpoint
             if (!response.ok && url.toString().includes('/auth/v1/token')) {
               const clonedResponse = response.clone()
               try {
                 const errorData = await clonedResponse.json()
                 
                 // Only handle if error message specifically mentions refresh token
-                // Be very specific - only catch errors that explicitly mention "Refresh Token"
                 const errorDesc = errorData.error_description || ''
                 const isRefreshTokenError =
                   errorDesc.includes('Refresh Token') ||
@@ -70,14 +66,37 @@ export const supabase = (() => {
                 if (isRefreshTokenError && !isHandlingRefreshError) {
                   isHandlingRefreshError = true
                   // Clear invalid session silently in the background
-                  // Don't modify the response - let it through normally
                   clearInvalidSession().catch(() => {
                     // Ignore errors during cleanup
                   })
                 }
               } catch {
                 // If we can't parse the error, just return the original response
-                // This ensures sign-in and other auth flows work normally
+              }
+            }
+            
+            // Handle missing column errors (is_visible) - suppress console errors
+            // The application code will handle the fallback, we just suppress the noise
+            if (!response.ok && url.toString().includes('/rest/v1/professionals') && response.status === 400) {
+              const clonedResponse = response.clone()
+              try {
+                const errorData = await clonedResponse.json()
+                const errorMessage = errorData.message || errorData.error_description || ''
+                
+                // Check if it's a missing column error for is_visible
+                const isMissingColumnError = 
+                  errorMessage.includes('is_visible') ||
+                  errorMessage.includes('column') && errorMessage.includes('does not exist') ||
+                  errorData.code === '42703' ||
+                  (errorData.details && errorData.details.includes('is_visible'))
+                
+                if (isMissingColumnError) {
+                  // Suppress the error - application code will handle fallback
+                  // Return the response so the app can detect and retry
+                  return response
+                }
+              } catch {
+                // If we can't parse, return original response
               }
             }
             
