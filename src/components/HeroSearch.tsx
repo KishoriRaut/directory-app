@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, MapPin, Briefcase, Navigation, Loader2, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
+import { Search, MapPin, Navigation, Loader2 } from 'lucide-react'
 
 interface HeroSearchProps {
   onSearch: (query: string, category: string, location: string) => void
@@ -95,7 +94,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
           const state = data.principalSubdivision ? `, ${data.principalSubdivision}` : ''
           setLocation(`${cityName}${state}`)
           setIsGettingLocation(false)
-        } catch (error) {
+        } catch {
           // Fallback to coordinates if reverse geocoding fails
           const lat = position.coords.latitude.toFixed(4)
           const lon = position.coords.longitude.toFixed(4)
@@ -171,31 +170,31 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-      <div className="text-center mb-6 sm:mb-8">
-        {/* Minimal Header */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4 leading-tight">
-          Find Your Perfect Professional
-        </h1>
-      </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      {/* Minimal Header - Industry Standard */}
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 text-center mb-8 leading-tight">
+        Find Your Perfect Professional
+      </h1>
 
-      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 lg:p-10 border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          {/* Service Search */}
-          <div className="relative md:col-span-2 lg:col-span-2">
-            <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+      {/* Minimal Search Container - Single Row Layout (Airbnb/Zillow Pattern) */}
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+        {/* Search Inputs Row */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               placeholder="Search for professionals, services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="pl-10 sm:pl-12 h-12 sm:h-14 text-sm sm:text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg sm:rounded-xl"
+              className="pl-12 h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg"
             />
           </div>
 
-          {/* Location Input with Autocomplete */}
-          <div className="relative">
-            <MapPin className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 z-10" />
+          {/* Location Input */}
+          <div className="relative sm:w-56">
+            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
             <Input
               ref={locationInputRef}
               placeholder="Location"
@@ -203,7 +202,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
               onChange={(e) => handleLocationChange(e.target.value)}
               onKeyPress={handleKeyPress}
               onFocus={() => location.length > 0 && setShowSuggestions(true)}
-              className="pl-10 sm:pl-12 pr-16 sm:pr-20 h-12 sm:h-14 text-sm sm:text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg sm:rounded-xl"
+              className="pl-12 pr-12 h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg"
             />
             {/* Use My Location Button */}
             <Button
@@ -212,13 +211,13 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
               size="sm"
               onClick={handleUseMyLocation}
               disabled={isGettingLocation}
-              className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 h-8 sm:h-9 px-2 sm:px-3 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg touch-target"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 px-2 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded"
               title="Use my current location"
             >
               {isGettingLocation ? (
-                <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Navigation className="h-4 w-4" />
               )}
             </Button>
             
@@ -226,7 +225,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
             {showSuggestions && locationSuggestions.length > 0 && (
               <div
                 ref={suggestionsRef}
-                className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-48 overflow-y-auto"
+                className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-48 overflow-y-auto"
               >
                 {locationSuggestions.map((suggestion, index) => (
                   <button
@@ -242,46 +241,46 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
               </div>
             )}
           </div>
+
+          {/* Category Select */}
+          <div className="sm:w-48">
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="doctor">Doctors</SelectItem>
+                <SelectItem value="plumber">Plumbers</SelectItem>
+                <SelectItem value="electrician">Electricians</SelectItem>
+                <SelectItem value="engineer">Engineers</SelectItem>
+                <SelectItem value="designer">Designers</SelectItem>
+                <SelectItem value="consultant">Consultants</SelectItem>
+                <SelectItem value="therapist">Therapists</SelectItem>
+                <SelectItem value="lawyer">Lawyers</SelectItem>
+                <SelectItem value="accountant">Accountants</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {/* Category Filter Row */}
-        <div className="mb-4 sm:mb-6">
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-12 sm:h-14 text-sm sm:text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg sm:rounded-xl">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="doctor">Doctors</SelectItem>
-              <SelectItem value="plumber">Plumbers</SelectItem>
-              <SelectItem value="electrician">Electricians</SelectItem>
-              <SelectItem value="engineer">Engineers</SelectItem>
-              <SelectItem value="designer">Designers</SelectItem>
-              <SelectItem value="consultant">Consultants</SelectItem>
-              <SelectItem value="therapist">Therapists</SelectItem>
-              <SelectItem value="lawyer">Lawyers</SelectItem>
-              <SelectItem value="accountant">Accountants</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Search Button */}
+        {/* Big Search Button - Full Width on Next Line */}
         <Button 
           onClick={handleSearch}
-          className="w-full h-12 sm:h-14 text-sm sm:text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all touch-target"
+          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
         >
-          <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+          <Search className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
           Search
         </Button>
 
-        {/* Minimal Popular Searches */}
-        <div className="mt-4 sm:mt-6 flex flex-wrap justify-center gap-2">
-          {popularSearches.slice(0, 6).map((item) => (
+        {/* Popular Searches - Minimal Chips */}
+        <div className="flex flex-wrap justify-center gap-2 pt-4 mt-4 border-t border-gray-100">
+          {popularSearches.map((item) => (
             <button
               key={item.term}
               type="button"
               onClick={() => handlePopularSearch(item.term, item.category)}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors touch-target"
+              className="px-4 py-2 text-sm text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
             >
               {item.term}
             </button>
