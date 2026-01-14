@@ -50,12 +50,12 @@ export default function ProfilePage() {
         // Only return true if error has actual error properties (message, code, etc.)
         // Empty objects {} or objects without error properties should be treated as no error
         const hasError = (err: unknown): boolean => {
+          if (!err) return false
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const error = err as any
-          if (!err) return false
           // Check if it has any meaningful error properties
           // If none exist, it's not a real error (even if it's an object)
-          const hasErrorProperty = !!(err.message || err.code || err.details || err.hint || err.statusCode || err.status)
+          const hasErrorProperty = !!(error.message || error.code || error.details || error.hint || error.statusCode || error.status)
           return hasErrorProperty
         }
 
