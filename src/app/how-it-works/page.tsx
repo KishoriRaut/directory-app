@@ -19,8 +19,7 @@ import {
   Check,
   User as UserIcon
 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
-import type { User } from '@supabase/supabase-js'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 const steps = [
   {
@@ -120,12 +119,7 @@ const providerSteps = [
   }
 ]
 
-const stats = [
-  { number: '50,000+', label: 'Verified Professionals' },
-  { number: '1M+', label: 'Jobs Completed' },
-  { number: '4.8/5', label: 'Average Rating' },
-  { number: '500+', label: 'Cities Served' }
-]
+// Stats will be fetched dynamically
 
 const trustSignals = [
   {
@@ -228,8 +222,14 @@ const faqs = [
 ]
 
 export default function HowItWorksPage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ email?: string } | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [stats, setStats] = useState([
+    { number: '...', label: 'Verified Professionals' },
+    { number: '...', label: 'Average Rating' },
+    { number: '...', label: 'Total Professionals' },
+    { number: '100%', label: 'Free' }
+  ])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -261,6 +261,74 @@ export default function HowItWorksPage() {
     })
 
     return () => subscription.unsubscribe()
+  }, [])
+
+  // Fetch real statistics from database
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!isSupabaseConfigured()) {
+        return
+      }
+
+      try {
+        // Fetch total professionals
+        const { count: totalCount } = await supabase
+          .from('professionals')
+          .select('*', { count: 'exact', head: true })
+
+        // Fetch verified professionals
+        const { count: verifiedCount } = await supabase
+          .from('professionals')
+          .select('*', { count: 'exact', head: true })
+          .eq('verified', true)
+
+        // Fetch average rating
+        const { data: ratingData } = await supabase
+          .from('professionals')
+          .select('rating')
+          .not('rating', 'is', null)
+          .gt('rating', 0)
+
+        // Calculate average rating
+        let avgRating = 0
+        if (ratingData && ratingData.length > 0) {
+          const sum = ratingData.reduce((acc: number, prof: { rating: number }) => acc + (Number(prof.rating) || 0), 0)
+          avgRating = Math.round((sum / ratingData.length) * 10) / 10
+        }
+
+        // Format count helper
+        const formatCount = (count: number | null) => {
+          if (!count || count === 0) return '0+'
+          if (count >= 1000) {
+            return `${(count / 1000).toFixed(1)}K+`
+          }
+          return `${count}+`
+        }
+
+        setStats([
+          { 
+            number: formatCount(verifiedCount), 
+            label: 'Verified Professionals' 
+          },
+          { 
+            number: avgRating > 0 ? `${avgRating}/5` : 'N/A', 
+            label: 'Average Rating' 
+          },
+          { 
+            number: formatCount(totalCount), 
+            label: 'Total Professionals' 
+          },
+          { 
+            number: '100%', 
+            label: 'Free' 
+          }
+        ])
+      } catch (error) {
+        console.error('Error fetching statistics:', error)
+      }
+    }
+
+    fetchStats()
   }, [])
 
   const handleSignOut = async () => {
@@ -708,7 +776,7 @@ export default function HowItWorksPage() {
               Need Help? We're Here for You
             </h2>
             <p className="text-gray-600">
-              Our support team is available to help you with any questions or concerns
+              Our support team is available to help
             </p>
           </div>
           
