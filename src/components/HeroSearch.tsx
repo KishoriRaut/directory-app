@@ -243,9 +243,12 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
           </div>
 
           {/* Category Select */}
-          <div className="sm:w-48">
+          <div className="relative sm:w-56">
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg">
+              <SelectTrigger 
+                className="w-full text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg py-1 px-3"
+                style={{ height: '3rem', minHeight: '3rem' }}
+              >
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>

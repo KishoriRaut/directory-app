@@ -9,7 +9,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Professional } from '@/types/directory'
-import { getInitials } from '@/lib/utils'
+import { getDeterministicCount, getInitials } from '@/lib/utils'
 
 export function FeaturedProfessionals() {
   const [featuredProfessionals, setFeaturedProfessionals] = useState<Professional[]>([])
@@ -228,7 +228,7 @@ export function FeaturedProfessionals() {
                   <div className="flex items-center gap-1.5">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
-                    <span className="text-sm text-gray-500">({Math.floor(Math.random() * 100 + 10)})</span>
+                  <span className="text-sm text-gray-500">({getDeterministicCount(professional.id)})</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <MapPin className="h-3.5 w-3.5" />

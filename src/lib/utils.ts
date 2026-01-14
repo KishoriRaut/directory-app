@@ -20,3 +20,17 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2) // Limit to 2 characters for better display
 }
+
+/**
+ * Generate a deterministic pseudo-random number from a string seed.
+ * Useful for placeholder counts that must stay identical between SSR and CSR.
+ */
+export function getDeterministicCount(seed: string, min: number = 10, max: number = 99): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i)
+    hash |= 0 // Convert to 32bit integer
+  }
+  const range = Math.max(max - min + 1, 1)
+  return Math.abs(hash) % range + min
+}

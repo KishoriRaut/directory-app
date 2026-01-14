@@ -19,7 +19,8 @@ import {
   Users,
   Briefcase,
   Building,
-  ArrowRight
+  ArrowRight,
+  LayoutGrid
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
@@ -79,17 +80,6 @@ export function Header({ user, onSignOut }: HeaderProps) {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
-  // Navigation items - minimal design
-  const navigationItems = [
-    { name: 'Categories', href: '/#categories', icon: Briefcase },
-    { name: 'How It Works', href: '/how-it-works', icon: Shield },
-  ]
-
-  const dropdownItems = [
-    { name: 'My Profile', href: '/profile', icon: User },
-    { name: 'Settings', href: '/settings', icon: Settings },
-  ]
-
   return (
     <>
       {/* Main Header */}
@@ -108,16 +98,20 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
-                >
-                  <item.icon className="h-4 w-4 group-hover:text-indigo-600" />
-                  <span className="group-hover:text-indigo-600">{item.name}</span>
-                </Link>
-              ))}
+              <Link
+                href="/#categories"
+                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
+              >
+                <LayoutGrid className="h-4 w-4 group-hover:text-indigo-600" />
+                <span className="group-hover:text-indigo-600">Categories</span>
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
+              >
+                <Shield className="h-4 w-4 group-hover:text-indigo-600" />
+                <span className="group-hover:text-indigo-600">How It Works</span>
+              </Link>
             </nav>
 
             {/* Desktop Actions */}
@@ -156,17 +150,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
                           </p>
                           <p className="text-xs text-gray-500">{user.email}</p>
                         </div>
-                        {dropdownItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <item.icon className="h-4 w-4 text-gray-500" />
-                            <span>{item.name}</span>
-                          </Link>
-                        ))}
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <User className="h-4 w-4 text-gray-500" />
+                          <span>My Profile</span>
+                        </Link>
+                        <Link
+                          href="/settings"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <Settings className="h-4 w-4 text-gray-500" />
+                          <span>Settings</span>
+                        </Link>
                         <div className="border-t border-gray-100 mt-2 pt-2">
                           <button
                             onClick={onSignOut}
@@ -222,17 +221,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
             <div className="container mx-auto px-4 py-4">
               {/* Mobile Navigation */}
               <nav className="space-y-1">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
+                <Link
+                  href="/#categories"
+                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <LayoutGrid className="h-5 w-5" />
+                  <span>Categories</span>
+                </Link>
+                <Link
+                  href="/how-it-works"
+                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Shield className="h-5 w-5" />
+                  <span>How It Works</span>
+                </Link>
               </nav>
 
               {/* Mobile Actions */}
@@ -257,17 +261,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       </Button>
                     </Link>
                     <div className="space-y-1 mb-4">
-                      {dropdownItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <item.icon className="h-4 w-4 text-gray-500" />
-                          <span>{item.name}</span>
-                        </Link>
-                      ))}
+                      <Link
+                        href="/profile"
+                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <User className="h-4 w-4 text-gray-500" />
+                        <span>My Profile</span>
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Settings className="h-4 w-4 text-gray-500" />
+                        <span>Settings</span>
+                      </Link>
                     </div>
                     <button
                       onClick={() => {

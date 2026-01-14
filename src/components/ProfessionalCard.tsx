@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Star, MapPin, CheckCircle, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
-import { getInitials } from '@/lib/utils'
+import { getDeterministicCount, getInitials } from '@/lib/utils'
 
 interface ProfessionalCardProps {
   professional: Professional
@@ -15,6 +15,8 @@ interface ProfessionalCardProps {
 }
 
 export const ProfessionalCard = memo(function ProfessionalCard({ professional, onViewProfile }: ProfessionalCardProps) {
+
+  const reviewCount = getDeterministicCount(professional.id)
 
   return (
     <Card className="group relative overflow-hidden border-2 border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 bg-white rounded-lg shadow-sm">
@@ -87,7 +89,7 @@ export const ProfessionalCard = memo(function ProfessionalCard({ professional, o
           <div className="flex items-center gap-1.5">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
             <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
-            <span className="text-sm text-gray-500">({Math.floor(Math.random() * 100 + 10)})</span>
+            <span className="text-sm text-gray-500">({reviewCount})</span>
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-600">
             <MapPin className="h-3.5 w-3.5" />
