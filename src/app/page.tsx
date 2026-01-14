@@ -459,16 +459,7 @@ function HomeContent({
         </div>
       </section>
 
-      {/* Popular Categories */}
-      <PopularCategories />
-
-      {/* Statistics - Moved up for early trust building */}
-      <Statistics />
-
-      {/* Featured Professionals - Moved up for social proof */}
-      <FeaturedProfessionals />
-
-      {/* Main Search Results Section - Moved up before How It Works (industry standard) */}
+      {/* Main Search Results Section - Immediately after hero for immediate value */}
       <section id="results-section" className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-8 sm:mb-12">
@@ -680,6 +671,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
         </div>
       </div>
       </section>
+
+      {/* Popular Categories - Moved below results */}
+      <PopularCategories />
+
+      {/* Statistics - Trust signals below results */}
+      <Statistics />
+
+      {/* Featured Professionals - Social proof below results */}
+      <FeaturedProfessionals />
 
       {/* How It Works - Moved down after results (industry standard) */}
       <HowItWorks />
