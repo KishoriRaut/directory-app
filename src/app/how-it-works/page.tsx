@@ -20,6 +20,7 @@ import {
   User
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import type { User } from '@supabase/supabase-js'
 
 const steps = [
   {
@@ -243,9 +244,10 @@ export default function HowItWorksPage() {
           }
         }
         setUser(session?.user || null)
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle any unexpected errors
-        if (error?.message?.includes('Refresh Token') || error?.message?.includes('refresh_token')) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
           await supabase.auth.signOut()
         }
         setUser(null)
@@ -529,7 +531,7 @@ export default function HowItWorksPage() {
               Why Choose KhojCity?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We're committed to making professional services accessible, safe, and reliable
+              We&apos;re committed to making professional services accessible, safe, and reliable
             </p>
           </div>
 
@@ -559,7 +561,7 @@ export default function HowItWorksPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Got questions? We've got answers. Here are some common questions about using KhojCity.
+              Got questions? We&apos;ve got answers. Here are some common questions about using KhojCity.
             </p>
           </div>
 

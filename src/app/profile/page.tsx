@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,6 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  Calendar, 
   Star, 
   Briefcase, 
   Award, 
@@ -224,19 +223,22 @@ export default function MyProfilePage() {
           .maybeSingle()
         
         if (ilikeData) {
-          data = ilikeData
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data = ilikeData as any
           error = null
           console.log('Profile found via case-insensitive search')
           
           // Normalize the email in database for future queries (optional optimization)
           // This ensures future queries will work with exact match
-          if (ilikeData.email !== normalizedEmail) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const ilikeDataTyped = ilikeData as any
+          if (ilikeDataTyped.email !== normalizedEmail) {
             console.log('Normalizing email in database for future queries...')
-            await supabase
-              .from('professionals')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabase.from('professionals') as any)
               .update({ email: normalizedEmail })
-              .eq('id', ilikeData.id)
-              .then(({ error: updateError }) => {
+              .eq('id', ilikeDataTyped.id)
+              .then(({ error: updateError }: { error: unknown }) => {
                 if (updateError) {
                   console.warn('Could not normalize email:', updateError)
                 } else {
@@ -267,10 +269,12 @@ export default function MyProfilePage() {
               error = null
               
               // Normalize email in database
-              await supabase
-                .from('professionals')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const matchingProfileTyped = matchingProfile as any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (supabase.from('professionals') as any)
                 .update({ email: normalizedEmail })
-                .eq('id', matchingProfile.id)
+                .eq('id', matchingProfileTyped.id)
             }
           }
         }
@@ -299,15 +303,17 @@ export default function MyProfilePage() {
       }
 
       if (data) {
-        console.log('Profile found successfully:', { id: data.id, name: data.name, email: data.email })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dataTyped = data as any
+        console.log('Profile found successfully:', { id: dataTyped.id, name: dataTyped.name, email: dataTyped.email })
         
         // CRITICAL: Map database fields to TypeScript interface (image_url -> imageUrl, services array)
         // The database has 'image_url' (snake_case), we need 'imageUrl' (camelCase) for the interface
-        const imageUrl = (data as any).image_url || (data as any).imageUrl || undefined
+        const imageUrl = dataTyped.image_url || dataTyped.imageUrl || undefined
         
         console.log('Mapping image_url from database to imageUrl:', {
-          database_image_url: (data as any).image_url,
-          database_imageUrl: (data as any).imageUrl,
+          database_image_url: dataTyped.image_url,
+          database_imageUrl: dataTyped.imageUrl,
           mapped_imageUrl: imageUrl,
           imageUrlType: typeof imageUrl,
           imageUrlLength: imageUrl?.length
@@ -315,19 +321,21 @@ export default function MyProfilePage() {
         
         // Handle services - could be array or related table data
         let servicesArray: string[] = []
-        if (Array.isArray((data as any).services)) {
+        if (Array.isArray(dataTyped.services)) {
           // Check if services is array of objects (from join query) or strings
-          const firstItem = (data as any).services[0]
+          const firstItem = dataTyped.services[0]
           if (firstItem && typeof firstItem === 'object' && firstItem.service_name) {
             // Array of objects with service_name property (from join query)
-            servicesArray = (data as any).services.map((s: any) => s.service_name || s.name || String(s)).filter(Boolean)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            servicesArray = dataTyped.services.map((s: any) => s.service_name || s.name || String(s)).filter(Boolean)
           } else {
             // Array of strings
-            servicesArray = (data as any).services.filter((s: any) => s != null && s !== '')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            servicesArray = dataTyped.services.filter((s: any) => s != null && s !== '')
           }
-        } else if ((data as any).services) {
+        } else if (dataTyped.services) {
           // If it's a single service or other format
-          const singleService = (data as any).services
+          const singleService = dataTyped.services
           if (typeof singleService === 'object' && singleService.service_name) {
             servicesArray = [singleService.service_name]
           } else {
@@ -336,19 +344,19 @@ export default function MyProfilePage() {
         }
         
         console.log('Raw profile data:', { 
-          has_image_url: !!(data as any).image_url, 
-          has_imageUrl: !!(data as any).imageUrl,
-          image_url_value: (data as any).image_url,
-          imageUrl_value: (data as any).imageUrl,
-          services_type: typeof (data as any).services,
-          services_is_array: Array.isArray((data as any).services),
-          services_value: (data as any).services,
+          has_image_url: !!dataTyped.image_url, 
+          has_imageUrl: !!dataTyped.imageUrl,
+          image_url_value: dataTyped.image_url,
+          imageUrl_value: dataTyped.imageUrl,
+          services_type: typeof dataTyped.services,
+          services_is_array: Array.isArray(dataTyped.services),
+          services_value: dataTyped.services,
           allDataKeys: Object.keys(data || {}),
           fullData: data
         })
         
         // CRITICAL: If image_url is null but photo exists in bucket, we need to check storage
-        if (!(data as any).image_url && data.id) {
+        if (!dataTyped.image_url && dataTyped.id) {
           // Silently check if there's an orphaned image in storage for this user
           // This is a background check - don't spam console
           const { data: { session } } = await supabase.auth.getSession()
@@ -372,22 +380,22 @@ export default function MyProfilePage() {
         // Explicitly construct profileData to ensure imageUrl is set correctly
         // Use spread operator but override critical fields to ensure proper mapping
         const profileData: ProfileData = {
-          ...data,
+          ...dataTyped,
           // Explicitly override imageUrl to ensure it's set from image_url
           imageUrl: imageUrl || undefined,
           // Explicitly override services to ensure it's an array of strings
           services: servicesArray,
           // Map is_visible field (defaults to true if not set)
-          is_visible: (data as any).is_visible !== undefined ? (data as any).is_visible : true,
+          is_visible: dataTyped.is_visible !== undefined ? dataTyped.is_visible : true,
           // Ensure date fields are properly mapped
-          createdAt: (data as any).created_at || (data as any).createdAt || new Date().toISOString(),
-          updated_at: (data as any).updated_at || (data as any).updated_at
+          createdAt: dataTyped.created_at || dataTyped.createdAt || new Date().toISOString(),
+          updated_at: dataTyped.updated_at || dataTyped.updated_at
         } as ProfileData
         
         // Final safety check: if imageUrl is still not set, try one more time
-        if (!profileData.imageUrl && (data as any).image_url) {
+        if (!profileData.imageUrl && dataTyped.image_url) {
           console.warn('ImageUrl still not set after mapping, forcing assignment')
-          profileData.imageUrl = String((data as any).image_url)
+          profileData.imageUrl = String(dataTyped.image_url)
         }
         
         // Check if this is a minimal profile (needs completion) - industry best practice
@@ -566,18 +574,18 @@ export default function MyProfilePage() {
         }
         
         updatedProfile = data
-        profileId = data.id
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        profileId = (data as any).id
       } else {
         // Create new profile
         const { data, error } = await supabase
           .from('professionals')
-          // @ts-ignore
-          .insert({ 
+          .insert([{ 
             ...profileData, 
             email: normalizedEmail,
             rating: 0,
             verified: false
-          })
+          }])
           .select()
           .single()
 
@@ -596,7 +604,8 @@ export default function MyProfilePage() {
         })
         
         updatedProfile = data
-        profileId = data.id
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        profileId = (data as any).id
       }
 
       // Handle services separately (stored in services table)
@@ -616,7 +625,6 @@ export default function MyProfilePage() {
 
           const { error: servicesError } = await supabase
             .from('services')
-            // @ts-ignore
             .insert(servicesToInsert)
 
           if (servicesError) {
@@ -636,7 +644,7 @@ export default function MyProfilePage() {
             service_name
           )
         `)
-        .eq('id', profileId)
+        .eq('id', profileId as string)
         .single()
 
       if (fetchError) {

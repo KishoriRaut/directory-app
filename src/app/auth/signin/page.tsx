@@ -13,7 +13,6 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 function SignInPageContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -50,7 +49,7 @@ function SignInPageContent() {
         // Successful sign in - use full page reload to ensure auth state updates
         window.location.href = redirectTo
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -162,7 +161,7 @@ function SignInPageContent() {
             {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/auth/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
                   Sign up
                 </Link>

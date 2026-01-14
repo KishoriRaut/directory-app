@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +11,6 @@ import { Mail, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 export default function ForgotPasswordPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -31,16 +29,16 @@ export default function ForgotPasswordPage() {
     }
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })
 
-      if (error) {
-        setError(error.message)
+      if (resetError) {
+        setError(resetError.message)
       } else {
         setMessage('Password reset instructions have been sent to your email. Please check your inbox.')
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -83,7 +81,7 @@ export default function ForgotPasswordPage() {
             {/* Instructions */}
             <div className="text-center text-gray-600">
               <p className="mb-4">
-                Enter your email address and we'll send you instructions to reset your password.
+                Enter your email address and we&apos;ll send you instructions to reset your password.
               </p>
             </div>
 

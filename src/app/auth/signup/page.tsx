@@ -106,7 +106,7 @@ function SignUpPageContent() {
             const profileData = {
               name: formData.name,
               profession: '',
-              category: 'other',
+              category: 'other' as const,
               email: normalizedEmail,
               phone: '',
               location: '',
@@ -120,7 +120,7 @@ function SignUpPageContent() {
 
             const { error: profileError } = await supabase
               .from('professionals')
-              .insert(profileData)
+              .insert([profileData])
 
             if (profileError) {
               console.error('Error creating profile:', profileError)
@@ -148,7 +148,7 @@ function SignUpPageContent() {
           }, 2000)
         }
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)

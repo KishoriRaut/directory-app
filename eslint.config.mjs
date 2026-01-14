@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore generated PWA files (these are auto-generated and shouldn't be linted)
+    "public/sw.js",
+    "public/workbox-*.js",
+    "public/**/*.js",
+    "**/sw.js",
+    "**/workbox-*.js",
   ]),
 ]);
 

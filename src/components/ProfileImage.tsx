@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { memo, useState, useEffect, useMemo } from 'react'
 import { getInitials } from '@/lib/utils'
 
 interface ProfileImageProps {
@@ -20,7 +20,7 @@ const sizeClasses = {
   xl: 'w-40 h-40 sm:w-48 sm:h-48 text-4xl sm:text-5xl'
 }
 
-export function ProfileImage({ 
+export const ProfileImage = memo(function ProfileImage({ 
   imageUrl, 
   name, 
   size = 'md',
@@ -32,10 +32,19 @@ export function ProfileImage({
   const [imageBlobUrl, setImageBlobUrl] = useState<string | null>(null)
   const [imageError, setImageError] = useState(false)
 
+  // Memoize initials calculation
+  const initials = useMemo(() => getInitials(name), [name])
+
   // Create blob URL for better CORS handling if image URL is from Supabase
   useEffect(() => {
-    if (imageUrl && imageUrl.includes('supabase.co') && !imageBlobUrl) {
-      fetch(imageUrl, { mode: 'cors', credentials: 'omit' })
+    if (imageUrl && imageUrl.includes('supabase.co') && !imageBlobUrl && !imageError) {
+      const controller = new AbortController()
+      
+      fetch(imageUrl, { 
+        mode: 'cors', 
+        credentials: 'omit',
+        signal: controller.signal
+      })
         .then(async (response) => {
           if (response.ok) {
             const contentType = response.headers.get('content-type')
@@ -51,15 +60,15 @@ export function ProfileImage({
         .catch(() => {
           // Silently fail - will use direct URL as fallback
         })
-    }
 
-    // Cleanup blob URL on unmount
-    return () => {
-      if (imageBlobUrl) {
-        URL.revokeObjectURL(imageBlobUrl)
+      return () => {
+        controller.abort()
+        if (imageBlobUrl) {
+          URL.revokeObjectURL(imageBlobUrl)
+        }
       }
     }
-  }, [imageUrl, imageBlobUrl])
+  }, [imageUrl, imageBlobUrl, imageError])
 
   const imageUrlToUse = imageBlobUrl || imageUrl
   const hasImage = imageUrlToUse && typeof imageUrlToUse === 'string' && imageUrlToUse.trim() !== ''
@@ -83,7 +92,7 @@ export function ProfileImage({
         {/* Fallback Avatar - Shows if image fails to load */}
         <div className={`profile-avatar-fallback hidden absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center ${borderClass} z-10 ${fallbackClassName}`}>
           <span className={`font-bold text-white ${sizeClass.includes('text-') ? '' : 'text-2xl'}`}>
-            {getInitials(name)}
+            {initials}
           </span>
         </div>
         {verified && (
@@ -102,7 +111,7 @@ export function ProfileImage({
     <div className={`relative ${sizeClass} ${className}`}>
       <div className={`w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center ${borderClass} relative ${fallbackClassName}`}>
         <span className={`font-bold text-white ${sizeClass.includes('text-') ? '' : 'text-2xl'}`}>
-          {getInitials(name)}
+          {initials}
         </span>
         {verified && (
           <div className="absolute -bottom-1 -right-1 w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-20">
@@ -114,4 +123,10 @@ export function ProfileImage({
       </div>
     </div>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison for memo
+  return prevProps.imageUrl === nextProps.imageUrl &&
+         prevProps.name === nextProps.name &&
+         prevProps.size === nextProps.size &&
+         prevProps.verified === nextProps.verified
+})

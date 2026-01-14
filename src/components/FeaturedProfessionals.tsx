@@ -55,9 +55,9 @@ export function FeaturedProfessionals() {
           const retryResult = await query
           data = retryResult.data
           error = retryResult.error
-        }
-        
-        if (isMissingColumnError) {
+          
+          // If still error after retry, check if it's missing column error
+          if (error && isMissingColumnError(error)) {
           // Mark that the column doesn't exist so we don't try again
           if (typeof window !== 'undefined') {
             (window as any).__isVisibleColumnExists = false
@@ -69,22 +69,19 @@ export function FeaturedProfessionals() {
             ;(window as any).__isVisibleColumnWarningShown = true
           }
           
-          // Retry without is_visible filter
-          const retryResult = await supabase
-            .from('professionals')
-            .select(`
-              *,
-              services (
-                service_name
-              )
-            `)
-            .order('verified', { ascending: false })
-            .order('created_at', { ascending: false })
-            .order('rating', { ascending: false })
-            .limit(3)
-          
-          data = retryResult.data
-          error = retryResult.error
+            // Mark that the column doesn't exist so we don't try again
+            if (typeof window !== 'undefined') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (window as any).__isVisibleColumnExists = false
+            }
+            
+            // Only log once per session to avoid console spam
+            if (!(window as any).__isVisibleColumnWarningShown) {
+              console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ;(window as any).__isVisibleColumnWarningShown = true
+            }
+          }
         }
 
         if (error) {
@@ -185,6 +182,8 @@ export function FeaturedProfessionals() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.style.display = 'none'

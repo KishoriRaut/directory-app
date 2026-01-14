@@ -69,7 +69,7 @@ function ResetPasswordPageContent() {
         } else {
           setIsValidToken(true)
         }
-      } catch (error) {
+      } catch {
         setError('Invalid reset token. Please request a new password reset.')
       }
     }
@@ -106,21 +106,19 @@ function ResetPasswordPageContent() {
     }
 
     try {
-      const token = searchParams.get('token')
-      
-      const { error } = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         password: formData.password
       })
 
-      if (error) {
-        setError(error.message)
+      if (updateError) {
+        setError(updateError.message)
       } else {
         setMessage('Password reset successfully! You can now sign in with your new password.')
         setTimeout(() => {
           router.push('/auth/signin?message=Password reset successful! Please sign in.')
         }, 2000)
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -182,7 +180,7 @@ function ResetPasswordPageContent() {
                 {/* Instructions */}
                 <div className="text-center text-gray-600">
                   <p>
-                    Enter your new password below. Make sure it's strong and secure.
+                    Enter your new password below. Make sure it&apos;s strong and secure.
                   </p>
                 </div>
 

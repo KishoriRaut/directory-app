@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Professional } from '@/types/directory'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -13,7 +14,7 @@ interface ProfessionalCardProps {
   onViewProfile: (id: string) => void
 }
 
-export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCardProps) {
+export const ProfessionalCard = memo(function ProfessionalCard({ professional, onViewProfile }: ProfessionalCardProps) {
 
   return (
     <Card className="group relative overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 bg-white rounded-lg">
@@ -37,7 +38,8 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={false}
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.style.display = 'none'
@@ -109,4 +111,11 @@ export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCa
       </CardContent>
     </Card>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison for memo - only re-render if professional data changes
+  return prevProps.professional.id === nextProps.professional.id &&
+         prevProps.professional.name === nextProps.professional.name &&
+         prevProps.professional.imageUrl === nextProps.professional.imageUrl &&
+         prevProps.professional.rating === nextProps.professional.rating &&
+         prevProps.professional.verified === nextProps.professional.verified
+})

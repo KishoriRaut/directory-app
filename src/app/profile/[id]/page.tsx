@@ -49,7 +49,9 @@ export default function ProfilePage() {
         // Helper function to check if error is meaningful
         // Only return true if error has actual error properties (message, code, etc.)
         // Empty objects {} or objects without error properties should be treated as no error
-        const hasError = (err: any): boolean => {
+        const hasError = (err: unknown): boolean => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const error = err as any
           if (!err) return false
           // Check if it has any meaningful error properties
           // If none exist, it's not a real error (even if it's an object)
@@ -83,7 +85,10 @@ export default function ProfilePage() {
               .eq('professional_id', idString)
             
             if (data) {
-              (data as any).services = servicesData?.map((s: any) => s.service_name) || []
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const dataTyped = data as any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              dataTyped.services = servicesData?.map((s: any) => s.service_name) || []
             }
             error = null // Clear error since we successfully fetched
           } else if (professionalError) {
@@ -201,6 +206,7 @@ export default function ProfilePage() {
           experience: professionalData.experience,
           rating: professionalData.rating,
           description: professionalData.description,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           services: professionalData.services?.map((s: any) => s.service_name) || [],
           availability: professionalData.availability,
           imageUrl: imageUrl,
@@ -274,7 +280,7 @@ export default function ProfilePage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-2">Profile Not Found</h1>
-            <p className="text-muted-foreground mb-4">The professional profile you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mb-4">The professional profile you&apos;re looking for doesn&apos;t exist.</p>
             <Link href="/">
               <Button>Browse Directory</Button>
             </Link>

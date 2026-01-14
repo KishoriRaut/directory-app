@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { Professional } from '@/types/directory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, X, User, Briefcase, Mail, Phone, MapPin, Clock, FileText, Sparkles } from 'lucide-react'
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { ImageUpload } from '@/components/ImageUpload'
 import { Header } from '@/components/Header'
@@ -49,7 +49,7 @@ export default function AddProfilePage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<SupabaseUser | null>(null)
 
   // Check authentication and if profile exists, redirect to profile page
   useEffect(() => {
@@ -99,9 +99,10 @@ export default function AddProfilePage() {
           // Pre-fill email from authenticated user
           setFormData(prev => ({ ...prev, email: session.user.email || '' }))
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle any unexpected errors
-        if (error?.message?.includes('Refresh Token') || error?.message?.includes('refresh_token')) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
           await supabase.auth.signOut()
         }
         router.push('/auth/signin?redirect=/add-profile')
@@ -178,13 +179,11 @@ export default function AddProfilePage() {
         image_url: formData.imageUrl || null,
         verified: false
       }
-      const { data: professionalData, error: professionalError } = await (supabase
+      const { data: professionalData, error: professionalError } = await supabase
         .from('professionals')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .insert(insertData as any)
+        .insert([insertData])
         .select()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .single() as any) as { data: { id: string } | null; error: Error | null }
+        .single()
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
@@ -201,8 +200,7 @@ export default function AddProfilePage() {
 
         const { error: servicesError } = await supabase
           .from('services')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .insert(servicesToInsert as any)
+          .insert(servicesToInsert)
 
         if (servicesError) {
           console.error('Error adding services:', servicesError)

@@ -220,6 +220,42 @@ export const isMissingColumnError = (error: unknown): boolean => {
   )
 }
 
+// Simple in-memory cache for queries (5 minute TTL)
+const queryCache = new Map<string, { data: any; timestamp: number }>()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * Get cached query result if available and not expired
+ */
+function getCachedQuery(key: string): any | null {
+  const cached = queryCache.get(key)
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data
+  }
+  if (cached) {
+    queryCache.delete(key) // Remove expired cache
+  }
+  return null
+}
+
+/**
+ * Set query result in cache
+ */
+function setCachedQuery(key: string, data: any): void {
+  queryCache.set(key, { data, timestamp: Date.now() })
+  
+  // Clean up old cache entries if cache gets too large
+  if (queryCache.size > 100) {
+    const entries = Array.from(queryCache.entries())
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp)
+    // Remove oldest 20% of entries
+    const toRemove = Math.floor(entries.length * 0.2)
+    for (let i = 0; i < toRemove; i++) {
+      queryCache.delete(entries[i][0])
+    }
+  }
+}
+
 /**
  * Build base professionals query with services join
  * This is a common pattern used across multiple components
