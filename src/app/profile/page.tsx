@@ -578,7 +578,7 @@ export default function MyProfilePage() {
         profileId = (data as any).id
       } else {
         // Create new profile
-        const { data, error } = await supabase
+        const result = await supabase
           .from('professionals')
           .insert([{ 
             ...profileData, 
@@ -589,6 +589,9 @@ export default function MyProfilePage() {
           .select()
           .single()
 
+        const data = result.data as any
+        const error = result.error
+
         if (error) {
           console.error('Error creating profile:', error)
           setSavingStatus('error')
@@ -598,14 +601,13 @@ export default function MyProfilePage() {
         
         console.log('✅ Profile created successfully. Response:', {
           data: data,
-          image_url_in_response: (data as any)?.image_url,
-          hasImage_url: !!(data as any)?.image_url,
+          image_url_in_response: data?.image_url,
+          hasImage_url: !!data?.image_url,
           allKeys: Object.keys(data || {})
         })
         
         updatedProfile = data
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        profileId = (data as any).id
+        profileId = data?.id
       }
 
       // Handle services separately (stored in services table)

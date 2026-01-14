@@ -179,11 +179,14 @@ export default function AddProfilePage() {
         image_url: formData.imageUrl || null,
         verified: false
       }
-      const { data: professionalData, error: professionalError } = await supabase
+      const result = await supabase
         .from('professionals')
         .insert([insertData] as any)
         .select()
         .single()
+
+      const professionalData = result.data as { id: string } | null
+      const professionalError = result.error
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
