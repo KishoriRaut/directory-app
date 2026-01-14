@@ -26,6 +26,7 @@ export function FeaturedProfessionals() {
         // 1. Verified status (priority - verified first)
         // 2. Newest first (latest professionals)
         // 3. Highest rating (tie-breaker)
+        // CRITICAL: Only show visible profiles (industry best practice)
         const { data, error } = await supabase
           .from('professionals')
           .select(`
@@ -34,6 +35,7 @@ export function FeaturedProfessionals() {
               service_name
             )
           `)
+          .eq('is_visible', true) // Only show visible profiles
           .order('verified', { ascending: false }) // Verified professionals first
           .order('created_at', { ascending: false }) // Then newest first
           .order('rating', { ascending: false }) // Then by rating

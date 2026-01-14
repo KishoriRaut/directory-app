@@ -92,6 +92,10 @@ export default function Home() {
             )
           `, { count: 'exact' }) // Get total count for pagination
 
+        // CRITICAL: Only show visible profiles in search results (industry best practice)
+        // Users can always see their own profile even if hidden (handled by RLS)
+        query = query.eq('is_visible', true)
+
         // Apply filters
         if (filters.category && filters.category !== 'all') {
           query = query.eq('category', filters.category)

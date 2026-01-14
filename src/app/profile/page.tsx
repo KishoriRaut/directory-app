@@ -58,6 +58,7 @@ interface ProfileData {
   availability: string
   imageUrl?: string
   verified: boolean
+  is_visible?: boolean // Controls profile visibility in search results
   createdAt: string
   website?: string
   socialLinks?: {
@@ -148,14 +149,10 @@ export default function MyProfilePage() {
         ...profile,
         imageUrl: imageUrlToUse
       }
-      console.log('Syncing formData with profile:', {
-        profileImageUrl: profile.imageUrl,
-        profileImage_url: (profile as any).image_url,
-        syncedImageUrl: syncedFormData.imageUrl,
-        profileKeys: Object.keys(profile),
-        profileHasImageUrl: 'imageUrl' in profile,
-        profileHasImage_url: 'image_url' in profile
-      })
+      // Reduced logging - only log when there's a change or issue
+      if (profile.imageUrl !== syncedFormData.imageUrl) {
+        console.log('Syncing formData with profile - imageUrl updated')
+      }
       setFormData(syncedFormData)
     }
   }, [profile, editing])
@@ -352,9 +349,24 @@ export default function MyProfilePage() {
         
         // CRITICAL: If image_url is null but photo exists in bucket, we need to check storage
         if (!(data as any).image_url && data.id) {
-          console.warn('⚠️ image_url is null in database. Checking if photo exists in storage bucket...')
-          // Note: We can't automatically link it, user needs to re-upload or we need to query storage
-          // For now, we'll just log a warning
+          // Silently check if there's an orphaned image in storage for this user
+          // This is a background check - don't spam console
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.user?.id) {
+            // Check if there are any images in storage for this user
+            const { data: files } = await supabase.storage
+              .from('my-photo')
+              .list('profiles', {
+                limit: 10,
+                search: session.user.id
+              })
+            
+            // If we find files but no image_url, log a helpful message
+            if (files && files.length > 0 && files[0]) {
+              // Found orphaned image - user can re-upload or we could auto-link it
+              // For now, just note it exists but don't spam console
+            }
+          }
         }
         
         // Explicitly construct profileData to ensure imageUrl is set correctly
@@ -365,6 +377,8 @@ export default function MyProfilePage() {
           imageUrl: imageUrl || undefined,
           // Explicitly override services to ensure it's an array of strings
           services: servicesArray,
+          // Map is_visible field (defaults to true if not set)
+          is_visible: (data as any).is_visible !== undefined ? (data as any).is_visible : true,
           // Ensure date fields are properly mapped
           createdAt: (data as any).created_at || (data as any).createdAt || new Date().toISOString(),
           updated_at: (data as any).updated_at || (data as any).updated_at
@@ -486,8 +500,9 @@ export default function MyProfilePage() {
         experience: formData.experience || 0,
         description: formData.description || '',
         availability: formData.availability || '',
-        image_url: imageUrlToSave, // Use the determined image URL
-        website: formData.website,
+        image_url: imageUrlToSave || null, // Use the determined image URL - explicitly set to null if empty
+        website: formData.website || null,
+        is_visible: formData.is_visible !== undefined ? formData.is_visible : true, // Default to visible
         updated_at: new Date().toISOString()
       }
       
@@ -699,6 +714,13 @@ export default function MyProfilePage() {
         imageUrl: mappedImageUrl || undefined,
         services: servicesArray,
         website: finalProfileData?.website || updatedProfile?.website || profile?.website || formData.website,
+        is_visible: (finalProfileData as any)?.is_visible !== undefined 
+          ? (finalProfileData as any).is_visible 
+          : (updatedProfile as any)?.is_visible !== undefined 
+            ? (updatedProfile as any).is_visible 
+            : profile?.is_visible !== undefined 
+              ? profile.is_visible 
+              : true, // Default to visible
         stats: profile?.stats || updatedProfile?.stats || {
           jobsCompleted: 0,
           repeatClients: 0,
@@ -950,17 +972,14 @@ export default function MyProfilePage() {
                                            (profile as any).imageUrl ||
                                            undefined
                             
-        console.log('Displaying profile image:', {
-          hasImageUrl: !!profile.imageUrl,
-          hasImage_url: !!(profile as any).image_url,
-          imageUrl: imageUrl,
-          imageUrlType: typeof imageUrl,
-          imageUrlLength: imageUrl?.length,
-          profileKeys: Object.keys(profile),
-          profileImageUrl: profile.imageUrl,
-          profileImage_url: (profile as any).image_url,
-          fullProfile: profile
-        })
+        // Reduced logging - only log if there's actually an issue
+        if (!imageUrl) {
+          // Only log once, not on every render
+          if (!(window as any).__imageWarningLogged) {
+            console.log('ℹ️ No profile image found. Upload an image in edit mode and click "Save Changes" to add one.')
+            ;(window as any).__imageWarningLogged = true
+          }
+        }
                             
                             if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
                               return (
@@ -984,10 +1003,7 @@ export default function MyProfilePage() {
                                 />
                               )
                             } else {
-                              console.warn('No valid imageUrl found for profile:', {
-                                profileImageUrl: profile.imageUrl,
-                                profileImage_url: (profile as any).image_url
-                              })
+                              // No image - show default avatar (no console spam)
                               return <User className="h-12 w-12 text-white" />
                             }
                           })()}
@@ -1217,6 +1233,99 @@ export default function MyProfilePage() {
                 </CardContent>
               </Card>
 
+              {/* Profile Visibility - Only show if profile exists */}
+              {profile && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <EyeOff className="h-5 w-5" />
+                      Profile Visibility
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Show in Search Results</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {profile.is_visible !== false 
+                            ? 'Your profile is visible to everyone' 
+                            : 'Your profile is hidden from search results'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {profile.is_visible !== false ? (
+                          <Eye className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <EyeOff className="h-5 w-5 text-gray-400" />
+                        )}
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={async () => {
+                        const newVisibility = !(profile.is_visible !== false)
+                        try {
+                          // Use email-based update for better compatibility
+                          const normalizedEmail = (profile.email || user?.email || '').toLowerCase().trim()
+                          const { error } = await supabase
+                            .from('professionals')
+                            // @ts-expect-error - is_visible might not exist in type yet
+                            .update({ is_visible: newVisibility })
+                            .eq('email', normalizedEmail)
+                          
+                          if (error) {
+                            console.error('Error updating visibility:', error)
+                            // Check if error is due to missing column
+                            if (error.message?.includes('column') && error.message?.includes('is_visible')) {
+                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
+                            } else if (error.code === '42703' || error.message?.includes('does not exist')) {
+                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
+                            } else {
+                              alert(`Failed to update profile visibility: ${error.message || 'Unknown error'}`)
+                            }
+                            return
+                          }
+                          
+                          // Update local state
+                          setProfile({ ...profile, is_visible: newVisibility })
+                          setFormData({ ...formData, is_visible: newVisibility })
+                          
+                          // Show success message
+                          setSavingStatus('success')
+                          setTimeout(() => setSavingStatus('idle'), 2000)
+                        } catch (error: any) {
+                          console.error('Error updating visibility:', error)
+                          if (error?.message?.includes('column') || error?.message?.includes('does not exist') || error?.code === '42703') {
+                            alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
+                          } else {
+                            alert(`Failed to update profile visibility: ${error?.message || 'Unknown error'}`)
+                          }
+                        }
+                      }}
+                    >
+                      {profile.is_visible !== false ? (
+                        <>
+                          <EyeOff className="h-4 w-4 mr-2" />
+                          Hide Profile
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Show Profile
+                        </>
+                      )}
+                    </Button>
+                    {profile.is_visible === false && (
+                      <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                        ⚠️ Your profile is hidden. Clients won't be able to find you in search results.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Quick Actions */}
               <Card>
                 <CardHeader>
@@ -1332,16 +1441,11 @@ export default function MyProfilePage() {
                                        (formData as any)?.image_url ||
                                        undefined
                         
-                        console.log('🖼️ ImageUpload currentImage determination:', {
-                          formDataImageUrl: formData.imageUrl,
-                          profileImageUrl: profile?.imageUrl,
-                          profileImage_url: (profile as any)?.image_url,
-                          formDataImage_url: (formData as any)?.image_url,
-                          finalImageUrl: imageUrl,
-                          hasImageUrl: !!imageUrl,
-                          imageUrlType: typeof imageUrl,
-                          imageUrlLength: imageUrl?.length
-                        })
+                        // Reduced logging - only log when image changes
+                        if (imageUrl && !(window as any).__imageUrlLogged) {
+                          console.log('🖼️ Image found for profile')
+                          ;(window as any).__imageUrlLogged = true
+                        }
                         
                         return imageUrl || undefined // Ensure it's undefined, not empty string
                       })()}

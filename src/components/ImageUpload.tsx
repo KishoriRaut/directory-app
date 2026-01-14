@@ -16,7 +16,10 @@ interface ImageUploadProps {
 export function ImageUpload({ currentImage, onImageChange, className }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(currentImage || null)
+  const [imageError, setImageError] = useState<string | null>(null)
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const blobUrlRef = useRef<string | null>(null)
 
   // Update preview when currentImage prop changes (industry best practice)
   useEffect(() => {
@@ -32,29 +35,88 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
     // This ensures the preview is in sync with the prop
     if (currentImage && currentImage.trim() !== '') {
       setPreview(currentImage)
+      setImageError(null)
       console.log('✅ Preview updated to:', currentImage)
       
-      // Verify the image URL is accessible (test with actual GET request)
-      if (currentImage.startsWith('http')) {
-        // Test if image is actually accessible
-        const testImg = new Image()
-        testImg.onload = () => {
-          console.log('✅ Image URL verified - image loads successfully')
+      // If it's a Supabase URL, try to load via fetch and create blob URL as fallback
+      if (currentImage.startsWith('http') && currentImage.includes('supabase.co')) {
+        // Cleanup previous blob URL
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current)
+          blobUrlRef.current = null
         }
-        testImg.onerror = (err) => {
-          console.warn('⚠️ Image URL verification failed:', err)
-          console.warn('This might indicate the bucket is not public or CORS issue')
+        
+        // Try to fetch and create blob URL for CORS issues
+        fetch(currentImage, { mode: 'cors', credentials: 'omit' })
+          .then(async (response) => {
+            if (!response.ok) {
+              const text = await response.text()
+              try {
+                const json = JSON.parse(text)
+                console.error('❌ Supabase returned error:', json)
+                setImageError(json.message || json.error || 'Failed to load image')
+              } catch {
+                setImageError(`Failed to load image (${response.status})`)
+              }
+              return
+            }
+            
+            const contentType = response.headers.get('content-type')
+            if (contentType && contentType.startsWith('application/json')) {
+              // Response is JSON, not an image - likely an error
+              const json = await response.json()
+              console.error('❌ Supabase returned JSON error:', json)
+              setImageError(json.message || json.error || 'Image not accessible')
+              return
+            }
+            
+            // It's actually an image, create blob URL
+            const blob = await response.blob()
+            if (blob.type.startsWith('image/')) {
+              const url = URL.createObjectURL(blob)
+              blobUrlRef.current = url
+              setBlobUrl(url)
+              console.log('✅ Created blob URL for image')
+            } else {
+              console.error('❌ Response is not an image, type:', blob.type)
+              setImageError('Invalid image response')
+            }
+          })
+          .catch((error) => {
+            console.error('❌ Failed to fetch image:', error)
+            setImageError('Failed to load image')
+          })
+      } else {
+        // Clear blob URL if not a Supabase URL
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current)
+          blobUrlRef.current = null
+          setBlobUrl(null)
         }
-        testImg.src = currentImage
       }
     } else {
       // Only clear if we had a preview before (don't clear on initial mount if both are null)
       if (preview) {
         console.log('Clearing preview (currentImage is empty)')
         setPreview(null)
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current)
+          blobUrlRef.current = null
+        }
+        setBlobUrl(null)
+        setImageError(null)
       }
     }
-  }, [currentImage]) // Only depend on currentImage, not preview
+    
+    // Cleanup on unmount or when currentImage changes
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+        blobUrlRef.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentImage]) // Only depend on currentImage, not preview (to avoid loops)
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -120,10 +182,6 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
     }
   }
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
-  }
-
   return (
     <Card className={`border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors ${className}`}>
       <CardContent className="p-6">
@@ -132,70 +190,62 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
           <div className="relative mx-auto w-32 h-32">
             {preview && preview.trim() !== '' ? (
               <div className="relative w-full h-full">
-                <img
-                  src={preview}
-                  alt="Profile preview"
-                  className="w-full h-full object-cover rounded-full border-4 border-white shadow-lg"
-                  onLoad={() => {
-                    console.log('✅ Image loaded successfully in preview:', preview)
-                  }}
-                  onError={(e) => {
-                    const img = e.target as HTMLImageElement
-                    const errorDetails = {
-                      url: preview,
-                      imgSrc: img.src,
-                      naturalWidth: img.naturalWidth,
-                      naturalHeight: img.naturalHeight,
-                      complete: img.complete,
-                      crossOrigin: img.crossOrigin,
-                      referrerPolicy: img.referrerPolicy
-                    }
-                    
-                    console.error('❌ Image failed to load in preview:', preview)
-                    console.error('Error details:', errorDetails)
-                    
-                    // Try to fetch the image directly to get more error info
-                    if (preview) {
-                      fetch(preview, { method: 'GET', mode: 'cors' })
-                        .then(response => {
-                          console.error('Fetch response status:', response.status, response.statusText)
-                          console.error('Fetch response headers:', Object.fromEntries(response.headers.entries()))
-                          if (!response.ok) {
-                            console.error('❌ Fetch failed with status:', response.status)
-                            return response.text().then(text => {
-                              console.error('Response body:', text.substring(0, 200))
-                            })
-                          }
-                          return response.blob()
-                        })
-                        .then(blob => {
-                          if (blob) {
-                            console.log('✅ Fetch succeeded, blob size:', blob.size, 'type:', blob.type)
-                            console.error('⚠️ Image loads via fetch but not in <img> tag - likely CORS or referrer issue')
-                          }
-                        })
-                        .catch(fetchError => {
-                          console.error('❌ Fetch also failed:', fetchError)
-                          console.error('This confirms the URL is not accessible')
-                        })
-                    }
-                    
-                    // CRITICAL: Check if this is a Supabase Storage issue
-                    if (preview?.includes('supabase.co')) {
-                      console.error('🔍 DIAGNOSIS: Supabase Storage image load failure')
-                      console.error('')
-                      console.error('IMMEDIATE ACTION REQUIRED:')
-                      console.error('1. Open this URL in a new browser tab:')
-                      console.error('   ' + preview)
-                      console.error('2. If it loads in browser → CORS/component issue')
-                      console.error('3. If it does NOT load → Bucket not public or policy issue')
-                      console.error('')
-                      console.error('Check Supabase Dashboard:')
-                      console.error('- Storage → Buckets → my-photo → Settings → Public bucket = ON')
-                      console.error('- Storage → Policies → Verify "Public Access - my-photo" exists')
-                    }
-                  }}
-                />
+                {blobUrl ? (
+                  // Use blob URL if available (workaround for CORS issues)
+                  <img
+                    src={blobUrl}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover rounded-full border-4 border-white shadow-lg"
+                    onLoad={() => {
+                      console.log('✅ Image loaded successfully via blob URL')
+                      setImageError(null)
+                    }}
+                    onError={() => {
+                      console.error('❌ Image failed to load even via blob URL')
+                      setImageError('Failed to display image')
+                    }}
+                  />
+                ) : (
+                  // Try direct URL first
+                  <img
+                    src={preview}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover rounded-full border-4 border-white shadow-lg"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    onLoad={() => {
+                      console.log('✅ Image loaded successfully in preview:', preview)
+                      setImageError(null)
+                    }}
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement
+                      console.error('❌ Image failed to load in preview:', preview)
+                      console.error('Error details:', {
+                        url: preview,
+                        imgSrc: img.src,
+                        naturalWidth: img.naturalWidth,
+                        naturalHeight: img.naturalHeight,
+                        complete: img.complete,
+                        crossOrigin: img.crossOrigin,
+                        referrerPolicy: img.referrerPolicy
+                      })
+                      
+                      // If blob URL creation is in progress, wait for it
+                      // Otherwise, show error
+                      if (!blobUrl && preview?.includes('supabase.co')) {
+                        setImageError('Loading image...')
+                      }
+                    }}
+                  />
+                )}
+                {imageError && (
+                  <div className="absolute inset-0 bg-red-50 border-2 border-red-200 rounded-full flex items-center justify-center">
+                    <div className="text-center p-2">
+                      <p className="text-xs text-red-600 font-semibold">⚠️ Error</p>
+                      <p className="text-[10px] text-red-500 mt-1">{imageError}</p>
+                    </div>
+                  </div>
+                )}
                 <Button
                   type="button"
                   size="sm"
