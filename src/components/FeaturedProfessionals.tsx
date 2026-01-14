@@ -7,8 +7,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import Image from 'next/image'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Professional } from '@/types/directory'
+import { getInitials } from '@/lib/utils'
 
 export function FeaturedProfessionals() {
   const [featuredProfessionals, setFeaturedProfessionals] = useState<Professional[]>([])
@@ -27,21 +28,9 @@ export function FeaturedProfessionals() {
         // 2. Newest first (latest professionals)
         // 3. Highest rating (tie-breaker)
         // CRITICAL: Only show visible profiles (industry best practice)
-        // Check if we've already detected that the column doesn't exist
-        const isVisibleColumnExists = typeof window !== 'undefined' 
-          ? (window as any).__isVisibleColumnExists !== false
-          : true
+        let query = buildProfessionalsQuery()
         
-        let query = supabase
-          .from('professionals')
-          .select(`
-            *,
-            services (
-              service_name
-            )
-          `)
-        
-        if (isVisibleColumnExists) {
+        if (checkIsVisibleColumnExists()) {
           query = query.eq('is_visible', true) // Only show visible profiles
         }
         
@@ -54,15 +43,19 @@ export function FeaturedProfessionals() {
         let { data, error } = await query
 
         // If error is due to missing is_visible column, retry without the filter
-        // Check for PostgreSQL error code 42703 (undefined column) or error messages about missing column
-        const isMissingColumnError = error && (
-          error.code === '42703' || 
-          error.message?.includes('is_visible') || 
-          error.message?.includes('column') ||
-          error.message?.includes('does not exist') ||
-          (error as any)?.details?.includes('is_visible') ||
-          (error as any)?.hint?.includes('is_visible')
-        )
+        if (error && isMissingColumnError(error)) {
+          setIsVisibleColumnExists(false)
+          // Retry query without is_visible filter
+          query = buildProfessionalsQuery()
+            .order('verified', { ascending: false })
+            .order('created_at', { ascending: false })
+            .order('rating', { ascending: false })
+            .limit(3)
+          
+          const retryResult = await query
+          data = retryResult.data
+          error = retryResult.error
+        }
         
         if (isMissingColumnError) {
           // Mark that the column doesn't exist so we don't try again
@@ -129,10 +122,6 @@ export function FeaturedProfessionals() {
 
     fetchFeatured()
   }, [])
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
-  }
 
   // Show loading state or empty state
   if (loading) {

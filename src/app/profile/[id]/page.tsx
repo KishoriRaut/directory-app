@@ -9,8 +9,9 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Star, MapPin, Phone, Mail, Clock, CheckCircle, User, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 // Using regular img tag for external Supabase URLs (more reliable than Next.js Image)
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, buildProfessionalsQuery } from '@/lib/supabase'
 import { StructuredData } from '@/components/StructuredData'
+import { ProfileImage } from '@/components/ProfileImage'
 
 export default function ProfilePage() {
   const params = useParams()
@@ -18,14 +19,10 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [imageBlobUrl, setImageBlobUrl] = useState<string | null>(null)
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
-  }
-
   useEffect(() => {
     const fetchProfessional = async () => {
       if (!params.id) {
-        console.error('No ID parameter provided')
+        // No ID parameter provided
         setProfessional(null)
         setLoading(false)
         return
@@ -34,7 +31,7 @@ export default function ProfilePage() {
       // Extract and validate ID
       const idString = Array.isArray(params.id) ? params.id[0] : params.id
       if (!idString || idString.trim().length === 0) {
-        console.error('Invalid ID: ID is empty or undefined')
+        // Invalid ID: ID is empty or undefined
         setProfessional(null)
         setLoading(false)
         return
@@ -61,20 +58,13 @@ export default function ProfilePage() {
         }
 
         // First try with services join
-        let { data, error } = await supabase
-          .from('professionals')
-          .select(`
-            *,
-            services (
-              service_name
-            )
-          `)
+        let { data, error } = await buildProfessionalsQuery()
           .eq('id', idString)
           .maybeSingle()
 
         // If error with services join, try without it
         if (hasError(error)) {
-          console.warn('Error with services join, trying without:', error)
+          // Error with services join, trying without
           
           // Fallback: fetch professional without services
           const { data: professionalData, error: professionalError } = await supabase
@@ -189,7 +179,6 @@ export default function ProfilePage() {
         }
 
         if (!data) {
-          console.log('No professional found with ID:', idString)
           setProfessional(null)
           setLoading(false)
           return
@@ -219,12 +208,6 @@ export default function ProfilePage() {
           createdAt: professionalData.created_at
         }
 
-        console.log('Profile data transformed:', {
-          hasImageUrl: !!transformedProfessional.imageUrl,
-          imageUrl: transformedProfessional.imageUrl,
-          imageUrlType: typeof transformedProfessional.imageUrl
-        })
-
         setProfessional(transformedProfessional)
         
         // If image URL exists, try to create blob URL for better CORS handling
@@ -238,13 +221,12 @@ export default function ProfilePage() {
                   if (blob.type.startsWith('image/')) {
                     const url = URL.createObjectURL(blob)
                     setImageBlobUrl(url)
-                    console.log('Created blob URL for profile image')
                   }
                 }
               }
             })
-            .catch((error) => {
-              console.warn('Could not create blob URL for image:', error)
+            .catch(() => {
+              // Silently fail - will use direct URL as fallback
             })
         }
       } catch (error) {
@@ -361,70 +343,13 @@ export default function ProfilePage() {
                   {/* Large Profile Image - Industry Standard: 160-200px */}
                   <div className="flex-shrink-0 mx-auto sm:mx-0">
                     <div className="relative w-32 h-32 sm:w-40 sm:h-40">
-                      {(() => {
-                        // Determine which image URL to use (blob URL preferred for CORS)
-                        const imageUrlToUse = imageBlobUrl || professional.imageUrl
-                        const hasImage = imageUrlToUse && typeof imageUrlToUse === 'string' && imageUrlToUse.trim() !== ''
-                        
-                        console.log('Profile image render:', {
-                          hasImageUrl: !!professional.imageUrl,
-                          imageUrl: professional.imageUrl,
-                          hasBlobUrl: !!imageBlobUrl,
-                          imageUrlToUse: imageUrlToUse,
-                          hasImage: hasImage
-                        })
-                        
-                        if (hasImage) {
-                          return (
-                            <div className="relative w-full h-full">
-                              {/* Profile Image - Use blob URL if available, otherwise direct URL */}
-                              <img
-                                src={imageUrlToUse}
-                                alt={`${professional.name} - ${professional.profession}`}
-                                className="w-full h-full object-cover rounded-full border-4 border-white shadow-xl bg-white relative z-0"
-                                crossOrigin="anonymous"
-                                referrerPolicy="no-referrer"
-                                loading="eager"
-                                onError={(e) => {
-                                  console.error('Profile image failed to load:', imageUrlToUse)
-                                  const target = e.target as HTMLImageElement
-                                  target.style.display = 'none'
-                                  const parent = target.parentElement
-                                  if (parent) {
-                                    const fallback = parent.querySelector('.profile-avatar-fallback')
-                                    if (fallback) {
-                                      fallback.classList.remove('hidden')
-                                    }
-                                  }
-                                }}
-                                onLoad={() => {
-                                  console.log('Profile image loaded successfully')
-                                }}
-                              />
-                              {/* Fallback Avatar - Shows if image fails to load */}
-                              <div className="profile-avatar-fallback hidden absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white shadow-xl z-10">
-                                <span className="text-3xl sm:text-4xl font-bold text-white">
-                                  {getInitials(professional.name)}
-                                </span>
-                              </div>
-                            </div>
-                          )
-                        } else {
-                          return (
-                            <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white shadow-xl relative">
-                              <span className="text-3xl sm:text-4xl font-bold text-white">
-                                {getInitials(professional.name)}
-                              </span>
-                              {/* Verified Badge on Avatar - Industry Standard: Bottom right corner */}
-                              {professional.verified && (
-                                <div className="absolute -bottom-1 -right-1 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-20">
-                                  <CheckCircle className="h-5 w-5 text-white" />
-                                </div>
-                              )}
-                            </div>
-                          )
-                        }
-                      })()}
+                      <ProfileImage
+                        imageUrl={professional.imageUrl}
+                        name={professional.name}
+                        size="lg"
+                        verified={professional.verified}
+                        className="mx-auto sm:mx-0"
+                      />
                     </div>
                   </div>
 

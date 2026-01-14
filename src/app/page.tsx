@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut, ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { StructuredData } from '@/components/StructuredData'
 
@@ -83,23 +83,11 @@ export default function Home() {
 
       try {
         // Build query with filters
-        let query = supabase
-          .from('professionals')
-          .select(`
-            *,
-            services (
-              service_name
-            )
-          `, { count: 'exact' }) // Get total count for pagination
+        let query = buildProfessionalsQuery(true) // Get total count for pagination
 
         // CRITICAL: Only show visible profiles in search results (industry best practice)
         // Users can always see their own profile even if hidden (handled by RLS)
-        // Check if we've already detected that the column doesn't exist
-        const isVisibleColumnExists = typeof window !== 'undefined' 
-          ? (window as any).__isVisibleColumnExists !== false
-          : true
-        
-        if (isVisibleColumnExists) {
+        if (checkIsVisibleColumnExists()) {
           query = query.eq('is_visible', true)
         }
 
@@ -165,21 +153,8 @@ export default function Home() {
           .range(from, to)
 
         // If error is due to missing is_visible column, retry without the filter
-        // Check for PostgreSQL error code 42703 (undefined column) or error messages about missing column
-        const isMissingColumnError = error && (
-          error.code === '42703' || 
-          error.message?.includes('is_visible') || 
-          error.message?.includes('column') ||
-          error.message?.includes('does not exist') ||
-          (error as any)?.details?.includes('is_visible') ||
-          (error as any)?.hint?.includes('is_visible')
-        )
-        
-        if (isMissingColumnError) {
-          // Mark that the column doesn't exist so we don't try again
-          if (typeof window !== 'undefined') {
-            (window as any).__isVisibleColumnExists = false
-          }
+        if (error && isMissingColumnError(error)) {
+          setIsVisibleColumnExists(false)
           
           // Only log once per session to avoid console spam
           if (!(window as any).__isVisibleColumnWarningShown) {
@@ -187,14 +162,7 @@ export default function Home() {
             ;(window as any).__isVisibleColumnWarningShown = true
           }
           // Rebuild query without is_visible filter
-          query = supabase
-            .from('professionals')
-            .select(`
-              *,
-              services (
-                service_name
-              )
-            `, { count: 'exact' })
+          query = buildProfessionalsQuery(true)
           
           // Reapply all filters except is_visible
           if (filters.category && filters.category !== 'all') {

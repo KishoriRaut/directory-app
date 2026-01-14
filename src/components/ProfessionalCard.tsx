@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Star, MapPin, CheckCircle, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import { getInitials } from '@/lib/utils'
 
 interface ProfessionalCardProps {
   professional: Professional
@@ -13,9 +14,6 @@ interface ProfessionalCardProps {
 }
 
 export function ProfessionalCard({ professional, onViewProfile }: ProfessionalCardProps) {
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
-  }
 
   return (
     <Card className="group relative overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 bg-white rounded-lg">

@@ -182,3 +182,56 @@ export const isSupabaseConfigured = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== 'your-anon-key'
   )
 }
+
+/**
+ * Check if is_visible column exists in the database
+ * Uses a cached value to avoid repeated checks
+ */
+export const checkIsVisibleColumnExists = (): boolean => {
+  if (typeof window === 'undefined') return true
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as any).__isVisibleColumnExists !== false
+}
+
+/**
+ * Set the cached value for is_visible column existence
+ */
+export const setIsVisibleColumnExists = (exists: boolean): void => {
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__isVisibleColumnExists = exists
+  }
+}
+
+/**
+ * Check if an error is related to a missing column (specifically is_visible)
+ */
+export const isMissingColumnError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const err = error as any
+  return (
+    err.code === '42703' || 
+    err.message?.includes('is_visible') || 
+    err.message?.includes('column') ||
+    err.message?.includes('does not exist') ||
+    err.details?.includes('is_visible') ||
+    err.hint?.includes('is_visible')
+  )
+}
+
+/**
+ * Build base professionals query with services join
+ * This is a common pattern used across multiple components
+ */
+export const buildProfessionalsQuery = (includeCount: boolean = false) => {
+  const selectOptions = includeCount ? { count: 'exact' as const } : undefined
+  return supabase
+    .from('professionals')
+    .select(`
+      *,
+      services (
+        service_name
+      )
+    `, selectOptions)
+}
