@@ -21,11 +21,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'),
   title: {
-    default: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
-    template: "%s | KhojCity"
+    default: "Siscora Pro - Professional Service Directory | Find Trusted Professionals Near You",
+    template: "%s | Siscora Pro"
   },
   description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, lawyers, accountants, and more. Browse verified professionals with ratings and reviews.",
-  keywords: ["professional directory", "find professionals", "local services", "khojcity", "directory app", "service providers", "verified professionals", "local business directory"],
+  keywords: ["professional directory", "find professionals", "local services", "siscora pro", "directory app", "service providers", "verified professionals", "local business directory"],
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",
@@ -45,21 +45,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    siteName: "KhojCity",
-    title: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
+    siteName: "Siscora Pro",
+    title: "Siscora Pro - Professional Service Directory | Find Trusted Professionals Near You",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: [
       {
         url: "/og-image.png", // You'll need to create this
         width: 1200,
         height: 630,
-        alt: "KhojCity - Professional Directory",
+        alt: "Siscora Pro - Professional Service Directory",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KhojCity - Professional Directory",
+    title: "Siscora Pro - Professional Service Directory",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: ["/og-image.png"], // You'll need to create this
   },
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "KhojCity",
+    title: "Siscora Pro",
   },
   icons: {
     icon: [
@@ -100,7 +100,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#4f46e5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="KhojCity" />
+        <meta name="apple-mobile-web-app-title" content="Siscora Pro" />
         {/* DNS prefetch and preconnect for external resources - Performance optimization */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />

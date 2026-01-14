@@ -665,7 +665,7 @@ function HomeContent({
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="inline-block mb-3">
                 <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  KhojCity
+                  Siscora Pro
                 </h3>
               </Link>
               <p className="text-sm text-gray-600 mb-4">
@@ -740,7 +740,7 @@ function HomeContent({
           <div className="border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500">
-                © {new Date().getFullYear()} KhojCity
+                © {new Date().getFullYear()} Siscora Pro
               </p>
             </div>
           </div>

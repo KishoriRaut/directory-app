@@ -193,7 +193,7 @@ const pricingInfo = {
 const faqs = [
   {
     question: 'How do I know if a professional is trustworthy?',
-    answer: 'All professionals on KhojCity go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
+    answer: 'All professionals on Siscora Pro go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
   },
   {
     question: 'Is it really free for customers?',
@@ -347,13 +347,13 @@ export default function HowItWorksPage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-4 sm:mb-6">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                KhojCity
+                Siscora Pro
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-1">Professional Directory</p>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-1">Professional Service Directory</p>
               <p className="text-xs text-gray-500">by Siscora.com</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-              How KhojCity Works
+              How Siscora Pro Works
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8">
               Get connected with trusted professionals in 4 simple steps. 
@@ -407,7 +407,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Trust KhojCity?
+              Why Trust Siscora Pro?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We go above and beyond to ensure your safety and satisfaction
@@ -596,7 +596,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose KhojCity?
+              Why Choose Siscora Pro?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We&apos;re committed to making professional services accessible, safe, and reliable
@@ -629,7 +629,7 @@ export default function HowItWorksPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Got questions? We&apos;ve got answers. Here are some common questions about using KhojCity.
+              Got questions? We&apos;ve got answers. Here are some common questions about using Siscora Pro.
             </p>
           </div>
 
@@ -664,7 +664,7 @@ export default function HowItWorksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Take KhojCity Anywhere
+                Take Siscora Pro Anywhere
               </h2>
               <p className="text-xl text-gray-300 mb-8">
                 Manage your professional services on the go with our mobile app. Search, book, and pay—all from your pocket.
@@ -749,7 +749,7 @@ export default function HowItWorksPage() {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-white/90 mb-8">
-              Join thousands of satisfied customers who found their perfect professional through KhojCity
+              Join thousands of satisfied customers who found their perfect professional through Siscora Pro
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/#results-section">

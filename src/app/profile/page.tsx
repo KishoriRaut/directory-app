@@ -914,7 +914,7 @@ export default function MyProfilePage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Welcome to KhojCity! 👋
+                    Welcome to Siscora Pro! 👋
                   </h3>
                   <p className="text-gray-700 mb-4">
                     Complete your profile to help clients find you. You can skip and complete it later if you prefer.

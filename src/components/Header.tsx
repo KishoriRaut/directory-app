@@ -102,7 +102,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
             {/* Brand Name */}
             <Link href="/" className="flex items-center py-0">
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none m-0">
-                KhojCity
+                Siscora Pro
               </h1>
             </Link>
 

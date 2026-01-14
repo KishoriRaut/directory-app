@@ -1,6 +1,6 @@
 // App constants
-export const APP_NAME = 'KhojCity'
-export const APP_DESCRIPTION = 'Professional Directory'
+export const APP_NAME = 'Siscora Pro'
+export const APP_DESCRIPTION = 'Professional Service Directory'
 export const APP_CREATOR = 'by Siscora.com'
 
 // Supabase constants
