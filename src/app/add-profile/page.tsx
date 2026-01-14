@@ -181,7 +181,7 @@ export default function AddProfilePage() {
       }
       const { data: professionalData, error: professionalError } = await supabase
         .from('professionals')
-        .insert([insertData])
+        .insert([insertData] as any)
         .select()
         .single()
 
@@ -200,7 +200,7 @@ export default function AddProfilePage() {
 
         const { error: servicesError } = await supabase
           .from('services')
-          .insert(servicesToInsert)
+          .insert(servicesToInsert as any)
 
         if (servicesError) {
           console.error('Error adding services:', servicesError)

@@ -585,7 +585,7 @@ export default function MyProfilePage() {
             email: normalizedEmail,
             rating: 0,
             verified: false
-          }])
+          }] as any)
           .select()
           .single()
 
@@ -625,7 +625,7 @@ export default function MyProfilePage() {
 
           const { error: servicesError } = await supabase
             .from('services')
-            .insert(servicesToInsert)
+            .insert(servicesToInsert as any)
 
           if (servicesError) {
             console.error('Error updating services:', servicesError)

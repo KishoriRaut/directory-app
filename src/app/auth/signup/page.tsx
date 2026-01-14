@@ -120,7 +120,7 @@ function SignUpPageContent() {
 
             const { error: profileError } = await supabase
               .from('professionals')
-              .insert([profileData])
+              .insert([profileData] as any)
 
             if (profileError) {
               console.error('Error creating profile:', profileError)
