@@ -17,7 +17,7 @@ import {
   Mail,
   ArrowRight,
   Check,
-  User
+  User as UserIcon
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
@@ -501,7 +501,7 @@ export default function HowItWorksPage() {
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="h-8 w-8 text-white" />
+                  <UserIcon className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   {pricingInfo.forProfessionals.title}
