@@ -38,8 +38,26 @@ export default function Home() {
   // Check authentication status
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+            // Clear invalid session
+            await supabase.auth.signOut()
+            setUser(null)
+            return
+          }
+          console.error('Auth error:', error)
+        }
+        setUser(session?.user || null)
+      } catch (error: any) {
+        // Handle any unexpected errors
+        if (error?.message?.includes('Refresh Token') || error?.message?.includes('refresh_token')) {
+          await supabase.auth.signOut()
+        }
+        setUser(null)
+      }
     }
     
     checkAuth()
@@ -141,9 +159,6 @@ export default function Home() {
           return
         }
 
-        console.log('Fetched data:', data) // Debug log
-        console.log('Total count:', count) // Debug log
-
         // Type assertion for the data
         const professionalsData = data as any[]
 
@@ -165,8 +180,6 @@ export default function Home() {
           verified: prof.verified,
           createdAt: prof.created_at
         }))
-
-        console.log('Transformed data:', transformedData) // Debug log
         setProfessionals(transformedData)
         setTotalItems(count || 0)
       } catch (error) {
@@ -579,7 +592,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="inline-block mb-3">
                 <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Khojix
+                  KhojCity
                 </h3>
               </Link>
               <p className="text-sm text-gray-600 mb-4">
@@ -654,7 +667,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500">
-                © {new Date().getFullYear()} Khojix. All rights reserved.
+                © {new Date().getFullYear()} KhojCity. All rights reserved.
               </p>
               <p className="text-xs text-gray-500">
                 Connecting professionals worldwide

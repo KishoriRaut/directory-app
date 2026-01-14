@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { 
-  ArrowLeft, 
   User, 
   Mail, 
   Lock, 
@@ -20,6 +19,7 @@ import {
   EyeOff
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { Header } from '@/components/Header'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -56,17 +56,34 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+            await supabase.auth.signOut()
+            router.push('/auth/signin?redirect=/settings')
+            return
+          }
+        }
+        if (!session) {
+          router.push('/auth/signin?redirect=/settings')
+          return
+        }
+        setUser(session.user)
+        setProfileData({
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
+          email: session.user.email || ''
+        })
+        setLoading(false)
+      } catch (error: any) {
+        // Handle any unexpected errors
+        if (error?.message?.includes('Refresh Token') || error?.message?.includes('refresh_token')) {
+          await supabase.auth.signOut()
+        }
         router.push('/auth/signin?redirect=/settings')
-        return
+        setLoading(false)
       }
-      setUser(session.user)
-      setProfileData({
-        name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
-        email: session.user.email || ''
-      })
-      setLoading(false)
     }
     
     checkAuth()
@@ -161,6 +178,11 @@ export default function SettingsPage() {
     }
   }
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -181,24 +203,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Directory
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Settings
-              </h1>
-              <p className="text-gray-600 mt-1">Manage your account settings and preferences</p>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header user={user} onSignOut={handleSignOut} />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">

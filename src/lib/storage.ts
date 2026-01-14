@@ -34,6 +34,13 @@ export class StorageService {
 
       // Check authentication status
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) {
+        // Handle refresh token errors
+        if (sessionError.message?.includes('Refresh Token') || sessionError.message?.includes('refresh_token')) {
+          await supabase.auth.signOut()
+          return { publicUrl: null, error: 'Session expired. Please sign in again.' }
+        }
+      }
       if (!session) {
         console.error('No session found:', sessionError)
         return { publicUrl: null, error: 'You must be logged in to upload images' }
@@ -77,6 +84,28 @@ export class StorageService {
         .getPublicUrl(filePath)
 
       console.log('Public URL:', publicUrl)
+
+      // CRITICAL: Verify the file exists and is accessible
+      if (publicUrl) {
+        // Try to verify the file exists by checking if we can list it
+        const { data: fileList, error: listError } = await supabase.storage
+          .from(BUCKET_NAME)
+          .list('profiles', {
+            limit: 1000,
+            search: fileName
+          })
+        
+        if (listError) {
+          console.warn('⚠️ Could not verify file existence (this is OK if bucket is public):', listError)
+        } else {
+          const fileExists = fileList?.some(f => f.name === fileName)
+          console.log('✅ File verified in storage:', fileExists)
+          if (!fileExists) {
+            console.error('❌ WARNING: File was uploaded but not found in storage listing!')
+            console.error('This might indicate a bucket permission or RLS policy issue.')
+          }
+        }
+      }
 
       return { publicUrl, error: null }
 

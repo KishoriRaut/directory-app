@@ -98,7 +98,50 @@ function SignUpPageContent() {
         // Check if user needs to confirm email
         if (data.user && !data.user.email_confirmed_at) {
           setMessage('Account created! Please check your email to confirm your account.')
+        } else if (data.user) {
+          // User is signed in - create minimal profile and redirect to onboarding
+          try {
+            // Auto-create minimal profile with pre-filled data (industry best practice)
+            const normalizedEmail = formData.email.toLowerCase().trim()
+            const profileData = {
+              name: formData.name,
+              profession: '',
+              category: 'other',
+              email: normalizedEmail,
+              phone: '',
+              location: '',
+              experience: 0,
+              rating: 0,
+              description: '',
+              availability: '',
+              image_url: null,
+              verified: false
+            }
+
+            const { error: profileError } = await supabase
+              .from('professionals')
+              .insert(profileData)
+
+            if (profileError) {
+              console.error('Error creating profile:', profileError)
+              // Continue anyway - user can create profile later
+            }
+
+            // Redirect to profile page in edit mode for onboarding
+            setMessage('Account created successfully! Let\'s set up your profile.')
+            setTimeout(() => {
+              router.push('/profile?onboarding=true')
+            }, 1500)
+          } catch (profileErr) {
+            console.error('Error in profile creation:', profileErr)
+            // Still redirect to profile page
+            setMessage('Account created successfully! Let\'s set up your profile.')
+            setTimeout(() => {
+              router.push('/profile?onboarding=true')
+            }, 1500)
+          }
         } else {
+          // Fallback - redirect to signin
           setMessage('Account created successfully! You can now sign in.')
           setTimeout(() => {
             router.push(`/auth/signin?message=Account created successfully! Please sign in.`)

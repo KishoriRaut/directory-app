@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Upload, X, Camera, Loader2 } from 'lucide-react'
@@ -17,6 +17,44 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(currentImage || null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Update preview when currentImage prop changes (industry best practice)
+  useEffect(() => {
+    console.log('ImageUpload: currentImage prop changed:', {
+      currentImage: currentImage,
+      currentPreview: preview,
+      willUpdate: currentImage !== preview,
+      currentImageType: typeof currentImage,
+      currentImageLength: currentImage?.length
+    })
+    
+    // Always update preview to match currentImage, even if it's the same
+    // This ensures the preview is in sync with the prop
+    if (currentImage && currentImage.trim() !== '') {
+      setPreview(currentImage)
+      console.log('✅ Preview updated to:', currentImage)
+      
+      // Verify the image URL is accessible (test with actual GET request)
+      if (currentImage.startsWith('http')) {
+        // Test if image is actually accessible
+        const testImg = new Image()
+        testImg.onload = () => {
+          console.log('✅ Image URL verified - image loads successfully')
+        }
+        testImg.onerror = (err) => {
+          console.warn('⚠️ Image URL verification failed:', err)
+          console.warn('This might indicate the bucket is not public or CORS issue')
+        }
+        testImg.src = currentImage
+      }
+    } else {
+      // Only clear if we had a preview before (don't clear on initial mount if both are null)
+      if (preview) {
+        console.log('Clearing preview (currentImage is empty)')
+        setPreview(null)
+      }
+    }
+  }, [currentImage]) // Only depend on currentImage, not preview
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -36,7 +74,15 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
       const compressedFile = await StorageService.compressImage(file)
       
       // Get current user ID for filename
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) {
+        // Handle refresh token errors
+        if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+          await supabase.auth.signOut()
+          alert('Session expired. Please sign in again.')
+          return
+        }
+      }
       if (!session) {
         alert('You must be logged in to upload images')
         return
@@ -51,8 +97,12 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
       }
 
       if (result.publicUrl) {
+        console.log('✅ Upload successful, setting preview and calling onImageChange:', result.publicUrl)
         setPreview(result.publicUrl)
         onImageChange(result.publicUrl)
+        console.log('✅ Preview state updated, onImageChange called')
+      } else {
+        console.warn('⚠️ Upload succeeded but no publicUrl returned')
       }
     } catch (error) {
       console.error('Upload error:', error)
@@ -80,12 +130,71 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
         <div className="text-center space-y-4">
           {/* Image Preview */}
           <div className="relative mx-auto w-32 h-32">
-            {preview ? (
+            {preview && preview.trim() !== '' ? (
               <div className="relative w-full h-full">
                 <img
                   src={preview}
                   alt="Profile preview"
                   className="w-full h-full object-cover rounded-full border-4 border-white shadow-lg"
+                  onLoad={() => {
+                    console.log('✅ Image loaded successfully in preview:', preview)
+                  }}
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement
+                    const errorDetails = {
+                      url: preview,
+                      imgSrc: img.src,
+                      naturalWidth: img.naturalWidth,
+                      naturalHeight: img.naturalHeight,
+                      complete: img.complete,
+                      crossOrigin: img.crossOrigin,
+                      referrerPolicy: img.referrerPolicy
+                    }
+                    
+                    console.error('❌ Image failed to load in preview:', preview)
+                    console.error('Error details:', errorDetails)
+                    
+                    // Try to fetch the image directly to get more error info
+                    if (preview) {
+                      fetch(preview, { method: 'GET', mode: 'cors' })
+                        .then(response => {
+                          console.error('Fetch response status:', response.status, response.statusText)
+                          console.error('Fetch response headers:', Object.fromEntries(response.headers.entries()))
+                          if (!response.ok) {
+                            console.error('❌ Fetch failed with status:', response.status)
+                            return response.text().then(text => {
+                              console.error('Response body:', text.substring(0, 200))
+                            })
+                          }
+                          return response.blob()
+                        })
+                        .then(blob => {
+                          if (blob) {
+                            console.log('✅ Fetch succeeded, blob size:', blob.size, 'type:', blob.type)
+                            console.error('⚠️ Image loads via fetch but not in <img> tag - likely CORS or referrer issue')
+                          }
+                        })
+                        .catch(fetchError => {
+                          console.error('❌ Fetch also failed:', fetchError)
+                          console.error('This confirms the URL is not accessible')
+                        })
+                    }
+                    
+                    // CRITICAL: Check if this is a Supabase Storage issue
+                    if (preview?.includes('supabase.co')) {
+                      console.error('🔍 DIAGNOSIS: Supabase Storage image load failure')
+                      console.error('')
+                      console.error('IMMEDIATE ACTION REQUIRED:')
+                      console.error('1. Open this URL in a new browser tab:')
+                      console.error('   ' + preview)
+                      console.error('2. If it loads in browser → CORS/component issue')
+                      console.error('3. If it does NOT load → Bucket not public or policy issue')
+                      console.error('')
+                      console.error('Check Supabase Dashboard:')
+                      console.error('- Storage → Buckets → my-photo → Settings → Public bucket = ON')
+                      console.error('- Storage → Policies → Verify "Public Access - my-photo" exists')
+                    }
+                  }}
                 />
                 <Button
                   type="button"
@@ -100,6 +209,13 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
             ) : (
               <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                 <Camera className="h-8 w-8 text-gray-400" />
+                {currentImage && currentImage.trim() !== '' && (
+                  <div className="absolute bottom-0 left-0 right-0 text-xs text-red-600 bg-white/90 p-1 rounded">
+                    ⚠️ Image URL exists but failed to load
+                    <br />
+                    <span className="text-[10px] text-gray-500">Check console for details</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

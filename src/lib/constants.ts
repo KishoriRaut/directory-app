@@ -1,5 +1,5 @@
 // App constants
-export const APP_NAME = 'Khojix'
+export const APP_NAME = 'KhojCity'
 export const APP_DESCRIPTION = 'Professional Directory'
 export const APP_CREATOR = 'by Siscora.com'
 
