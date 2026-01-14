@@ -193,7 +193,7 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
           </div>
 
           {/* Location Input */}
-          <div className="relative sm:w-56">
+          <div className="relative w-full sm:w-56">
             <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
             <Input
               ref={locationInputRef}
@@ -243,10 +243,10 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
           </div>
 
           {/* Category Select */}
-          <div className="relative sm:w-56">
+          <div className="relative w-full sm:w-56">
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger 
-                className="w-full text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg py-1 px-3"
+                className="w-full text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg py-1 px-3 touch-target"
                 style={{ height: '3rem', minHeight: '3rem' }}
               >
                 <SelectValue placeholder="All Categories" />

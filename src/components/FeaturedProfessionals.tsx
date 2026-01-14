@@ -230,9 +230,9 @@ export function FeaturedProfessionals() {
                     <span className="text-sm font-bold text-gray-900">{professional.rating}</span>
                   <span className="text-sm text-gray-500">({getDeterministicCount(professional.id)})</span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <MapPin className="h-3.5 w-3.5" />
-                    <span className="truncate max-w-[120px]">{professional.location}</span>
+                  <div className="flex items-center gap-1 text-sm text-gray-600 min-w-0 flex-1">
+                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="truncate">{professional.location}</span>
                   </div>
                 </div>
 

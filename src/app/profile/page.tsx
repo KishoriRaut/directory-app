@@ -41,6 +41,7 @@ import { Header } from '@/components/Header'
 import { supabase } from '@/lib/supabase'
 import { validateField as validateFieldUtil, validateForm as validateFormUtil } from '@/lib/validation'
 import { VALIDATION_RULES } from '@/lib/constants'
+import { normalizeEmail } from '@/lib/utils'
 
 interface ProfileData {
   id: string
@@ -124,7 +125,7 @@ export default function MyProfilePage() {
         setUser(session.user)
         if (session.user.email) {
           // Normalize email before fetching
-          const normalizedEmail = session.user.email.toLowerCase().trim()
+          const normalizedEmail = normalizeEmail(session.user.email)
           fetchProfile(normalizedEmail)
         }
       } catch (error: any) {
@@ -185,7 +186,7 @@ export default function MyProfilePage() {
 
   const fetchProfile = async (userEmail: string) => {
     try {
-      const normalizedEmail = userEmail.toLowerCase().trim()
+      const normalizedEmail = normalizeEmail(userEmail)
       console.log('Fetching profile for email:', normalizedEmail)
       
       // Try exact match first (most efficient) - explicitly select all fields including image_url
@@ -467,7 +468,7 @@ export default function MyProfilePage() {
       }
 
       // Normalize email before saving (industry best practice - ensures consistency)
-      const normalizedEmail = (formData.email || user?.email || '').toLowerCase().trim()
+      const normalizedEmail = normalizeEmail(formData.email || user?.email || '')
       
       // Map TypeScript interface to database fields (imageUrl -> image_url)
       // Note: services are stored in separate table, not in professionals table
@@ -1278,7 +1279,7 @@ export default function MyProfilePage() {
                         const newVisibility = !(profile.is_visible !== false)
                         try {
                           // Use email-based update for better compatibility
-                          const normalizedEmail = (profile.email || user?.email || '').toLowerCase().trim()
+                          const normalizedEmail = normalizeEmail(profile.email || user?.email || '')
                           const { error } = await supabase
                             .from('professionals')
                             // @ts-expect-error - is_visible might not exist in type yet

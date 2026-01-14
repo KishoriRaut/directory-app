@@ -34,3 +34,14 @@ export function getDeterministicCount(seed: string, min: number = 10, max: numbe
   const range = Math.max(max - min + 1, 1)
   return Math.abs(hash) % range + min
 }
+
+/**
+ * Normalize email address for consistent storage and comparison.
+ * Converts to lowercase and trims whitespace.
+ * @param email - Email address to normalize
+ * @returns Normalized email address
+ */
+export function normalizeEmail(email: string): string {
+  if (!email || typeof email !== 'string') return ''
+  return email.toLowerCase().trim()
+}

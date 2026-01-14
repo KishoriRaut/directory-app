@@ -15,6 +15,7 @@ import { Plus, X, User, Briefcase, Mail, Phone, MapPin, Clock, FileText, Sparkle
 import { supabase } from '@/lib/supabase'
 import { ImageUpload } from '@/components/ImageUpload'
 import { Header } from '@/components/Header'
+import { normalizeEmail } from '@/lib/utils'
 
 const categories = [
   { value: 'doctor', label: 'Doctor' },
@@ -71,9 +72,9 @@ export default function AddProfilePage() {
 
         setUser(session.user)
 
-        // Check if profile already exists - if yes, redirect to profile page (industry best practice)
+          // Check if profile already exists - if yes, redirect to profile page (industry best practice)
         if (session.user?.email) {
-          const normalizedEmail = session.user.email.toLowerCase().trim()
+          const normalizedEmail = normalizeEmail(session.user.email)
           console.log('Checking for existing profile with email:', normalizedEmail)
           
           const { data: existingProfile, error: checkError } = await supabase
@@ -164,7 +165,7 @@ export default function AddProfilePage() {
 
     try {
       // Insert professional data (normalize email for consistency - industry best practice)
-      const normalizedEmail = formData.email.toLowerCase().trim()
+      const normalizedEmail = normalizeEmail(formData.email)
       const insertData = {
         name: formData.name,
         profession: formData.profession,
@@ -295,7 +296,7 @@ export default function AddProfilePage() {
                     <ImageUpload
                       currentImage={formData.imageUrl}
                       onImageChange={handleImageChange}
-                      className="max-w-xs mx-auto"
+                      className="max-w-xs w-full mx-auto"
                     />
                   </div>
                 </div>

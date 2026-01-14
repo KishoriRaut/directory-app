@@ -86,7 +86,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
       <header className={`sticky top-0 z-50 transition-all duration-300 bg-white ${
         mounted && isScrolled ? 'shadow-md' : ''
       }`}>
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 sm:px-6 py-3">
           {/* Main Navigation */}
           <div className="flex items-center justify-between">
             {/* Brand Name */}
@@ -99,17 +99,19 @@ export function Header({ user, onSignOut }: HeaderProps) {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               <Link
+                key="categories-nav"
                 href="/#categories"
                 className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
               >
-                <LayoutGrid className="h-4 w-4 group-hover:text-indigo-600" />
+                <LayoutGrid className="h-4 w-4 group-hover:text-indigo-600" aria-hidden="true" />
                 <span className="group-hover:text-indigo-600">Categories</span>
               </Link>
               <Link
+                key="how-it-works-nav"
                 href="/how-it-works"
                 className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
               >
-                <Shield className="h-4 w-4 group-hover:text-indigo-600" />
+                <Shield className="h-4 w-4 group-hover:text-indigo-600" aria-hidden="true" />
                 <span className="group-hover:text-indigo-600">How It Works</span>
               </Link>
             </nav>
@@ -134,6 +136,10 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         setIsDropdownOpen(!isDropdownOpen)
                       }}
                       className="dropdown-trigger flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                      aria-label="User menu"
+                      aria-expanded={isDropdownOpen}
+                      aria-haspopup="true"
+                      title="User menu"
                     >
                       <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm">
                         <User className="h-5 w-5 text-white" />
@@ -222,19 +228,21 @@ export function Header({ user, onSignOut }: HeaderProps) {
               {/* Mobile Navigation */}
               <nav className="space-y-1">
                 <Link
+                  key="categories-mobile-nav"
                   href="/#categories"
                   className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <LayoutGrid className="h-5 w-5" />
+                  <LayoutGrid className="h-5 w-5" aria-hidden="true" />
                   <span>Categories</span>
                 </Link>
                 <Link
+                  key="how-it-works-mobile-nav"
                   href="/how-it-works"
                   className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Shield className="h-5 w-5" />
+                  <Shield className="h-5 w-5" aria-hidden="true" />
                   <span>How It Works</span>
                 </Link>
               </nav>
