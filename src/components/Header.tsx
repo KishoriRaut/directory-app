@@ -86,22 +86,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
       <header className={`sticky top-0 z-50 transition-all duration-300 bg-white ${
         mounted && isScrolled ? 'shadow-md' : ''
       }`}>
-        <div className="container mx-auto px-4 sm:px-6 py-3">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-5">
           {/* Main Navigation */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 lg:gap-8">
             {/* Brand Name */}
-            <Link href="/" className="flex items-center py-0">
+            <Link href="/" className="flex items-center py-0 flex-shrink-0">
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none m-0">
                 Siscora Pro
               </h1>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-10 xl:gap-12 flex-1 justify-center">
               <Link
                 key="categories-nav"
                 href="/#categories"
-                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
+                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group px-2"
               >
                 <LayoutGrid className="h-4 w-4 group-hover:text-indigo-600" aria-hidden="true" />
                 <span className="group-hover:text-indigo-600">Categories</span>
@@ -109,7 +109,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
               <Link
                 key="how-it-works-nav"
                 href="/how-it-works"
-                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group"
+                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors group px-2"
               >
                 <Shield className="h-4 w-4 group-hover:text-indigo-600" aria-hidden="true" />
                 <span className="group-hover:text-indigo-600">How It Works</span>
@@ -117,12 +117,12 @@ export function Header({ user, onSignOut }: HeaderProps) {
             </nav>
 
             {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-4 xl:gap-5 flex-shrink-0">
               {user ? (
                 <>
                   {/* Add Profile CTA - Only show when logged in */}
                   <Link href="/add-profile">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all px-4">
                       <Briefcase className="h-4 w-4 mr-2" />
                       Add Your Profile
                     </Button>
@@ -135,7 +135,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         e.stopPropagation()
                         setIsDropdownOpen(!isDropdownOpen)
                       }}
-                      className="dropdown-trigger flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
                       aria-label="User menu"
                       aria-expanded={isDropdownOpen}
                       aria-haspopup="true"
@@ -188,18 +188,18 @@ export function Header({ user, onSignOut }: HeaderProps) {
               ) : (
                 <>
                   <Link href="/add-profile">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all px-4">
                       <Briefcase className="h-4 w-4 mr-2" />
                       Add Your Profile
                     </Button>
                   </Link>
                   <Link href="/auth/signup">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all px-4">
                       Sign Up
                     </Button>
                   </Link>
                   <Link href="/auth/signin">
-                    <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                    <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all px-4">
                       Log In
                     </Button>
                   </Link>
@@ -224,7 +224,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white">
-            <div className="container mx-auto px-4 py-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
               {/* Mobile Navigation */}
               <nav className="space-y-1">
                 <Link
