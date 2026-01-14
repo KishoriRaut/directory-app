@@ -16,6 +16,7 @@ import {
   MapPin,
   Star,
   Shield,
+  Settings,
   Users,
   Briefcase,
   Building,
@@ -56,10 +57,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
+      
+      // Never interfere with any navigation links, buttons, or header elements
+      if (target.closest('header a') || target.closest('header button') || target.closest('nav')) {
+        return
+      }
+      
+      // Close dropdown if clicking outside of it
       if (!target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
         setIsDropdownOpen(false)
       }
-      if (!target.closest('.mobile-menu') && !target.closest('.mobile-menu-trigger')) {
+      
+      // Close mobile menu only if clicking outside of it
+      const isMobileMenuElement = target.closest('.mobile-menu')
+      const isMobileMenuTrigger = target.closest('.mobile-menu-trigger')
+      
+      if (!isMobileMenuElement && !isMobileMenuTrigger) {
         setIsMobileMenuOpen(false)
       }
     }
@@ -75,7 +88,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
   const dropdownItems = [
     { name: 'My Profile', href: '/profile', icon: User },
-    { name: 'Settings', href: '/settings', icon: Shield },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ]
 
   return (
@@ -84,19 +97,14 @@ export function Header({ user, onSignOut }: HeaderProps) {
       <header className={`sticky top-0 z-50 transition-all duration-300 bg-white ${
         mounted && isScrolled ? 'shadow-md' : ''
       }`}>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 py-3">
           {/* Main Navigation */}
-          <div className="flex items-center justify-between h-14">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg flex-shrink-0">
-                <span className="text-white font-bold text-lg sm:text-xl leading-none select-none">K</span>
-              </div>
-              <div className="h-8 sm:h-10 flex items-center">
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none m-0">
-                  Khojix
-                </h1>
-              </div>
+          <div className="flex items-center justify-between">
+            {/* Brand Name */}
+            <Link href="/" className="flex items-center py-0">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none m-0">
+                KhojCity
+              </h1>
             </Link>
 
             {/* Desktop Navigation */}
@@ -117,11 +125,11 @@ export function Header({ user, onSignOut }: HeaderProps) {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
-                  {/* For Professionals CTA - Only show when logged in */}
+                  {/* Add Profile CTA - Only show when logged in */}
                   <Link href="/add-profile">
-                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
                       <Briefcase className="h-4 w-4 mr-2" />
-                      For Professionals
+                      Add Your Profile
                     </Button>
                   </Link>
                   
@@ -134,7 +142,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       }}
                       className="dropdown-trigger flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white">
+                      <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm">
                         <User className="h-5 w-5 text-white" />
                       </div>
                       <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -175,20 +183,20 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 </>
               ) : (
                 <>
-                  <Link href="/auth/signin">
-                    <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                      Log In
+                  <Link href="/add-profile">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Add Your Profile
                     </Button>
                   </Link>
                   <Link href="/auth/signup">
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
                       Sign Up
                     </Button>
                   </Link>
-                  <Link href="/add-profile">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
-                      <Briefcase className="h-4 w-4 mr-2" />
-                      For Professionals
+                  <Link href="/auth/signin">
+                    <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                      Log In
                     </Button>
                   </Link>
                 </>
@@ -244,9 +252,9 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       </div>
                     </div>
                     <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)} className="mb-4 block">
-                      <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
                         <Briefcase className="h-4 w-4 mr-2" />
-                        For Professionals
+                        Add Your Profile
                       </Button>
                     </Link>
                     <div className="space-y-1 mb-4">
@@ -275,20 +283,20 @@ export function Header({ user, onSignOut }: HeaderProps) {
                   </>
                 ) : (
                   <div className="space-y-3 mb-4">
-                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
-                        Log In
+                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        Add Your Profile
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
                         Sign Up
                       </Button>
                     </Link>
-                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
-                        <Briefcase className="h-4 w-4 mr-2" />
-                        For Professionals
+                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                        Log In
                       </Button>
                     </Link>
                   </div>

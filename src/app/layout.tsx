@@ -1,14 +1,31 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import { initPerformanceMonitor } from "@/lib/performance-monitor";
 import "./globals.css";
+
+// Initialize performance monitoring
+if (typeof window !== 'undefined') {
+  initPerformanceMonitor();
+}
+
+// Optimize font loading with next/font
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
+  variable: "--font-plus-jakarta-sans",
+  fallback: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "system-ui", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'),
   title: {
-    default: "Khojix - Professional Directory | Find Trusted Professionals Near You",
-    template: "%s | Khojix"
+    default: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
+    template: "%s | KhojCity"
   },
   description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, lawyers, accountants, and more. Browse verified professionals with ratings and reviews.",
-  keywords: ["professional directory", "find professionals", "local services", "khojix", "directory app", "service providers", "verified professionals", "local business directory"],
+  keywords: ["professional directory", "find professionals", "local services", "khojcity", "directory app", "service providers", "verified professionals", "local business directory"],
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",
@@ -28,21 +45,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    siteName: "Khojix",
-    title: "Khojix - Professional Directory | Find Trusted Professionals Near You",
+    siteName: "KhojCity",
+    title: "KhojCity - Professional Directory | Find Trusted Professionals Near You",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: [
       {
         url: "/og-image.png", // You'll need to create this
         width: 1200,
         height: 630,
-        alt: "Khojix - Professional Directory",
+        alt: "KhojCity - Professional Directory",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Khojix - Professional Directory",
+    title: "KhojCity - Professional Directory",
     description: "Connect with trusted professionals in your area. Find engineers, plumbers, electricians, designers, and more.",
     images: ["/og-image.png"], // You'll need to create this
   },
@@ -52,16 +69,13 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Khojix",
+    title: "KhojCity",
   },
   icons: {
     icon: [
-      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+      { url: "/vercel.svg", sizes: "any", type: "image/svg+xml" },
     ],
-    apple: [
-      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
-    ],
+    apple: [],
   },
 };
 
@@ -79,18 +93,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={plusJakartaSans.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#4f46e5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Khojix" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-title" content="KhojCity" />
+        {/* DNS prefetch and preconnect for external resources - Performance optimization */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://piulmultzreflltuqaxs.supabase.co" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://piulmultzreflltuqaxs.supabase.co" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -114,7 +131,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className={`antialiased ${plusJakartaSans.className}`} suppressHydrationWarning>
         {children}
       </body>
     </html>

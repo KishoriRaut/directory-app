@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useMemo, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Professional } from '@/types/directory'
 import { ProfessionalCard } from '@/components/ProfessionalCard'
@@ -10,26 +10,67 @@ import { Pagination } from '@/components/Pagination'
 import { debounce } from '@/lib/performance'
 import { Header } from '@/components/Header'
 import { HeroSearch } from '@/components/HeroSearch'
-import { PopularCategories } from '@/components/PopularCategories'
-import { HowItWorks } from '@/components/HowItWorks'
-import { FeaturedProfessionals } from '@/components/FeaturedProfessionals'
-import { Testimonials } from '@/components/Testimonials'
-import { Statistics } from '@/components/Statistics'
+import dynamic from 'next/dynamic'
+
+// Lazy load below-the-fold components for better initial load performance
+const PopularCategories = dynamic(() => import('@/components/PopularCategories').then(mod => ({ default: mod.PopularCategories })), {
+  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-96 mx-auto"></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div></div></div></div></div>,
+  ssr: true
+})
+
+const HowItWorks = dynamic(() => import('@/components/HowItWorks').then(mod => ({ default: mod.HowItWorks })), {
+  loading: () => <div className="py-12 sm:py-16 bg-gray-50"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-48 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-4 gap-6"><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div></div></div></div></div>,
+  ssr: true
+})
+
+const FeaturedProfessionals = dynamic(() => import('@/components/FeaturedProfessionals').then(mod => ({ default: mod.FeaturedProfessionals })), {
+  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-96 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6"><div className="h-64 bg-gray-200 rounded"></div><div className="h-64 bg-gray-200 rounded"></div><div className="h-64 bg-gray-200 rounded"></div></div></div></div></div>,
+  ssr: true
+})
+
+const Testimonials = dynamic(() => import('@/components/Testimonials').then(mod => ({ default: mod.Testimonials })), {
+  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6"><div className="h-48 bg-gray-200 rounded"></div><div className="h-48 bg-gray-200 rounded"></div><div className="h-48 bg-gray-200 rounded"></div></div></div></div></div>,
+  ssr: true
+})
+
+const Statistics = dynamic(() => import('@/components/Statistics').then(mod => ({ default: mod.Statistics })), {
+  loading: () => <div className="py-12 sm:py-16 bg-indigo-600"><div className="container mx-auto px-6"><div className="animate-pulse grid grid-cols-2 md:grid-cols-4 gap-6"><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div></div></div></div>,
+  ssr: true
+})
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Search, CheckCircle, Star, Clock, MapPin, Mail, User, LogOut, ArrowUpDown } from 'lucide-react'
+import { X, Search, CheckCircle, Star, Clock, MapPin } from 'lucide-react'
 import Link from 'next/link'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { StructuredData } from '@/components/StructuredData'
+import type { User } from '@supabase/supabase-js'
 
 type SortOption = 'rating-desc' | 'verified-first' | 'newest' | 'experience-desc'
+
+interface SupabaseProfessional {
+  id: string
+  name: string
+  profession: string
+  category: string
+  email: string
+  phone: string
+  location: string
+  experience: number
+  rating: number
+  description: string
+  availability: string
+  image_url?: string | null
+  verified: boolean
+  created_at: string
+  services?: Array<{ service_name: string }>
+}
 
 export default function Home() {
   const [filters, setFilters] = useState<SearchFiltersType>({})
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(12)
@@ -38,8 +79,27 @@ export default function Home() {
   // Check authentication status
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+            // Clear invalid session
+            await supabase.auth.signOut()
+            setUser(null)
+            return
+          }
+          console.error('Auth error:', error)
+        }
+        setUser(session?.user || null)
+      } catch (error: unknown) {
+        // Handle any unexpected errors
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
+          await supabase.auth.signOut()
+        }
+        setUser(null)
+      }
     }
     
     checkAuth()
@@ -65,14 +125,13 @@ export default function Home() {
 
       try {
         // Build query with filters
-        let query = supabase
-          .from('professionals')
-          .select(`
-            *,
-            services (
-              service_name
-            )
-          `, { count: 'exact' }) // Get total count for pagination
+        let query = buildProfessionalsQuery(true) // Get total count for pagination
+
+        // CRITICAL: Only show visible profiles in search results (industry best practice)
+        // Users can always see their own profile even if hidden (handled by RLS)
+        if (checkIsVisibleColumnExists()) {
+          query = query.eq('is_visible', true)
+        }
 
         // Apply filters
         if (filters.category && filters.category !== 'all') {
@@ -132,8 +191,62 @@ export default function Home() {
         const from = (currentPage - 1) * itemsPerPage
         const to = from + itemsPerPage - 1
         
-        const { data, error, count } = await query
+        let { data, error, count } = await query
           .range(from, to)
+
+        // If error is due to missing is_visible column, retry without the filter
+        if (error && isMissingColumnError(error)) {
+          setIsVisibleColumnExists(false)
+          
+          // Only log once per session to avoid console spam
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (!(window as any).__isVisibleColumnWarningShown) {
+            console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ;(window as any).__isVisibleColumnWarningShown = true
+          }
+          // Rebuild query without is_visible filter
+          query = buildProfessionalsQuery(true)
+          
+          // Reapply all filters except is_visible
+          if (filters.category && filters.category !== 'all') {
+            query = query.eq('category', filters.category)
+          }
+          if (filters.minRating) {
+            query = query.gte('rating', filters.minRating)
+          }
+          if (filters.verified) {
+            query = query.eq('verified', true)
+          }
+          if (filters.search || filters.profession) {
+            const searchTerm = filters.search || filters.profession || ''
+            query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
+          } else if (filters.location) {
+            query = query.ilike('location', `%${filters.location}%`)
+          }
+          
+          // Reapply sorting
+          switch (sortBy) {
+            case 'rating-desc':
+              query = query.order('verified', { ascending: false })
+                          .order('rating', { ascending: false })
+                          .order('created_at', { ascending: false })
+              break
+            case 'verified-first':
+              query = query.order('verified', { ascending: false })
+                          .order('rating', { ascending: false })
+                          .order('experience', { ascending: false })
+              break
+            default:
+              query = query.order('created_at', { ascending: false })
+          }
+          
+          // Retry query
+          const retryResult = await query.range(from, to)
+          data = retryResult.data
+          error = retryResult.error
+          count = retryResult.count
+        }
 
         if (error) {
           console.error('Error fetching professionals:', error)
@@ -141,32 +254,27 @@ export default function Home() {
           return
         }
 
-        console.log('Fetched data:', data) // Debug log
-        console.log('Total count:', count) // Debug log
-
         // Type assertion for the data
-        const professionalsData = data as any[]
+        const professionalsData = (data || []) as SupabaseProfessional[]
 
         // Transform data to match Professional interface
         const transformedData: Professional[] = professionalsData.map(prof => ({
           id: prof.id,
           name: prof.name,
           profession: prof.profession,
-          category: prof.category,
+          category: prof.category as Professional['category'],
           email: prof.email,
           phone: prof.phone,
           location: prof.location,
           experience: prof.experience,
           rating: prof.rating,
           description: prof.description,
-          services: prof.services?.map((s: any) => s.service_name) || [],
+          services: prof.services?.map((s) => s.service_name) || [],
           availability: prof.availability,
-          imageUrl: prof.image_url,
+          imageUrl: prof.image_url || undefined,
           verified: prof.verified,
           createdAt: prof.created_at
         }))
-
-        console.log('Transformed data:', transformedData) // Debug log
         setProfessionals(transformedData)
         setTotalItems(count || 0)
       } catch (error) {
@@ -179,49 +287,55 @@ export default function Home() {
     fetchProfessionals()
   }, [currentPage, itemsPerPage, filters, sortBy])
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page)
-  }
+  }, [])
 
-  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+  const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
     setItemsPerPage(newItemsPerPage)
     setCurrentPage(1) // Reset to first page when changing items per page
-  }
+  }, [])
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const totalPages = useMemo(() => Math.ceil(totalItems / itemsPerPage), [totalItems, itemsPerPage])
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut()
     setUser(null)
-  }
+  }, [])
 
-  const handleViewProfile = (id: string) => {
+  const handleViewProfile = useCallback((id: string) => {
     window.location.href = `/profile/${id}`
-  }
+  }, [])
 
-  const handleHeroSearch = debounce((query: string, category: string, location: string) => {
-    const newFilters: SearchFiltersType = {}
-    if (query) newFilters.search = query
-    if (category && category !== 'all') newFilters.category = category
-    if (location) newFilters.location = location
-    
-    setFilters(newFilters)
-    setCurrentPage(1)
-    
-    // Scroll to results section
-    const resultsSection = document.getElementById('results-section')
-    if (resultsSection) {
-      resultsSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, 300)
+  const handleHeroSearch = useCallback(
+    debounce((query: string, category: string, location: string) => {
+      const newFilters: SearchFiltersType = {}
+      if (query) newFilters.search = query
+      if (category && category !== 'all') newFilters.category = category
+      if (location) newFilters.location = location
+      
+      setFilters(newFilters)
+      setCurrentPage(1)
+      
+      // Scroll to results section
+      const resultsSection = document.getElementById('results-section')
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 300),
+    []
+  )
 
-  const handleSortChange = (value: SortOption) => {
+  const handleSortChange = useCallback((value: SortOption) => {
     setSortBy(value)
     setCurrentPage(1) // Reset to first page when sorting changes
-  }
+  }, [])
 
-  const hasActiveFilters = Object.values(filters).some(value => 
-    value !== undefined && value !== '' && value !== false
+  const hasActiveFilters = useMemo(() => 
+    Object.values(filters).some(value => 
+      value !== undefined && value !== '' && value !== false
+    ),
+    [filters]
   )
 
   return (
@@ -262,6 +376,7 @@ function HomeContent({
   totalItems,
   itemsPerPage,
   sortBy,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setSortBy,
   handleSignOut,
   handleViewProfile,
@@ -270,13 +385,14 @@ function HomeContent({
   hasActiveFilters,
   totalPages,
   handlePageChange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleItemsPerPageChange
 }: {
   filters: SearchFiltersType
   setFilters: (filters: SearchFiltersType) => void
   professionals: Professional[]
   loading: boolean
-  user: any
+  user: User | null
   currentPage: number
   setCurrentPage: (page: number) => void
   totalItems: number
@@ -500,7 +616,7 @@ function HomeContent({
                 <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 max-w-md mx-auto">
                   <h4 className="font-semibold text-gray-900 mb-2">Setup Instructions:</h4>
                   <ol className="text-left text-sm text-gray-700 space-y-2 list-decimal">
-                    <li>Go to <a href="https://supabase.com" target="_blank" className="text-indigo-600 hover:text-indigo-700">supabase.com</a></li>
+                    <li>Go to <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700">supabase.com</a></li>
                     <li>Create a new project or use your existing one</li>
                     <li>Go to Settings → API</li>
                     <li>Copy your Project URL and Anon Key</li>
@@ -521,7 +637,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">No professionals found</h3>
                 <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-                  Try adjusting your filters or search criteria to find more professionals. We're constantly adding new experts to our directory.
+                  Try adjusting your filters or search criteria to find more professionals. We&apos;re constantly adding new experts to our directory.
                 </p>
                 <div className="space-y-3">
                   <Button 
@@ -579,7 +695,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="inline-block mb-3">
                 <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Khojix
+                  KhojCity
                 </h3>
               </Link>
               <p className="text-sm text-gray-600 mb-4">
@@ -654,7 +770,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}</pre>
           <div className="border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500">
-                © {new Date().getFullYear()} Khojix. All rights reserved.
+                © {new Date().getFullYear()} KhojCity. All rights reserved.
               </p>
               <p className="text-xs text-gray-500">
                 Connecting professionals worldwide

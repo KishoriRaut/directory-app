@@ -1,5 +1,6 @@
 'use client'
 
+import { memo, useMemo, useCallback } from 'react'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { categories, professions } from '@/lib/constants'
 import { Input } from '@/components/ui/input'
@@ -12,24 +13,27 @@ interface SearchFiltersProps {
   onFiltersChange: (filters: SearchFiltersType) => void
 }
 
-export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
-  const updateFilter = (key: keyof SearchFiltersType, value: any) => {
+export const SearchFilters = memo(function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+  const updateFilter = useCallback((key: keyof SearchFiltersType, value: any) => {
     onFiltersChange({ ...filters, [key]: value })
-  }
+  }, [filters, onFiltersChange])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     onFiltersChange({})
-  }
+  }, [onFiltersChange])
 
-  const hasActiveFilters = Object.values(filters).some(value => 
-    value !== undefined && value !== '' && value !== false
+  const hasActiveFilters = useMemo(() => 
+    Object.values(filters).some(value => 
+      value !== undefined && value !== '' && value !== false
+    ),
+    [filters]
   )
 
-  const getActiveFiltersCount = () => {
+  const getActiveFiltersCount = useMemo(() => {
     return Object.values(filters).filter(value => 
       value !== undefined && value !== '' && value !== false
     ).length
-  }
+  }, [filters])
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow-sm">
@@ -39,7 +43,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
           <h3 className="text-base sm:text-lg font-bold text-gray-900">Search Filters</h3>
           {hasActiveFilters && (
             <p className="text-xs sm:text-sm text-gray-600 mt-1">
-              {getActiveFiltersCount()} filter{getActiveFiltersCount() !== 1 ? 's' : ''} applied
+              {getActiveFiltersCount} filter{getActiveFiltersCount !== 1 ? 's' : ''} applied
             </p>
           )}
         </div>
@@ -228,4 +232,9 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
       )}
     </div>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison - only re-render if filters actually change
+  const prevFilters = JSON.stringify(prevProps.filters)
+  const nextFilters = JSON.stringify(nextProps.filters)
+  return prevFilters === nextFilters
+})

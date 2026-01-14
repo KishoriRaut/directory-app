@@ -17,9 +17,10 @@ import {
   Mail,
   ArrowRight,
   Check,
-  User
+  User as UserIcon
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import type { User } from '@supabase/supabase-js'
 
 const steps = [
   {
@@ -74,7 +75,7 @@ const steps = [
 
 const providerSteps = [
   {
-    icon: User,
+    icon: UserIcon,
     title: 'Create Your Profile',
     description: 'Build your professional profile with skills, experience, photos, and customer reviews.',
     details: [
@@ -198,7 +199,7 @@ const pricingInfo = {
 const faqs = [
   {
     question: 'How do I know if a professional is trustworthy?',
-    answer: 'All professionals on Khojix go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
+    answer: 'All professionals on KhojCity go through a comprehensive verification process including background checks, license verification, insurance validation, and review of their work history. You can also read authentic reviews from verified service completions to make informed decisions.'
   },
   {
     question: 'Is it really free for customers?',
@@ -232,8 +233,25 @@ export default function HowItWorksPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+            await supabase.auth.signOut()
+            setUser(null)
+            return
+          }
+        }
+        setUser(session?.user || null)
+      } catch (error: unknown) {
+        // Handle any unexpected errors
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
+          await supabase.auth.signOut()
+        }
+        setUser(null)
+      }
     }
     
     checkAuth()
@@ -261,13 +279,13 @@ export default function HowItWorksPage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-4 sm:mb-6">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                Khojix
+                KhojCity
               </h1>
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-1">Professional Directory</p>
               <p className="text-xs text-gray-500">by Siscora.com</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-              How Khojix Works
+              How KhojCity Works
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8">
               Get connected with trusted professionals in 4 simple steps. 
@@ -321,7 +339,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Trust Khojix?
+              Why Trust KhojCity?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We go above and beyond to ensure your safety and satisfaction
@@ -483,7 +501,7 @@ export default function HowItWorksPage() {
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="h-8 w-8 text-white" />
+                  <UserIcon className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   {pricingInfo.forProfessionals.title}
@@ -510,10 +528,10 @@ export default function HowItWorksPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Khojix?
+              Why Choose KhojCity?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We're committed to making professional services accessible, safe, and reliable
+              We&apos;re committed to making professional services accessible, safe, and reliable
             </p>
           </div>
 
@@ -543,7 +561,7 @@ export default function HowItWorksPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Got questions? We've got answers. Here are some common questions about using Khojix.
+              Got questions? We&apos;ve got answers. Here are some common questions about using KhojCity.
             </p>
           </div>
 
@@ -578,7 +596,7 @@ export default function HowItWorksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Take Khojix Anywhere
+                Take KhojCity Anywhere
               </h2>
               <p className="text-xl text-gray-300 mb-8">
                 Manage your professional services on the go with our mobile app. Search, book, and pay—all from your pocket.
@@ -663,7 +681,7 @@ export default function HowItWorksPage() {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-white/90 mb-8">
-              Join thousands of satisfied customers who found their perfect professional through Khojix
+              Join thousands of satisfied customers who found their perfect professional through KhojCity
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/#results-section">

@@ -13,6 +13,7 @@ export interface Professional {
   availability: string
   imageUrl?: string
   verified: boolean
+  is_visible?: boolean // Controls profile visibility in search results
   createdAt: string
 }
 

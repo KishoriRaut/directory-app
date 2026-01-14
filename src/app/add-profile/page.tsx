@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { Professional } from '@/types/directory'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -10,10 +11,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Plus, X, User, Briefcase, Mail, Phone, MapPin, Clock, FileText, Sparkles } from 'lucide-react'
-import Link from 'next/link'
+import { Plus, X, User, Briefcase, Mail, Phone, MapPin, Clock, FileText, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ImageUpload } from '@/components/ImageUpload'
+import { Header } from '@/components/Header'
 
 const categories = [
   { value: 'doctor', label: 'Doctor' },
@@ -48,29 +49,85 @@ export default function AddProfilePage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [user, setUser] = useState<SupabaseUser | null>(null)
 
-  // Check authentication
+  // Check authentication and if profile exists, redirect to profile page
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/auth/signin?redirect=/add-profile')
-        return
-      }
+    const checkAuthAndProfile = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+            await supabase.auth.signOut()
+            router.push('/auth/signin?redirect=/add-profile')
+            return
+          }
+        }
+        if (!session) {
+          router.push('/auth/signin?redirect=/add-profile')
+          return
+        }
 
-      // Pre-fill email from authenticated user
-      if (session.user?.email) {
-        setFormData(prev => ({ ...prev, email: session.user.email || '' }))
+        setUser(session.user)
+
+        // Check if profile already exists - if yes, redirect to profile page (industry best practice)
+        if (session.user?.email) {
+          const normalizedEmail = session.user.email.toLowerCase().trim()
+          console.log('Checking for existing profile with email:', normalizedEmail)
+          
+          const { data: existingProfile, error: checkError } = await supabase
+            .from('professionals')
+            .select('id, email')
+            .eq('email', normalizedEmail)
+            .maybeSingle()
+
+          console.log('Profile check result:', { existingProfile, checkError })
+
+          if (existingProfile) {
+            // Profile exists, redirect to profile page
+            console.log('Profile exists, redirecting to /profile')
+            router.push('/profile')
+            return
+          }
+          
+          if (checkError && checkError.code !== 'PGRST116') {
+            // Error other than "not found" - log it
+            console.error('Error checking for existing profile:', checkError)
+          }
+
+          // Pre-fill email from authenticated user
+          setFormData(prev => ({ ...prev, email: session.user.email || '' }))
+        }
+      } catch (error: unknown) {
+        // Handle any unexpected errors
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
+          await supabase.auth.signOut()
+        }
+        router.push('/auth/signin?redirect=/add-profile')
       }
     }
     
-    checkAuth()
+    checkAuthAndProfile()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!session) {
         router.push('/auth/signin?redirect=/add-profile')
       } else {
+        setUser(session.user)
+        // Check if profile exists
         if (session.user?.email) {
+          const { data: existingProfile } = await supabase
+            .from('professionals')
+            .select('id')
+            .eq('email', session.user.email)
+            .maybeSingle()
+
+          if (existingProfile) {
+            router.push('/profile')
+            return
+          }
           setFormData(prev => ({ ...prev, email: session.user.email || '' }))
         }
       }
@@ -106,12 +163,13 @@ export default function AddProfilePage() {
     setIsSubmitting(true)
 
     try {
-      // Insert professional data
+      // Insert professional data (normalize email for consistency - industry best practice)
+      const normalizedEmail = formData.email.toLowerCase().trim()
       const insertData = {
         name: formData.name,
         profession: formData.profession,
         category: formData.category,
-        email: formData.email,
+        email: normalizedEmail, // Always store email in lowercase
         phone: formData.phone,
         location: formData.location,
         experience: parseInt(formData.experience),
@@ -121,13 +179,14 @@ export default function AddProfilePage() {
         image_url: formData.imageUrl || null,
         verified: false
       }
-      const { data: professionalData, error: professionalError } = await (supabase
+      const result = await supabase
         .from('professionals')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .insert(insertData as any)
+        .insert([insertData] as any)
         .select()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .single() as any) as { data: { id: string } | null; error: Error | null }
+        .single()
+
+      const professionalData = result.data as { id: string } | null
+      const professionalError = result.error
 
       if (professionalError) {
         console.error('Error creating professional:', professionalError)
@@ -144,7 +203,6 @@ export default function AddProfilePage() {
 
         const { error: servicesError } = await supabase
           .from('services')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .insert(servicesToInsert as any)
 
         if (servicesError) {
@@ -207,26 +265,14 @@ export default function AddProfilePage() {
     updateField('imageUrl', imageUrl || '')
   }
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-sm touch-target">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Directory
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Add Your Profile
-              </h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Join our community of trusted professionals</p>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header user={user} onSignOut={handleSignOut} />
 
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto">
