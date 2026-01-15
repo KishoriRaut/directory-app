@@ -53,32 +53,77 @@ export function Header({ user, onSignOut }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [mounted])
 
-  // Close menus when clicking outside
+  // Close mobile menu when clicking outside
   useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return () => {} // Always return a cleanup function
+    }
+    
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
       
-      // Never interfere with any navigation links, buttons, or header elements
-      if (target.closest('header a') || target.closest('header button') || target.closest('nav')) {
+      // Don't close if clicking on mobile menu trigger or inside mobile menu
+      if (target.closest('.mobile-menu-trigger') || target.closest('.mobile-menu')) {
         return
       }
       
-      // Close dropdown if clicking outside of it
-      if (!target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
+      // Close mobile menu if clicking outside
+      setIsMobileMenuOpen(false)
+    }
+    
+    // Add listener with a small delay to avoid immediate closure on button click
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 100)
+    
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+    }
+  }, [isMobileMenuOpen])
+
+  // Handle Escape key for both menus
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setIsDropdownOpen(false)
-      }
-      
-      // Close mobile menu only if clicking outside of it
-      const isMobileMenuElement = target.closest('.mobile-menu')
-      const isMobileMenuTrigger = target.closest('.mobile-menu-trigger')
-      
-      if (!isMobileMenuElement && !isMobileMenuTrigger) {
         setIsMobileMenuOpen(false)
       }
     }
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
   }, [])
+  
+  // Handle dropdown click outside
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      return () => {} // Always return a cleanup function
+    }
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      
+      // Don't close if clicking on dropdown trigger or inside dropdown menu
+      if (target.closest('.dropdown-trigger') || target.closest('.dropdown-menu')) {
+        return
+      }
+      
+      // Close dropdown if clicking outside
+      setIsDropdownOpen(false)
+    }
+    
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 100)
+    
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+    }
+  }, [isDropdownOpen])
 
   return (
     <>
@@ -135,9 +180,15 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         e.stopPropagation()
                         setIsDropdownOpen(!isDropdownOpen)
                       }}
-                      className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          setIsDropdownOpen(!isDropdownOpen)
+                        }
+                      }}
+                      className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       aria-label="User menu"
-                      aria-expanded={isDropdownOpen}
+                      aria-expanded={mounted ? isDropdownOpen : false}
                       aria-haspopup="true"
                       title="User menu"
                     >
@@ -149,7 +200,11 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
-                      <div className="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                      <div 
+                        className="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                        role="menu"
+                        aria-label="User menu"
+                      >
                         <div className="px-4 py-3 border-b border-gray-100">
                           <p className="text-sm font-medium text-gray-900">
                             {user.email?.split('@')[0]}
@@ -159,25 +214,48 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         <Link
                           href="/profile"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              setIsDropdownOpen(false)
+                            }
+                          }}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+                          role="menuitem"
+                          aria-label="Go to my profile"
                         >
-                          <User className="h-4 w-4 text-gray-500" />
+                          <User className="h-4 w-4 text-gray-500" aria-hidden="true" />
                           <span>My Profile</span>
                         </Link>
                         <Link
                           href="/settings"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              setIsDropdownOpen(false)
+                            }
+                          }}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+                          role="menuitem"
+                          aria-label="Go to settings"
                         >
-                          <Settings className="h-4 w-4 text-gray-500" />
+                          <Settings className="h-4 w-4 text-gray-500" aria-hidden="true" />
                           <span>Settings</span>
                         </Link>
                         <div className="border-t border-gray-100 mt-2 pt-2">
                           <button
                             onClick={onSignOut}
-                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                onSignOut()
+                                setIsDropdownOpen(false)
+                              }
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors focus:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-inset"
+                            role="menuitem"
+                            aria-label="Sign out"
                           >
-                            <LogOut className="h-4 w-4" />
+                            <LogOut className="h-4 w-4" aria-hidden="true" />
                             <span>Sign Out</span>
                           </button>
                         </div>
@@ -209,8 +287,13 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
             {/* Mobile Menu Button */}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="mobile-menu-trigger lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsMobileMenuOpen(!isMobileMenuOpen)
+              }}
+              className="mobile-menu-trigger lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label="Toggle mobile menu"
+              aria-expanded={mounted ? isMobileMenuOpen : false}
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6 text-gray-700" />
@@ -223,7 +306,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white">
+          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white z-40">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
               {/* Mobile Navigation */}
               <nav className="space-y-1">

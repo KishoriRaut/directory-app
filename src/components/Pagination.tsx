@@ -10,6 +10,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void
   totalItems?: number
   itemsPerPage?: number
+  onItemsPerPageChange?: (items: number) => void
   className?: string
 }
 
@@ -19,6 +20,7 @@ export function Pagination({
   onPageChange,
   totalItems,
   itemsPerPage = 12,
+  onItemsPerPageChange,
   className
 }: PaginationProps) {
   const getVisiblePages = () => {
@@ -152,9 +154,14 @@ export function Pagination({
           value={itemsPerPage}
           onChange={(e) => {
             const newItemsPerPage = parseInt(e.target.value)
+            if (onItemsPerPageChange) {
+              onItemsPerPageChange(newItemsPerPage)
+            }
             onPageChange(1) // Reset to first page when changing page size
           }}
           className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px] touch-target"
+          aria-label="Items per page"
+          title="Items per page"
         >
           <option value={12}>12</option>
           <option value={24}>24</option>
