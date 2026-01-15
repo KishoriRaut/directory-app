@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, Suspense, useMemo, useCallback } from 'react'
+import { useState, useEffect, Suspense, useMemo, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Professional } from '@/types/directory'
 import { ProfessionalCard } from '@/components/ProfessionalCard'
 import { SearchFilters } from '@/components/SearchFilters'
+import { ClientOnly } from '@/components/ClientOnly'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Pagination } from '@/components/Pagination'
 import { debounce } from '@/lib/performance'
@@ -76,43 +78,134 @@ export default function Home() {
   const [itemsPerPage, setItemsPerPage] = useState(12)
   const [sortBy, setSortBy] = useState<SortOption>('newest') // Default: Newest First
 
+  // Memoize filters as JSON string to prevent unnecessary re-renders
+  const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
+
+  // Helper function to apply filters to query (eliminates duplication)
+  const applyFiltersToQuery = useCallback((query: any) => {
+    if (filters.category && filters.category !== 'all') {
+      query = query.eq('category', filters.category)
+    }
+    if (filters.minRating) {
+      query = query.gte('rating', filters.minRating)
+    }
+    if (filters.verified) {
+      query = query.eq('verified', true)
+    }
+    if (filters.search || filters.profession) {
+      const searchTerm = filters.search || filters.profession || ''
+      query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
+    } else if (filters.location) {
+      query = query.ilike('location', `%${filters.location}%`)
+    }
+    return query
+  }, [filters])
+
+  // Helper function to apply sorting to query (eliminates duplication)
+  const applySortingToQuery = useCallback((query: any) => {
+    switch (sortBy) {
+      case 'rating-desc':
+        query = query.order('verified', { ascending: false })
+                    .order('rating', { ascending: false })
+                    .order('created_at', { ascending: false })
+        break
+      case 'verified-first':
+        query = query.order('verified', { ascending: false })
+                    .order('rating', { ascending: false })
+                    .order('experience', { ascending: false })
+        break
+      case 'newest':
+        query = query.order('created_at', { ascending: false })
+        break
+      case 'experience-desc':
+        query = query.order('experience', { ascending: false })
+                    .order('rating', { ascending: false })
+        break
+      default:
+        query = query.order('created_at', { ascending: false })
+    }
+    return query
+  }, [sortBy])
+
   // Check authentication status
+  // Use ref to prevent StrictMode double-execution
+  const authCheckedRef = useRef(false)
+  
   useEffect(() => {
+    // Prevent double execution in StrictMode
+    if (authCheckedRef.current) return
+    authCheckedRef.current = true
+    
+    let isCancelled = false
+    
     const checkAuth = async () => {
+      if (isCancelled) return
+      
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
+        if (isCancelled) return
+        
         if (error) {
           // Handle refresh token errors
           if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
             // Clear invalid session
             await supabase.auth.signOut()
-            setUser(null)
+            if (!isCancelled) {
+              setUser(null)
+            }
             return
           }
           console.error('Auth error:', error)
         }
-        setUser(session?.user || null)
+        if (!isCancelled) {
+          setUser(session?.user || null)
+        }
       } catch (error: unknown) {
+        if (isCancelled) return
+        
         // Handle any unexpected errors
         const errorMessage = error instanceof Error ? error.message : String(error)
         if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
           await supabase.auth.signOut()
         }
-        setUser(null)
+        if (!isCancelled) {
+          setUser(null)
+        }
       }
     }
     
     checkAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null)
-    })
+    let subscription: { unsubscribe: () => void } | undefined
+    try {
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!isCancelled) {
+          setUser(session?.user || null)
+        }
+      })
+      subscription = data?.subscription
+    } catch (error) {
+      if (!isCancelled) {
+        console.error('Error setting up auth listener:', error)
+      }
+    }
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isCancelled = true
+      if (subscription) {
+        try {
+          subscription.unsubscribe()
+        } catch (error) {
+          // Ignore unsubscribe errors
+        }
+      }
+    }
   }, [])
 
   // Fetch professionals from Supabase with pagination
   useEffect(() => {
+    let isCancelled = false
+    
     const fetchProfessionals = async () => {
       // Check if Supabase is configured
       if (!isSupabaseConfigured()) {
@@ -121,7 +214,15 @@ export default function Home() {
         return
       }
 
-      setLoading(true)
+      // Only show loading spinner if we don't have existing data (prevents flickering)
+      // This prevents content from disappearing during filter changes
+      setLoading((prev) => {
+        // Only set to true if we have no data, otherwise keep existing state
+        if (professionals.length === 0 && !prev) {
+          return true
+        }
+        return prev
+      })
 
       try {
         // Build query with filters
@@ -133,113 +234,34 @@ export default function Home() {
           query = query.eq('is_visible', true)
         }
 
-        // Apply filters
-        if (filters.category && filters.category !== 'all') {
-          query = query.eq('category', filters.category)
-        }
-        
-        // Minimum rating filter
-        if (filters.minRating) {
-          query = query.gte('rating', filters.minRating)
-        }
-        
-        // Verified filter
-        if (filters.verified) {
-          query = query.eq('verified', true)
-        }
-        
-        // Improved search: search across name, profession, description, and location
-        if (filters.search || filters.profession) {
-          const searchTerm = filters.search || filters.profession || ''
-          // Use OR filter to search across multiple fields
-          // Format: field1.ilike.term,field2.ilike.term
-          query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
-        } else if (filters.location) {
-          // If only location filter (no search), search location field
-          query = query.ilike('location', `%${filters.location}%`)
-        }
-
-        // Apply sorting based on sortBy state
-        switch (sortBy) {
-          case 'rating-desc':
-            // Highest Rated: Verified first, then by rating
-            query = query.order('verified', { ascending: false })
-                        .order('rating', { ascending: false })
-                        .order('created_at', { ascending: false })
-            break
-          case 'verified-first':
-            // Verified First: Verified professionals first, then by rating
-            query = query.order('verified', { ascending: false })
-                        .order('rating', { ascending: false })
-                        .order('experience', { ascending: false })
-            break
-          case 'newest':
-            // Newest First
-            query = query.order('created_at', { ascending: false })
-            break
-          case 'experience-desc':
-            // Most Experienced
-            query = query.order('experience', { ascending: false })
-                        .order('rating', { ascending: false })
-            break
-          default:
-            // Default: Newest First
-            query = query.order('created_at', { ascending: false })
-        }
+        // Apply filters and sorting using helper functions (eliminates duplication)
+        query = applyFiltersToQuery(query)
+        query = applySortingToQuery(query)
 
         // Apply pagination
         const from = (currentPage - 1) * itemsPerPage
         const to = from + itemsPerPage - 1
         
-        let { data, error, count } = await query
-          .range(from, to)
+        const result = await query.range(from, to)
+        let { data, error, count } = result
 
         // If error is due to missing is_visible column, retry without the filter
         if (error && isMissingColumnError(error)) {
           setIsVisibleColumnExists(false)
           
           // Only log once per session to avoid console spam
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if (!(window as any).__isVisibleColumnWarningShown) {
-            console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+          if (typeof window !== 'undefined') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ;(window as any).__isVisibleColumnWarningShown = true
+            if (!(window as any).__isVisibleColumnWarningShown) {
+              console.warn('ℹ️ is_visible column not found. Fetching all profiles. Run database/add-is-visible-field.sql migration to enable visibility filtering.')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ;(window as any).__isVisibleColumnWarningShown = true
+            }
           }
-          // Rebuild query without is_visible filter
+          // Rebuild query without is_visible filter using helper functions (eliminates duplication)
           query = buildProfessionalsQuery(true)
-          
-          // Reapply all filters except is_visible
-          if (filters.category && filters.category !== 'all') {
-            query = query.eq('category', filters.category)
-          }
-          if (filters.minRating) {
-            query = query.gte('rating', filters.minRating)
-          }
-          if (filters.verified) {
-            query = query.eq('verified', true)
-          }
-          if (filters.search || filters.profession) {
-            const searchTerm = filters.search || filters.profession || ''
-            query = query.or(`name.ilike.%${searchTerm}%,profession.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
-          } else if (filters.location) {
-            query = query.ilike('location', `%${filters.location}%`)
-          }
-          
-          // Reapply sorting
-          switch (sortBy) {
-            case 'rating-desc':
-              query = query.order('verified', { ascending: false })
-                          .order('rating', { ascending: false })
-                          .order('created_at', { ascending: false })
-              break
-            case 'verified-first':
-              query = query.order('verified', { ascending: false })
-                          .order('rating', { ascending: false })
-                          .order('experience', { ascending: false })
-              break
-            default:
-              query = query.order('created_at', { ascending: false })
-          }
+          query = applyFiltersToQuery(query)
+          query = applySortingToQuery(query)
           
           // Retry query
           const retryResult = await query.range(from, to)
@@ -275,17 +297,33 @@ export default function Home() {
           verified: prof.verified,
           createdAt: prof.created_at
         }))
-        setProfessionals(transformedData)
+        // Only update if data actually changed to prevent unnecessary re-renders
+        setProfessionals((prev) => {
+          // Simple check: if IDs are the same and count is same, don't update
+          if (prev.length === transformedData.length) {
+            const prevIds = prev.map(p => p.id).sort().join(',')
+            const nextIds = transformedData.map(p => p.id).sort().join(',')
+            if (prevIds === nextIds) {
+              return prev // Return same reference to prevent re-render
+            }
+          }
+          return transformedData
+        })
         setTotalItems(count || 0)
       } catch (error) {
-        console.error('Error:', error)
+        if (!isCancelled) {
+          console.error('Error:', error)
+        }
       } finally {
-        setLoading(false)
+        if (!isCancelled) {
+          setLoading(false)
+        }
       }
     }
 
     fetchProfessionals()
-  }, [currentPage, itemsPerPage, filters, sortBy])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage, filtersKey, sortBy, applyFiltersToQuery, applySortingToQuery])
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page)
@@ -304,7 +342,9 @@ export default function Home() {
   }, [])
 
   const handleViewProfile = useCallback((id: string) => {
-    window.location.href = `/profile/${id}`
+    if (typeof window !== 'undefined') {
+      window.location.href = `/profile/${id}`
+    }
   }, [])
 
   const handleHeroSearch = useCallback(
@@ -317,10 +357,15 @@ export default function Home() {
       setFilters(newFilters)
       setCurrentPage(1)
       
-      // Scroll to results section
-      const resultsSection = document.getElementById('results-section')
-      if (resultsSection) {
-        resultsSection.scrollIntoView({ behavior: 'smooth' })
+      // Scroll to results section (client-side only, SSR-safe)
+      if (typeof window !== 'undefined') {
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+          const resultsSection = document.getElementById('results-section')
+          if (resultsSection) {
+            resultsSection.scrollIntoView({ behavior: 'smooth' })
+          }
+        })
       }
     }, 300),
     []
@@ -339,29 +384,31 @@ export default function Home() {
   )
 
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>}>
-      <HomeContent 
-        filters={filters}
-        setFilters={setFilters}
-        professionals={professionals}
-        loading={loading}
-        user={user}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalItems={totalItems}
-        itemsPerPage={itemsPerPage}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        handleSignOut={handleSignOut}
-        handleViewProfile={handleViewProfile}
-        handleHeroSearch={handleHeroSearch}
-        handleSortChange={handleSortChange}
-        hasActiveFilters={hasActiveFilters}
-        totalPages={totalPages}
-        handlePageChange={handlePageChange}
-        handleItemsPerPageChange={handleItemsPerPageChange}
-      />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>}>
+        <HomeContent 
+          filters={filters}
+          setFilters={setFilters}
+          professionals={professionals}
+          loading={loading}
+          user={user}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          handleSignOut={handleSignOut}
+          handleViewProfile={handleViewProfile}
+          handleHeroSearch={handleHeroSearch}
+          handleSortChange={handleSortChange}
+          hasActiveFilters={hasActiveFilters}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+        />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 
@@ -389,7 +436,7 @@ function HomeContent({
   handleItemsPerPageChange
 }: {
   filters: SearchFiltersType
-  setFilters: (filters: SearchFiltersType) => void
+  setFilters: (filters: SearchFiltersType | ((prev: SearchFiltersType) => SearchFiltersType)) => void
   professionals: Professional[]
   loading: boolean
   user: User | null
@@ -432,12 +479,14 @@ function HomeContent({
       setCurrentPage(1)
       
       // Scroll to results section after a short delay
-      setTimeout(() => {
-        const resultsSection = document.getElementById('results-section')
-        if (resultsSection) {
-          resultsSection.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 100)
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          const resultsSection = document.getElementById('results-section')
+          if (resultsSection) {
+            resultsSection.scrollIntoView({ behavior: 'smooth' })
+          }
+        }, 100)
+      }
     }
   }, [searchParams, setFilters, setCurrentPage])
 
@@ -466,14 +515,39 @@ function HomeContent({
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <aside className="lg:col-span-1 order-2 lg:order-1">
               <div className="sticky top-20 lg:top-24">
-                <SearchFilters 
-                  filters={filters} 
-                  onFiltersChange={setFilters} 
-                />
+                <ClientOnly
+                  fallback={
+                    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow-sm">
+                      <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-gray-200 rounded w-24"></div>
+                        <div className="h-11 bg-gray-200 rounded"></div>
+                        <div className="h-11 bg-gray-200 rounded"></div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="h-11 bg-gray-200 rounded"></div>
+                        <div className="grid grid-cols-4 gap-2">
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                          <div className="h-10 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                >
+                  <SearchFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters} 
+                  />
+                </ClientOnly>
               </div>
             </aside>
 
-            <main className="lg:col-span-3 order-1 lg:order-2">
+            <main className="lg:col-span-3 order-1 lg:order-2 relative">
             {/* Results Header */}
             <div className="mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -578,7 +652,7 @@ function HomeContent({
             </div>
 
             {/* Results Grid */}
-            {loading ? (
+            {loading && professionals.length === 0 ? (
               <div className="text-center py-12 sm:py-20 bg-white rounded-xl border-2 border-gray-200 shadow-sm">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
@@ -614,7 +688,7 @@ function HomeContent({
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {professionals.map((professional: Professional) => (
                   <ProfessionalCard
                     key={professional.id}

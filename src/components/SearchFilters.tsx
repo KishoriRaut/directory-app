@@ -1,24 +1,88 @@
 'use client'
 
-import { memo, useMemo, useCallback } from 'react'
+import { memo, useMemo, useCallback, useState, useEffect, useRef } from 'react'
 import { SearchFilters as SearchFiltersType } from '@/types/directory'
-import { categories, professions } from '@/lib/constants'
+import { categories } from '@/lib/constants'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Search, X, MapPin, Star, CheckCircle } from 'lucide-react'
+import { debounce } from '@/lib/performance'
 
 interface SearchFiltersProps {
   filters: SearchFiltersType
-  onFiltersChange: (filters: SearchFiltersType) => void
+  onFiltersChange: (filters: SearchFiltersType | ((prev: SearchFiltersType) => SearchFiltersType)) => void
 }
 
 export const SearchFilters = memo(function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+  // Local state for search and location inputs
+  const [searchQuery, setSearchQuery] = useState(() => filters.search || filters.profession || '')
+  const [locationQuery, setLocationQuery] = useState(() => filters.location || '')
+  
+  // Store callback in ref to prevent debounced function recreation
+  const onFiltersChangeRef = useRef(onFiltersChange)
+  useEffect(() => {
+    onFiltersChangeRef.current = onFiltersChange
+  }, [onFiltersChange])
+
+  // Debounced filter update for search and location inputs
+  const debouncedUpdateSearch = useMemo(
+    () => debounce((value: string) => {
+      onFiltersChangeRef.current((prevFilters) => {
+        const newFilters: SearchFiltersType = { ...prevFilters }
+        if (value) {
+          newFilters.search = value
+          newFilters.profession = value
+        } else {
+          delete newFilters.search
+          delete newFilters.profession
+        }
+        return newFilters
+      })
+    }, 400),
+    []
+  )
+
+  const debouncedUpdateLocation = useMemo(
+    () => debounce((value: string) => {
+      onFiltersChangeRef.current((prevFilters) => {
+        return { ...prevFilters, location: value || undefined }
+      })
+    }, 400),
+    []
+  )
+
+  // Sync local state with external filters
+  // Use ref to prevent infinite loops in StrictMode
+  const syncInProgressRef = useRef(false)
+  
+  useEffect(() => {
+    // Prevent sync during internal updates
+    if (syncInProgressRef.current) return
+    
+    const externalSearch = filters.search || filters.profession || ''
+    const externalLocation = filters.location || ''
+    
+    // Only update if values actually changed to prevent loops
+    if (externalSearch !== searchQuery) {
+      setSearchQuery(externalSearch)
+    }
+    if (externalLocation !== locationQuery) {
+      setLocationQuery(externalLocation)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.search, filters.profession, filters.location])
+
+  // Immediate filter update for non-text inputs (badges, checkboxes)
   const updateFilter = useCallback((key: keyof SearchFiltersType, value: any) => {
-    onFiltersChange({ ...filters, [key]: value })
-  }, [filters, onFiltersChange])
+    onFiltersChange((prevFilters) => {
+      return { ...prevFilters, [key]: value }
+    })
+  }, [onFiltersChange])
 
   const clearFilters = useCallback(() => {
+    setSearchQuery('')
+    setLocationQuery('')
     onFiltersChange({})
   }, [onFiltersChange])
 
@@ -67,15 +131,11 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search professionals..."
-            value={filters.search || filters.profession || ''}
+            value={searchQuery}
             onChange={(e) => {
               const value = e.target.value
-              updateFilter('search', value)
-              if (value) {
-                updateFilter('profession', value)
-              } else {
-                updateFilter('profession', undefined)
-              }
+              setSearchQuery(value)
+              debouncedUpdateSearch(value)
             }}
             className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
           />
@@ -112,8 +172,12 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="City or location"
-            value={filters.location || ''}
-            onChange={(e) => updateFilter('location', e.target.value)}
+            value={locationQuery}
+            onChange={(e) => {
+              const value = e.target.value
+              setLocationQuery(value)
+              debouncedUpdateLocation(value)
+            }}
             className="pl-10 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 h-11"
           />
         </div>

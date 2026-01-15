@@ -3,10 +3,7 @@ import { Inter } from "next/font/google";
 import { initPerformanceMonitor } from "@/lib/performance-monitor";
 import "./globals.css";
 
-// Initialize performance monitoring
-if (typeof window !== 'undefined') {
-  initPerformanceMonitor();
-}
+// Performance monitoring will be initialized client-side
 
 // Optimize font loading with next/font
 const inter = Inter({
@@ -141,6 +138,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`antialiased ${inter.className}`} suppressHydrationWarning>
+        {/* Initialize performance monitoring client-side only */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined' && window.initPerformanceMonitor) {
+                window.initPerformanceMonitor();
+              }
+            `,
+          }}
+        />
         {children}
       </body>
     </html>
