@@ -14,29 +14,32 @@ import { Header } from '@/components/Header'
 import { HeroSearch } from '@/components/HeroSearch'
 import dynamic from 'next/dynamic'
 
+import { LoadingSkeleton } from '@/components/LoadingSkeleton'
+
 // Lazy load below-the-fold components for better initial load performance
+// Using reusable LoadingSkeleton component to eliminate duplicate code
 const PopularCategories = dynamic(() => import('@/components/PopularCategories').then(mod => ({ default: mod.PopularCategories })), {
-  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-96 mx-auto"></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div></div></div></div></div>,
+  loading: () => <LoadingSkeleton variant="categories" />,
   ssr: true
 })
 
 const HowItWorks = dynamic(() => import('@/components/HowItWorks').then(mod => ({ default: mod.HowItWorks })), {
-  loading: () => <div className="py-12 sm:py-16 bg-gray-50"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-48 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-4 gap-6"><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div></div></div></div></div>,
+  loading: () => <LoadingSkeleton variant="how-it-works" />,
   ssr: true
 })
 
 const FeaturedProfessionals = dynamic(() => import('@/components/FeaturedProfessionals').then(mod => ({ default: mod.FeaturedProfessionals })), {
-  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-96 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6"><div className="h-64 bg-gray-200 rounded"></div><div className="h-64 bg-gray-200 rounded"></div><div className="h-64 bg-gray-200 rounded"></div></div></div></div></div>,
+  loading: () => <LoadingSkeleton variant="featured" />,
   ssr: true
 })
 
 const Testimonials = dynamic(() => import('@/components/Testimonials').then(mod => ({ default: mod.Testimonials })), {
-  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6"><div className="h-48 bg-gray-200 rounded"></div><div className="h-48 bg-gray-200 rounded"></div><div className="h-48 bg-gray-200 rounded"></div></div></div></div></div>,
+  loading: () => <LoadingSkeleton variant="testimonials" />,
   ssr: true
 })
 
 const Statistics = dynamic(() => import('@/components/Statistics').then(mod => ({ default: mod.Statistics })), {
-  loading: () => <div className="py-12 sm:py-16 bg-indigo-600"><div className="container mx-auto px-6"><div className="animate-pulse grid grid-cols-2 md:grid-cols-4 gap-6"><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div><div className="h-24 bg-indigo-500 rounded"></div></div></div></div>,
+  loading: () => <LoadingSkeleton variant="statistics" />,
   ssr: true
 })
 import { Button } from '@/components/ui/button'
@@ -127,12 +130,10 @@ export default function Home() {
     return query
   }, [sortBy])
 
-  // Check authentication status
-  // Use ref to prevent StrictMode double-execution
+  // Check authentication status - using ref to prevent StrictMode double-execution
   const authCheckedRef = useRef(false)
   
   useEffect(() => {
-    // Prevent double execution in StrictMode
     if (authCheckedRef.current) return
     authCheckedRef.current = true
     
@@ -146,31 +147,21 @@ export default function Home() {
         if (isCancelled) return
         
         if (error) {
-          // Handle refresh token errors
           if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
-            // Clear invalid session
             await supabase.auth.signOut()
-            if (!isCancelled) {
-              setUser(null)
-            }
+            if (!isCancelled) setUser(null)
             return
           }
           console.error('Auth error:', error)
         }
-        if (!isCancelled) {
-          setUser(session?.user || null)
-        }
+        if (!isCancelled) setUser(session?.user || null)
       } catch (error: unknown) {
         if (isCancelled) return
-        
-        // Handle any unexpected errors
         const errorMessage = error instanceof Error ? error.message : String(error)
         if (errorMessage.includes('Refresh Token') || errorMessage.includes('refresh_token')) {
           await supabase.auth.signOut()
         }
-        if (!isCancelled) {
-          setUser(null)
-        }
+        if (!isCancelled) setUser(null)
       }
     }
     
@@ -179,26 +170,16 @@ export default function Home() {
     let subscription: { unsubscribe: () => void } | undefined
     try {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (!isCancelled) {
-          setUser(session?.user || null)
-        }
+        if (!isCancelled) setUser(session?.user || null)
       })
       subscription = data?.subscription
     } catch (error) {
-      if (!isCancelled) {
-        console.error('Error setting up auth listener:', error)
-      }
+      if (!isCancelled) console.error('Error setting up auth listener:', error)
     }
 
     return () => {
       isCancelled = true
-      if (subscription) {
-        try {
-          subscription.unsubscribe()
-        } catch (error) {
-          // Ignore unsubscribe errors
-        }
-      }
+      subscription?.unsubscribe().catch(() => {})
     }
   }, [])
 
@@ -258,13 +239,11 @@ export default function Home() {
               ;(window as any).__isVisibleColumnWarningShown = true
             }
           }
-          // Rebuild query without is_visible filter using helper functions (eliminates duplication)
-          query = buildProfessionalsQuery(true)
-          query = applyFiltersToQuery(query)
-          query = applySortingToQuery(query)
-          
-          // Retry query
-          const retryResult = await query.range(from, to)
+          // Rebuild query without is_visible filter - reuse helper functions (eliminates duplication)
+          let retryQuery = buildProfessionalsQuery(true)
+          retryQuery = applyFiltersToQuery(retryQuery)
+          retryQuery = applySortingToQuery(retryQuery)
+          const retryResult = await retryQuery.range(from, to)
           data = retryResult.data
           error = retryResult.error
           count = retryResult.count
