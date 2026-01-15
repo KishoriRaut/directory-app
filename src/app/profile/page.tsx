@@ -1460,14 +1460,47 @@ export default function MyProfilePage() {
                             .eq('email', normalizedEmail)
                           
                           if (error) {
-                            console.error('Error updating visibility:', error)
+                            // Check if error is meaningful (has properties with actual values) or just an empty object
+                            const hasMeaningfulError = error && (
+                              (error.code && error.code !== '') || 
+                              (error.message && error.message !== '') || 
+                              (error.details && error.details !== '') || 
+                              (error.hint && error.hint !== '') ||
+                              (Object.keys(error).length > 0 && Object.values(error).some(v => v != null && v !== ''))
+                            )
+
+                            // Only log if error is meaningful
+                            if (hasMeaningfulError) {
+                              // Build error info only with non-null/undefined/empty string values
+                              const errorData: any = {}
+                              if (error.code && error.code !== '') errorData.code = error.code
+                              if (error.message && error.message !== '') errorData.message = error.message
+                              if (error.details && error.details !== '') errorData.details = error.details
+                              if (error.hint && error.hint !== '') errorData.hint = error.hint
+                              
+                              // Filter out empty values
+                              const filteredErrorData: any = {}
+                              Object.keys(errorData).forEach(key => {
+                                const value = errorData[key]
+                                if (value != null && value !== '') {
+                                  filteredErrorData[key] = value
+                                }
+                              })
+
+                              // Only log if we have actual error content
+                              if (Object.keys(filteredErrorData).length > 0) {
+                                console.error('Error updating visibility:', filteredErrorData)
+                              }
+                            }
                             // Check if error is due to missing column
                             if (error.message?.includes('column') && error.message?.includes('is_visible')) {
-                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
+                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/complete-profile-visibility-setup.sql\n\nIn Supabase Dashboard → SQL Editor')
                             } else if (error.code === '42703' || error.message?.includes('does not exist')) {
-                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
-                            } else {
-                              alert(`Failed to update profile visibility: ${error.message || 'Unknown error'}`)
+                              alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/complete-profile-visibility-setup.sql\n\nIn Supabase Dashboard → SQL Editor')
+                            } else if (error.message?.includes('permission denied') || error.message?.includes('table users') || error.code === '42501') {
+                              alert('⚠️ Permission denied. Please run the COMPLETE SQL migration:\ndatabase/complete-profile-visibility-setup.sql\n\nThis fixes all RLS policies (SELECT and UPDATE) to allow profile visibility updates by email matching.\n\nRun in Supabase Dashboard → SQL Editor')
+                            } else if (hasMeaningfulError) {
+                              alert(`Failed to update profile visibility: ${error.message || 'Unknown error'}\n\nError code: ${error.code || 'N/A'}\n\nIf this persists, run: database/complete-profile-visibility-setup.sql`)
                             }
                             return
                           }
@@ -1480,11 +1513,25 @@ export default function MyProfilePage() {
                           setSavingStatus('success')
                           setTimeout(() => setSavingStatus('idle'), 2000)
                         } catch (error: any) {
-                          console.error('Error updating visibility:', error)
+                          // Only log if error is meaningful
+                          if (error && (
+                            (error.code && error.code !== '') || 
+                            (error.message && error.message !== '') || 
+                            (Object.keys(error).length > 0 && Object.values(error).some(v => v != null && v !== ''))
+                          )) {
+                            const errorData: any = {}
+                            if (error.code && error.code !== '') errorData.code = error.code
+                            if (error.message && error.message !== '') errorData.message = error.message
+                            if (Object.keys(errorData).length > 0) {
+                              console.error('Error updating visibility:', errorData)
+                            }
+                          }
                           if (error?.message?.includes('column') || error?.message?.includes('does not exist') || error?.code === '42703') {
-                            alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/add-is-visible-field.sql\n\nIn Supabase Dashboard → SQL Editor')
-                          } else {
-                            alert(`Failed to update profile visibility: ${error?.message || 'Unknown error'}`)
+                            alert('⚠️ Profile visibility feature requires database migration.\n\nPlease run the SQL migration file:\ndatabase/complete-profile-visibility-setup.sql\n\nIn Supabase Dashboard → SQL Editor')
+                          } else if (error?.message?.includes('permission denied') || error?.message?.includes('table users') || error?.code === '42501') {
+                            alert('⚠️ Permission denied. Please run the COMPLETE SQL migration:\ndatabase/complete-profile-visibility-setup.sql\n\nThis fixes all RLS policies to allow profile visibility updates.\n\nRun in Supabase Dashboard → SQL Editor')
+                          } else if (error?.message) {
+                            alert(`Failed to update profile visibility: ${error?.message || 'Unknown error'}\n\nIf this persists, run: database/complete-profile-visibility-setup.sql`)
                           }
                         }
                       }}
