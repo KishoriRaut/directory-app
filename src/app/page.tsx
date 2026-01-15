@@ -773,7 +773,7 @@ function HomeContent({
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {professionals.map((professional: Professional) => (
                   <ProfessionalCard
                     key={professional.id}
@@ -817,9 +817,9 @@ function HomeContent({
       <Testimonials />
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t-2 border-gray-300 mt-16 lg:mt-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+      <footer className="bg-gray-50 border-t-2 border-gray-300 mt-12 sm:mt-16 lg:mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 xl:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
             {/* Company Info */}
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="inline-block mb-3">

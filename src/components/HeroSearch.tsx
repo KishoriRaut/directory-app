@@ -177,102 +177,106 @@ export function HeroSearch({ onSearch }: HeroSearchProps) {
       </h1>
 
       {/* Minimal Search Container - Single Row Layout (Airbnb/Zillow Pattern) */}
-      <div className="bg-white rounded-xl shadow-xl border-2 border-gray-200 p-4 sm:p-6">
+      <div className="bg-white rounded-xl shadow-xl border-2 border-gray-200 p-4 sm:p-6 lg:p-8">
         {/* Search Inputs Row */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex flex-col gap-3 mb-4">
           {/* Search Input */}
-          <div className="relative flex-1">
+          <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               placeholder="Search for professionals, services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="pl-12 h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg"
+              className="pl-12 h-12 sm:h-14 text-base sm:text-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg touch-target"
             />
           </div>
 
-          {/* Location Input */}
-          <div className="relative w-full sm:w-56">
-            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
-            <Input
-              ref={locationInputRef}
-              placeholder="Location"
-              value={location}
-              onChange={(e) => handleLocationChange(e.target.value)}
-              onKeyPress={handleKeyPress}
-              onFocus={() => location.length > 0 && setShowSuggestions(true)}
-              className="pl-12 pr-12 h-12 text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg"
-            />
-            {/* Use My Location Button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleUseMyLocation}
-              disabled={isGettingLocation}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 px-2 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded"
-              title="Use my current location"
-            >
-              {isGettingLocation ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Navigation className="h-4 w-4" />
+          {/* Location and Category Row */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Location Input */}
+            <div className="relative flex-1">
+              <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+              <Input
+                ref={locationInputRef}
+                placeholder="Location"
+                value={location}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                onKeyPress={handleKeyPress}
+                onFocus={() => location.length > 0 && setShowSuggestions(true)}
+                className="pl-12 pr-12 h-12 sm:h-14 text-base sm:text-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg touch-target"
+              />
+              {/* Use My Location Button */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleUseMyLocation}
+                disabled={isGettingLocation}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded touch-target"
+                title="Use my current location"
+                aria-label="Use my current location"
+              >
+                {isGettingLocation ? (
+                  <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                ) : (
+                  <Navigation className="h-4 w-4 sm:h-5 sm:w-5" />
+                )}
+              </Button>
+              
+              {/* Location Autocomplete Suggestions */}
+              {showSuggestions && locationSuggestions.length > 0 && (
+                <div
+                  ref={suggestionsRef}
+                  className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-48 overflow-y-auto"
+                >
+                  {locationSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleLocationSelect(suggestion)}
+                      className="w-full text-left px-4 py-3 hover:bg-indigo-50 flex items-center gap-3 text-sm sm:text-base transition-colors touch-target"
+                    >
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span>{suggestion}</span>
+                    </button>
+                  ))}
+                </div>
               )}
-            </Button>
-            
-            {/* Location Autocomplete Suggestions */}
-            {showSuggestions && locationSuggestions.length > 0 && (
-              <div
-                ref={suggestionsRef}
-                className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-48 overflow-y-auto"
-              >
-                {locationSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleLocationSelect(suggestion)}
-                    className="w-full text-left px-4 py-3 hover:bg-indigo-50 flex items-center gap-3 text-sm transition-colors"
-                  >
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span>{suggestion}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
 
-          {/* Category Select */}
-          <div className="relative w-full sm:w-56">
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger 
-                className="w-full text-base border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg py-1 px-3 touch-target"
-                style={{ height: '3rem', minHeight: '3rem' }}
-              >
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="doctor">Doctors</SelectItem>
-                <SelectItem value="plumber">Plumbers</SelectItem>
-                <SelectItem value="electrician">Electricians</SelectItem>
-                <SelectItem value="engineer">Engineers</SelectItem>
-                <SelectItem value="designer">Designers</SelectItem>
-                <SelectItem value="consultant">Consultants</SelectItem>
-                <SelectItem value="therapist">Therapists</SelectItem>
-                <SelectItem value="lawyer">Lawyers</SelectItem>
-                <SelectItem value="accountant">Accountants</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Category Select */}
+            <div className="relative w-full sm:w-56">
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger 
+                  className="w-full text-base sm:text-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg py-1 px-3 touch-target h-12 sm:h-14"
+                >
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="doctor">Doctors</SelectItem>
+                  <SelectItem value="plumber">Plumbers</SelectItem>
+                  <SelectItem value="electrician">Electricians</SelectItem>
+                  <SelectItem value="engineer">Engineers</SelectItem>
+                  <SelectItem value="designer">Designers</SelectItem>
+                  <SelectItem value="consultant">Consultants</SelectItem>
+                  <SelectItem value="therapist">Therapists</SelectItem>
+                  <SelectItem value="lawyer">Lawyers</SelectItem>
+                  <SelectItem value="accountant">Accountants</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
         {/* Big Search Button - Full Width on Next Line */}
         <Button 
           onClick={handleSearch}
-          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
+          className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all touch-target"
+          aria-label="Search for professionals"
         >
-          <Search className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+          <Search className="h-5 w-5 sm:h-6 sm:w-6 mr-2" aria-hidden="true" />
           Search
         </Button>
 

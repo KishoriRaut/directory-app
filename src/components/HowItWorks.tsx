@@ -35,16 +35,16 @@ export function HowItWorks() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {steps.map((step) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          {steps.map((step, index) => (
             <div key={step.title} className="text-center">
-              <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <step.icon className="h-7 w-7 text-indigo-600" />
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5">
+                <step.icon className="h-7 w-7 sm:h-8 sm:w-8 text-indigo-600" aria-hidden="true" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
                 {step.title}
               </h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed px-2">
                 {step.description}
               </p>
             </div>

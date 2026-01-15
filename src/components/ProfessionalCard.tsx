@@ -75,13 +75,13 @@ export const ProfessionalCard = memo(function ProfessionalCard({ professional, o
       </div>
 
       {/* Content Section */}
-      <CardContent className="p-5 space-y-3">
+      <CardContent className="p-4 sm:p-5 space-y-3">
         {/* Header */}
         <div className="space-y-1">
-          <h3 className="text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+          <h3 className="text-base sm:text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
             {professional.name}
           </h3>
-          <p className="text-sm text-gray-600 truncate">{professional.profession}</p>
+          <p className="text-xs sm:text-sm text-gray-600 truncate">{professional.profession}</p>
         </div>
 
         {/* Rating & Location */}
@@ -105,7 +105,7 @@ export const ProfessionalCard = memo(function ProfessionalCard({ professional, o
         {/* Action Button */}
         <Button 
           onClick={() => onViewProfile(professional.id)}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 touch-target h-11 sm:h-12 text-sm sm:text-base"
           aria-label={`View profile for ${professional.name}, ${professional.profession}${professional.location ? ` in ${professional.location}` : ''}`}
         >
           View Profile

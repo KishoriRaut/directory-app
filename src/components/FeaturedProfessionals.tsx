@@ -156,7 +156,7 @@ export function FeaturedProfessionals() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 max-w-5xl mx-auto">
           {featuredProfessionals.map((professional) => (
             <Card key={professional.id} className="group relative overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 bg-white rounded-lg">
               {/* Verified Badge */}
@@ -214,13 +214,13 @@ export function FeaturedProfessionals() {
               </div>
 
               {/* Content Section */}
-              <CardContent className="p-5 space-y-3">
+              <CardContent className="p-4 sm:p-5 space-y-3">
                 {/* Header */}
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                  <h3 className="text-base sm:text-lg font-bold sm:font-extrabold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
                     {professional.name}
                   </h3>
-                  <p className="text-sm text-gray-600 truncate">{professional.profession}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">{professional.profession}</p>
                 </div>
 
                 {/* Rating & Location */}
@@ -243,9 +243,9 @@ export function FeaturedProfessionals() {
 
                 {/* Action Button */}
                 <Link href={`/profile/${professional.id}`}>
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg touch-target h-11 sm:h-12 text-sm sm:text-base">
                     View Profile
-                    <ArrowRight className="h-4 w-4 ml-2" />
+                    <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
                   </Button>
                 </Link>
               </CardContent>

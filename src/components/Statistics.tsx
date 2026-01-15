@@ -89,16 +89,16 @@ export function Statistics() {
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <stat.icon className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5">
+                <stat.icon className="h-7 w-7 sm:h-8 sm:w-8 text-white" aria-hidden="true" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
                 {stat.value}
               </div>
-              <h3 className="text-base md:text-lg font-medium text-indigo-100">
+              <h3 className="text-sm sm:text-base md:text-lg font-medium text-indigo-100">
                 {stat.label}
               </h3>
             </div>

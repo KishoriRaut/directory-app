@@ -117,17 +117,18 @@ export function PopularCategories() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5 max-w-7xl mx-auto">
           {categories.map((category) => (
             <Link
               key={category.name}
               href={`/?category=${category.category}`}
-              className="bg-white rounded-lg p-3 sm:p-4 md:p-5 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 group text-center touch-target shadow-sm"
+              className="bg-white rounded-lg p-3 sm:p-4 md:p-5 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 group text-center touch-target shadow-sm min-h-[100px] sm:min-h-[120px] flex flex-col items-center justify-center"
+              aria-label={`Browse ${category.name} professionals`}
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:bg-indigo-100 transition-colors">
-                <category.icon className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:bg-indigo-100 transition-colors">
+                <category.icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-indigo-600" aria-hidden="true" />
               </div>
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
                 {category.name}
               </h3>
             </Link>

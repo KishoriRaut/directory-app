@@ -1077,7 +1077,7 @@ export default function MyProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <Header user={user} onSignOut={handleSignOut} />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Onboarding Welcome Banner - Industry Best Practice */}
         {isOnboarding && (editing || !profile) && (
           <div className="max-w-3xl mx-auto mb-6">
@@ -1140,8 +1140,8 @@ export default function MyProfilePage() {
         {profile && !editing ? (
           <>
             {/* View Mode - Original Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Profile Header */}
               <Card>
                 <CardHeader>

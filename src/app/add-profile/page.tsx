@@ -275,7 +275,7 @@ export default function AddProfilePage() {
     <div className="min-h-screen bg-background">
       <Header user={user} onSignOut={handleSignOut} />
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Basic Information Section */}
@@ -302,7 +302,7 @@ export default function AddProfilePage() {
                 </div>
 
                 {/* Name and Profession */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
                     <Label htmlFor="name" className="text-sm font-medium text-gray-900 flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-500" />
@@ -367,7 +367,7 @@ export default function AddProfilePage() {
                 <p className="text-sm text-gray-600 mt-1">How clients can reach you</p>
               </CardHeader>
               <CardContent className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
                     <Label htmlFor="email" className="text-sm font-medium text-gray-900 flex items-center gap-2">
                       <Mail className="h-4 w-4 text-gray-500" />
@@ -401,7 +401,7 @@ export default function AddProfilePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div>
                     <Label htmlFor="location" className="text-sm font-medium text-gray-900 flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-500" />
