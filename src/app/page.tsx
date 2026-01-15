@@ -9,8 +9,46 @@ import { SearchFilters as SearchFiltersType } from '@/types/directory'
 import { Pagination } from '@/components/Pagination'
 import { debounce } from '@/lib/performance'
 import { Header } from '@/components/Header'
-import { HeroSearch } from '@/components/HeroSearch'
 import dynamic from 'next/dynamic'
+
+// Dynamically import ComprehensiveSearchFilters with SSR disabled to prevent hydration mismatches
+const ComprehensiveSearchFilters = dynamic(
+  () => import('@/components/ComprehensiveSearchFilters').then(mod => ({ default: mod.ComprehensiveSearchFilters })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-12 bg-gray-200 rounded-lg"></div>
+          <div className="flex gap-3">
+            <div className="h-12 bg-gray-200 rounded-lg flex-1"></div>
+            <div className="h-12 bg-gray-200 rounded-lg w-48"></div>
+            <div className="h-12 bg-gray-200 rounded-lg w-32"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+)
+
+// Dynamically import HeroSearch with SSR disabled to prevent hydration mismatches
+const HeroSearch = dynamic(() => import('@/components/HeroSearch').then(mod => ({ default: mod.HeroSearch })), {
+  ssr: false,
+  loading: () => (
+    <div className="max-w-4xl mx-auto w-full">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 text-center mb-8 leading-tight">
+        Find Your Perfect Professional
+      </h1>
+      <div className="bg-white rounded-xl shadow-xl border-2 border-gray-200 p-4 sm:p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-12 bg-gray-200 rounded-lg"></div>
+          <div className="h-12 bg-gray-200 rounded-lg"></div>
+          <div className="h-16 bg-indigo-200 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 // Lazy load below-the-fold components for better initial load performance
 const PopularCategories = dynamic(() => import('@/components/PopularCategories').then(mod => ({ default: mod.PopularCategories })), {
@@ -456,6 +494,26 @@ function HomeContent({
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <HeroSearch onSearch={handleHeroSearch} />
+        </div>
+      </section>
+
+      {/* Comprehensive Search and Filters Section */}
+      <section className="py-8 bg-gray-50 border-b border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <ComprehensiveSearchFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onSearch={() => {
+              setCurrentPage(1)
+              // Scroll to results after a short delay
+              setTimeout(() => {
+                const resultsSection = document.getElementById('results-section')
+                if (resultsSection) {
+                  resultsSection.scrollIntoView({ behavior: 'smooth' })
+                }
+              }, 100)
+            }}
+          />
         </div>
       </section>
 
