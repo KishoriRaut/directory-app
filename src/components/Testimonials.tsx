@@ -78,29 +78,30 @@ export function Testimonials() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 max-w-5xl mx-auto">
           {topTestimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 shadow-sm">
+            <div key={testimonial.id} className="bg-gray-50 rounded-xl p-5 sm:p-6 border-2 border-gray-200 shadow-sm">
               <div className="flex items-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${
+                    className={`h-4 w-4 sm:h-5 sm:w-5 ${
                       i < testimonial.rating
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-gray-300'
                     }`}
+                    aria-hidden="true"
                   />
                 ))}
               </div>
 
-              <p className="text-sm text-gray-700 leading-relaxed mb-4">
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4 sm:mb-5">
                 {testimonial.text}
               </p>
 
               <div className="border-t border-gray-200 pt-4">
-                <p className="font-bold text-gray-900 text-sm">{testimonial.name}</p>
-                <p className="text-xs text-gray-500">{testimonial.location}</p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">{testimonial.name}</p>
+                <p className="text-xs sm:text-sm text-gray-500">{testimonial.location}</p>
               </div>
             </div>
           ))}

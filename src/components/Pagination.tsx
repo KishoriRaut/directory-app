@@ -94,26 +94,26 @@ export function Pagination({
       )}
 
       {/* Pagination controls */}
-      <div className="flex items-center gap-1 flex-wrap justify-center px-2">
+      <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center px-2">
         {/* Previous button */}
         <Button
           variant="outline"
           size="sm"
           onClick={handlePrevious}
           disabled={currentPage === 1}
-          className="h-9 w-9 p-0"
+          className="h-10 w-10 sm:h-9 sm:w-9 p-0 touch-target"
           aria-label="Previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
         </Button>
 
         {/* Page numbers */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           {getVisiblePages().map((page, index) => (
             <div key={index}>
               {page === '...' ? (
-                <div className="flex h-9 w-9 items-center justify-center">
-                  <MoreHorizontal className="h-4 w-4 text-gray-400" />
+                <div className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center">
+                  <MoreHorizontal className="h-4 w-4 text-gray-400" aria-hidden="true" />
                 </div>
               ) : (
                 <Button
@@ -121,7 +121,7 @@ export function Pagination({
                   size="sm"
                   onClick={() => handlePageClick(page as number)}
                   className={cn(
-                    "h-9 w-9 p-0",
+                    "h-10 w-10 sm:h-9 sm:w-9 p-0 touch-target text-sm sm:text-base",
                     currentPage === page && "bg-indigo-600 hover:bg-indigo-700 border-indigo-600"
                   )}
                   aria-label={`Page ${page}`}
@@ -140,10 +140,10 @@ export function Pagination({
           size="sm"
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className="h-9 w-9 p-0"
+          className="h-10 w-10 sm:h-9 sm:w-9 p-0 touch-target"
           aria-label="Next page"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
         </Button>
       </div>
 
