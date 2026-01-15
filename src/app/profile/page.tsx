@@ -34,7 +34,8 @@ import {
   TrendingUp,
   Users,
   DollarSign,
-  Globe
+  Globe,
+  Loader2
 } from 'lucide-react'
 import { ImageUpload } from '@/components/ImageUpload'
 import { Header } from '@/components/Header'
@@ -97,6 +98,7 @@ export default function MyProfilePage() {
   const [hasChanges, setHasChanges] = useState(false)
   const [savingStatus, setSavingStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
   const [isOnboarding, setIsOnboarding] = useState(false)
+  const [visibilityUpdating, setVisibilityUpdating] = useState(false)
 
   useEffect(() => {
     // Check for onboarding parameter from URL
@@ -1447,9 +1449,10 @@ export default function MyProfilePage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full"
+                      className="w-full focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       onClick={async () => {
                         const newVisibility = !(profile.is_visible !== false)
+                        setVisibilityUpdating(true)
                         try {
                           // Use email-based update for better compatibility
                           const normalizedEmail = normalizeEmail(profile.email || user?.email || '')
@@ -1509,6 +1512,12 @@ export default function MyProfilePage() {
                           setProfile({ ...profile, is_visible: newVisibility })
                           setFormData({ ...formData, is_visible: newVisibility })
                           
+                          // Announce to screen readers
+                          const announcement = document.getElementById('aria-live-region')
+                          if (announcement) {
+                            announcement.textContent = `Profile visibility ${newVisibility ? 'enabled' : 'disabled'}. Your profile is now ${newVisibility ? 'visible' : 'hidden'} in search results.`
+                          }
+                          
                           // Show success message
                           setSavingStatus('success')
                           setTimeout(() => setSavingStatus('idle'), 2000)
@@ -1533,18 +1542,28 @@ export default function MyProfilePage() {
                           } else if (error?.message) {
                             alert(`Failed to update profile visibility: ${error?.message || 'Unknown error'}\n\nIf this persists, run: database/complete-profile-visibility-setup.sql`)
                           }
+                        } finally {
+                          setVisibilityUpdating(false)
                         }
                       }}
+                      disabled={visibilityUpdating}
+                      aria-label={profile.is_visible !== false ? 'Hide profile from search results' : 'Show profile in search results'}
+                      aria-busy={visibilityUpdating}
                     >
-                      {profile.is_visible !== false ? (
+                      {visibilityUpdating ? (
                         <>
-                          <EyeOff className="h-4 w-4 mr-2" />
-                          Hide Profile
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+                          <span>Updating...</span>
+                        </>
+                      ) : profile.is_visible !== false ? (
+                        <>
+                          <EyeOff className="h-4 w-4 mr-2" aria-hidden="true" />
+                          <span>Hide Profile</span>
                         </>
                       ) : (
                         <>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Show Profile
+                          <Eye className="h-4 w-4 mr-2" aria-hidden="true" />
+                          <span>Show Profile</span>
                         </>
                       )}
                     </Button>

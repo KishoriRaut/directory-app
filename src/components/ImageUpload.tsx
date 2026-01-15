@@ -250,10 +250,11 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
                   type="button"
                   size="sm"
                   variant="destructive"
-                  className="absolute -top-2 -right-2 w-8 h-8 rounded-full p-0"
+                  className="absolute -top-2 -right-2 w-8 h-8 rounded-full p-0 focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   onClick={handleRemoveImage}
+                  aria-label="Remove profile image"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
             ) : (
@@ -288,17 +289,19 @@ export function ImageUpload({ currentImage, onImageChange, className }: ImageUpl
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full"
+              className="w-full focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label={uploading ? 'Uploading image, please wait' : preview ? 'Change profile photo' : 'Upload profile photo'}
+              aria-busy={uploading}
             >
               {uploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Uploading...
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+                  <span>Uploading...</span>
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  {preview ? 'Change Photo' : 'Upload Photo'}
+                  <Upload className="h-4 w-4 mr-2" aria-hidden="true" />
+                  <span>{preview ? 'Change Photo' : 'Upload Photo'}</span>
                 </>
               )}
             </Button>

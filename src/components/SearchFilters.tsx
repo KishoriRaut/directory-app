@@ -236,53 +236,53 @@ export const SearchFilters = memo(function SearchFilters({ filters, onFiltersCha
                 {categories.find(c => c.value === filters.category)?.label}
                 <button
                   onClick={() => updateFilter('category', undefined)}
-                  className="ml-2 text-indigo-500 hover:text-indigo-700"
-                  aria-label="Remove category filter"
-                  title="Remove category filter"
+                  className="ml-2 text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                  aria-label={`Remove ${categories.find(c => c.value === filters.category)?.label} category filter`}
+                  title={`Remove ${categories.find(c => c.value === filters.category)?.label} category filter`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}
             {filters.location && (
               <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                <MapPin className="h-3 w-3 mr-1" />
+                <MapPin className="h-3 w-3 mr-1" aria-hidden="true" />
                 {filters.location}
                 <button
                   onClick={() => updateFilter('location', undefined)}
-                  className="ml-2 text-indigo-500 hover:text-indigo-700"
-                  aria-label="Remove location filter"
-                  title="Remove location filter"
+                  className="ml-2 text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                  aria-label={`Remove location filter: ${filters.location}`}
+                  title={`Remove location filter: ${filters.location}`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}
             {filters.minRating && (
               <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                <Star className="h-3 w-3 mr-1 fill-current" />
+                <Star className="h-3 w-3 mr-1 fill-current" aria-hidden="true" />
                 {filters.minRating}+ Rating
                 <button
                   onClick={() => updateFilter('minRating', undefined)}
-                  className="ml-2 text-indigo-500 hover:text-indigo-700"
-                  aria-label="Remove rating filter"
-                  title="Remove rating filter"
+                  className="ml-2 text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                  aria-label={`Remove minimum rating filter: ${filters.minRating}+`}
+                  title={`Remove minimum rating filter: ${filters.minRating}+`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}
             {filters.verified && (
               <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                <CheckCircle className="h-3 w-3 mr-1" />
+                <CheckCircle className="h-3 w-3 mr-1" aria-hidden="true" />
                 Verified Only
                 <button
                   onClick={() => updateFilter('verified', undefined)}
-                  className="ml-2 text-indigo-500 hover:text-indigo-700"
-                  aria-label="Remove verified filter"
-                  title="Remove verified filter"
+                  className="ml-2 text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                  aria-label="Remove verified only filter"
+                  title="Remove verified only filter"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}

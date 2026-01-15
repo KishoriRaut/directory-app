@@ -53,7 +53,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [mounted])
 
-  // Close menus when clicking outside
+  // Close menus when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
@@ -76,8 +76,20 @@ export function Header({ user, onSignOut }: HeaderProps) {
         setIsMobileMenuOpen(false)
       }
     }
+    
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false)
+        setIsMobileMenuOpen(false)
+      }
+    }
+    
     document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
   }, [])
 
   return (
@@ -135,7 +147,13 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         e.stopPropagation()
                         setIsDropdownOpen(!isDropdownOpen)
                       }}
-                      className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          setIsDropdownOpen(!isDropdownOpen)
+                        }
+                      }}
+                      className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       aria-label="User menu"
                       aria-expanded={isDropdownOpen}
                       aria-haspopup="true"
@@ -149,7 +167,11 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
-                      <div className="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                      <div 
+                        className="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                        role="menu"
+                        aria-label="User menu"
+                      >
                         <div className="px-4 py-3 border-b border-gray-100">
                           <p className="text-sm font-medium text-gray-900">
                             {user.email?.split('@')[0]}
@@ -159,25 +181,48 @@ export function Header({ user, onSignOut }: HeaderProps) {
                         <Link
                           href="/profile"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              setIsDropdownOpen(false)
+                            }
+                          }}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+                          role="menuitem"
+                          aria-label="Go to my profile"
                         >
-                          <User className="h-4 w-4 text-gray-500" />
+                          <User className="h-4 w-4 text-gray-500" aria-hidden="true" />
                           <span>My Profile</span>
                         </Link>
                         <Link
                           href="/settings"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              setIsDropdownOpen(false)
+                            }
+                          }}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+                          role="menuitem"
+                          aria-label="Go to settings"
                         >
-                          <Settings className="h-4 w-4 text-gray-500" />
+                          <Settings className="h-4 w-4 text-gray-500" aria-hidden="true" />
                           <span>Settings</span>
                         </Link>
                         <div className="border-t border-gray-100 mt-2 pt-2">
                           <button
                             onClick={onSignOut}
-                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                onSignOut()
+                                setIsDropdownOpen(false)
+                              }
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors focus:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-inset"
+                            role="menuitem"
+                            aria-label="Sign out"
                           >
-                            <LogOut className="h-4 w-4" />
+                            <LogOut className="h-4 w-4" aria-hidden="true" />
                             <span>Sign Out</span>
                           </button>
                         </div>

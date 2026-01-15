@@ -105,10 +105,11 @@ export const ProfessionalCard = memo(function ProfessionalCard({ professional, o
         {/* Action Button */}
         <Button 
           onClick={() => onViewProfile(professional.id)}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          aria-label={`View profile for ${professional.name}, ${professional.profession}${professional.location ? ` in ${professional.location}` : ''}`}
         >
           View Profile
-          <ArrowRight className="h-4 w-4 ml-2" />
+          <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
         </Button>
       </CardContent>
     </Card>

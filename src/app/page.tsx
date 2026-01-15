@@ -582,6 +582,9 @@ function HomeContent({
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
         {/* Professional Header */}
         <Header user={user} onSignOut={handleSignOut} />
+        
+        {/* Main content landmark */}
+        <main id="main-content" role="main">
 
       {/* Hero Section with Search - Full viewport height on desktop */}
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
@@ -902,6 +905,7 @@ function HomeContent({
           </div>
         </div>
       </footer>
+        </main>
       </div>
     </>
   )
