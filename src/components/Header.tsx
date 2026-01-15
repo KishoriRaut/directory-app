@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -33,10 +34,17 @@ interface HeaderProps {
 }
 
 export function Header({ user, onSignOut }: HeaderProps) {
+  const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  
+  // Handle navigation with menu close
+  const handleNavigation = (href: string) => {
+    setIsMobileMenuOpen(false)
+    router.push(href)
+  }
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -191,9 +199,10 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       }}
                       className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       aria-label="User menu"
-                      aria-expanded={mounted ? isDropdownOpen : false}
+                      aria-expanded={isDropdownOpen}
                       aria-haspopup="true"
                       title="User menu"
+                      suppressHydrationWarning
                     >
                       <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm">
                         <User className="h-5 w-5 text-white" />
@@ -296,7 +305,8 @@ export function Header({ user, onSignOut }: HeaderProps) {
               }}
               className="mobile-menu-trigger lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               aria-label="Toggle mobile menu"
-              aria-expanded={mounted ? isMobileMenuOpen : false}
+              aria-expanded={isMobileMenuOpen}
+              suppressHydrationWarning
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6 text-gray-700" />
@@ -359,12 +369,15 @@ export function Header({ user, onSignOut }: HeaderProps) {
                     </div>
 
                     {/* Primary Action */}
-                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)} className="mb-4 block">
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
+                    <div className="mb-4">
+                      <Button 
+                        onClick={() => handleNavigation('/add-profile')}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target"
+                      >
                         <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
                         Add Your Profile
                       </Button>
-                    </Link>
+                    </div>
 
                     {/* Account Links */}
                     <div className="space-y-1 mb-4">
@@ -406,22 +419,26 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 <div className="mb-6 pt-6 border-t border-gray-100">
                   {/* Primary Actions for Guests */}
                   <div className="space-y-3 mb-4">
-                    <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
-                        <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
-                        Add Your Profile
-                      </Button>
-                    </Link>
-                    <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
-                        Sign Up
-                      </Button>
-                    </Link>
-                    <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all min-h-[44px] touch-target">
-                        Log In
-                      </Button>
-                    </Link>
+                    <Button 
+                      onClick={() => handleNavigation('/add-profile')}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target"
+                    >
+                      <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
+                      Add Your Profile
+                    </Button>
+                    <Button 
+                      onClick={() => handleNavigation('/auth/signup')}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target"
+                    >
+                      Sign Up
+                    </Button>
+                    <Button 
+                      onClick={() => handleNavigation('/auth/signin')}
+                      variant="outline" 
+                      className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all min-h-[44px] touch-target"
+                    >
+                      Log In
+                    </Button>
                   </div>
                 </div>
               )}
