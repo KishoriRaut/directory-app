@@ -11,26 +11,6 @@ import { debounce } from '@/lib/performance'
 import { Header } from '@/components/Header'
 import dynamic from 'next/dynamic'
 
-// Dynamically import ComprehensiveSearchFilters with SSR disabled to prevent hydration mismatches
-const ComprehensiveSearchFilters = dynamic(
-  () => import('@/components/ComprehensiveSearchFilters').then(mod => ({ default: mod.ComprehensiveSearchFilters })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-12 bg-gray-200 rounded-lg"></div>
-          <div className="flex gap-3">
-            <div className="h-12 bg-gray-200 rounded-lg flex-1"></div>
-            <div className="h-12 bg-gray-200 rounded-lg w-48"></div>
-            <div className="h-12 bg-gray-200 rounded-lg w-32"></div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-)
-
 // Dynamically import HeroSearch with SSR disabled to prevent hydration mismatches
 const HeroSearch = dynamic(() => import('@/components/HeroSearch').then(mod => ({ default: mod.HeroSearch })), {
   ssr: false,
@@ -51,11 +31,6 @@ const HeroSearch = dynamic(() => import('@/components/HeroSearch').then(mod => (
 })
 
 // Lazy load below-the-fold components for better initial load performance
-const PopularCategories = dynamic(() => import('@/components/PopularCategories').then(mod => ({ default: mod.PopularCategories })), {
-  loading: () => <div className="py-12 sm:py-16 bg-white"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-96 mx-auto"></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div><div className="h-24 bg-gray-200 rounded"></div></div></div></div></div>,
-  ssr: true
-})
-
 const HowItWorks = dynamic(() => import('@/components/HowItWorks').then(mod => ({ default: mod.HowItWorks })), {
   loading: () => <div className="py-12 sm:py-16 bg-gray-50"><div className="container mx-auto px-6"><div className="animate-pulse space-y-4"><div className="h-8 bg-gray-200 rounded w-48 mx-auto"></div><div className="h-4 bg-gray-200 rounded w-80 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-4 gap-6"><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div><div className="h-32 bg-gray-200 rounded"></div></div></div></div></div>,
   ssr: true
@@ -447,6 +422,12 @@ function HomeContent({
   handleItemsPerPageChange: (items: number) => void
 }) {
   const searchParams = useSearchParams()
+  const [visibleCount, setVisibleCount] = useState(6)
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(6)
+  }, [filters])
 
   // Parse URL parameters on mount and when they change
   useEffect(() => {
@@ -494,26 +475,6 @@ function HomeContent({
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <HeroSearch onSearch={handleHeroSearch} />
-        </div>
-      </section>
-
-      {/* Comprehensive Search and Filters Section */}
-      <section className="py-8 bg-gray-50 border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <ComprehensiveSearchFilters
-            filters={filters}
-            onFiltersChange={setFilters}
-            onSearch={() => {
-              setCurrentPage(1)
-              // Scroll to results after a short delay
-              setTimeout(() => {
-                const resultsSection = document.getElementById('results-section')
-                if (resultsSection) {
-                  resultsSection.scrollIntoView({ behavior: 'smooth' })
-                }
-              }, 100)
-            }}
-          />
         </div>
       </section>
 
@@ -672,36 +633,35 @@ function HomeContent({
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                {professionals.map((professional: Professional) => (
-                  <ProfessionalCard
-                    key={professional.id}
-                    professional={professional}
-                    onViewProfile={handleViewProfile}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Pagination */}
-            {professionals.length > 0 && (
-              <div className="mt-12">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                />
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                  {professionals.slice(0, visibleCount).map((professional: Professional) => (
+                    <ProfessionalCard
+                      key={professional.id}
+                      professional={professional}
+                      onViewProfile={handleViewProfile}
+                    />
+                  ))}
+                </div>
+                
+                {/* See More Button */}
+                {professionals.length > visibleCount && (
+                  <div className="mt-12 text-center">
+                    <Button
+                      onClick={() => setVisibleCount(professionals.length)}
+                      className="px-8 py-6 text-lg font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
+                    >
+                      See More ({professionals.length - visibleCount} more)
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>
       </div>
       </section>
 
-      {/* Popular Categories - Moved below results */}
-      <PopularCategories />
 
       {/* Statistics - Trust signals below results */}
       <Statistics />
