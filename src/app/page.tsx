@@ -179,7 +179,13 @@ export default function Home() {
 
     return () => {
       isCancelled = true
-      subscription?.unsubscribe().catch(() => {})
+      if (subscription) {
+        try {
+          subscription.unsubscribe()
+        } catch (error) {
+          // Ignore unsubscribe errors
+        }
+      }
     }
   }, [])
 
@@ -249,10 +255,107 @@ export default function Home() {
           count = retryResult.count
         }
 
-        if (error) {
-          console.error('Error fetching professionals:', error)
-          setLoading(false)
-          return
+        // Check if error is meaningful (has properties with actual values) or just an empty object
+        const hasMeaningfulError = error && (
+          (error.code && error.code !== '') || 
+          (error.message && error.message !== '') || 
+          (error.details && error.details !== '') || 
+          (error.hint && error.hint !== '') ||
+          (Object.keys(error).length > 0 && Object.values(error).some(v => v != null && v !== ''))
+        )
+
+        if (hasMeaningfulError && error) {
+          // Build error info only with non-null/undefined/empty string values
+          const errorData: any = {}
+          if (error.code && error.code !== '') errorData.code = error.code
+          if (error.message && error.message !== '') errorData.message = error.message
+          if (error.details && error.details !== '') errorData.details = error.details
+          if (error.hint && error.hint !== '') errorData.hint = error.hint
+          if ((error as any)?.status) errorData.status = (error as any).status
+          if ((error as any)?.statusText) errorData.statusText = (error as any).statusText
+          
+          const errorKeys = Object.keys(error).filter(k => {
+            const value = error[k as keyof typeof error]
+            return value != null && value !== ''
+          })
+          if (errorKeys.length > 0) {
+            errorData.keys = errorKeys
+          }
+
+          // Filter out any undefined/null/empty values that might have been added
+          const filteredErrorData: any = {}
+          Object.keys(errorData).forEach(key => {
+            const value = errorData[key]
+            if (value != null && value !== '') {
+              filteredErrorData[key] = value
+            }
+          })
+
+          // Only log if we have meaningful error info with actual values
+          // Double-check: ensure filteredErrorData has at least one non-empty value
+          const hasActualValues = Object.keys(filteredErrorData).length > 0 && 
+            Object.values(filteredErrorData).some(v => v != null && v !== '' && v !== undefined)
+          
+          if (hasActualValues) {
+            // Verify one more time that filteredErrorData is not empty
+            const nonEmptyValues = Object.entries(filteredErrorData).filter(([_, v]) => 
+              v != null && v !== '' && v !== undefined && 
+              !(Array.isArray(v) && v.length === 0) &&
+              !(typeof v === 'object' && Object.keys(v).length === 0)
+            )
+            
+            if (nonEmptyValues.length > 0) {
+              // Rebuild with only non-empty values
+              const finalErrorData: any = {}
+              nonEmptyValues.forEach(([key, value]) => {
+                // Final check: only add if value is truly meaningful
+                if (value != null && value !== '' && value !== undefined) {
+                  // Check for empty arrays/objects
+                  if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                      finalErrorData[key] = value
+                    }
+                  } else if (typeof value === 'object') {
+                    if (Object.keys(value).length > 0) {
+                      finalErrorData[key] = value
+                    }
+                  } else {
+                    finalErrorData[key] = value
+                  }
+                }
+              })
+              
+              // Final verification: only log if finalErrorData has actual content
+              const hasFinalValues = Object.keys(finalErrorData).length > 0 && 
+                Object.values(finalErrorData).some(v => {
+                  if (v == null || v === '' || v === undefined) return false
+                  if (Array.isArray(v) && v.length === 0) return false
+                  if (typeof v === 'object' && Object.keys(v).length === 0) return false
+                  return true
+                })
+              
+              if (hasFinalValues) {
+                console.error('Error fetching professionals:', finalErrorData)
+                setLoading(false)
+                return
+              }
+            }
+          }
+          
+          // If we get here, the error wasn't actually meaningful - don't log it
+          // Just continue processing (treat as no error)
+          console.log('Query returned empty error object (treating as success, no error to log)')
+          // Don't return - continue processing as if there's no error
+        }
+
+        // If error exists but is not meaningful (empty object), treat as no error
+        // This can happen with Supabase queries that return empty error objects
+        if (error && !hasMeaningfulError) {
+          console.log('Query returned empty error object (treating as success):', {
+            hasData: !!data,
+            dataLength: data?.length || 0
+          })
+          // Continue processing - empty error objects are not real errors
         }
 
         // Type assertion for the data

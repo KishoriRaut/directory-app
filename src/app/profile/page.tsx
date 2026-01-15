@@ -190,10 +190,26 @@ export default function MyProfilePage() {
       console.log('Fetching profile for email:', normalizedEmail)
       
       // Try exact match first (most efficient) - explicitly select all fields including image_url
+      // CRITICAL: Explicitly select image_url to ensure it's included (some RLS policies might hide it)
       let { data, error } = await supabase
         .from('professionals')
         .select(`
-          *,
+          id,
+          name,
+          profession,
+          category,
+          email,
+          phone,
+          location,
+          experience,
+          rating,
+          description,
+          availability,
+          image_url,
+          verified,
+          created_at,
+          updated_at,
+          is_visible,
           services (
             service_name
           )
@@ -206,6 +222,8 @@ export default function MyProfilePage() {
         dataKeys: data ? Object.keys(data) : [],
         hasImage_url: data ? !!(data as any).image_url : false,
         image_url_value: data ? (data as any).image_url : null,
+        image_url_type: data ? typeof (data as any).image_url : null,
+        image_url_length: data && (data as any).image_url ? String((data as any).image_url).length : 0,
         fullData: data
       })
 
@@ -215,7 +233,22 @@ export default function MyProfilePage() {
         const { data: ilikeData, error: ilikeError } = await supabase
           .from('professionals')
           .select(`
-            *,
+            id,
+            name,
+            profession,
+            category,
+            email,
+            phone,
+            location,
+            experience,
+            rating,
+            description,
+            availability,
+            image_url,
+            verified,
+            created_at,
+            updated_at,
+            is_visible,
             services (
               service_name
             )
@@ -253,7 +286,22 @@ export default function MyProfilePage() {
           const { data: allProfiles, error: allError } = await supabase
             .from('professionals')
             .select(`
-              *,
+              id,
+              name,
+              profession,
+              category,
+              email,
+              phone,
+              location,
+              experience,
+              rating,
+              description,
+              availability,
+              image_url,
+              verified,
+              created_at,
+              updated_at,
+              is_visible,
               services (
                 service_name
               )
@@ -281,24 +329,134 @@ export default function MyProfilePage() {
         }
       }
 
-      console.log('Profile fetch result:', { data: data ? 'Found' : 'Not found', error })
+      // Check if error is meaningful (has properties with actual values) or just an empty object
+      const hasMeaningfulError = error && (
+        (error.code && error.code !== '') || 
+        (error.message && error.message !== '') || 
+        (error.details && error.details !== '') || 
+        (error.hint && error.hint !== '') ||
+        (Object.keys(error).length > 0 && Object.values(error).some(v => v != null && v !== ''))
+      )
 
-      if (error) {
+      // Build errorInfo only with non-null/undefined/empty string values
+      let errorInfo: any = null
+      if (hasMeaningfulError && error) {
+        const errorData: any = {}
+        if (error.code && error.code !== '') errorData.code = error.code
+        if (error.message && error.message !== '') errorData.message = error.message
+        if (error.details && error.details !== '') errorData.details = error.details
+        if (error.hint && error.hint !== '') errorData.hint = error.hint
+        if ((error as any)?.status) errorData.status = (error as any).status
+        if ((error as any)?.statusText) errorData.statusText = (error as any).statusText
+        
+        const errorKeys = Object.keys(error).filter(k => {
+          const value = error[k as keyof typeof error]
+          return value != null && value !== ''
+        })
+        if (errorKeys.length > 0) {
+          errorData.keys = errorKeys
+        }
+        
+        // Filter out any undefined/null/empty values that might have been added
+        const filteredErrorData: any = {}
+        Object.keys(errorData).forEach(key => {
+          const value = errorData[key]
+          if (value != null && value !== '') {
+            filteredErrorData[key] = value
+          }
+        })
+        
+        // Only set errorInfo if we have at least one meaningful property with actual value
+        if (Object.keys(filteredErrorData).length > 0) {
+          errorInfo = filteredErrorData
+        }
+      }
+
+      // Only log error info if it's meaningful (not empty object)
+      console.log('Profile fetch result:', { 
+        data: data ? 'Found' : 'Not found', 
+        ...(errorInfo ? { error: errorInfo } : {}),
+        hasError: !!error,
+        hasMeaningfulError
+      })
+
+      // Only treat as error if it's a meaningful error (not just "no rows found" or empty object)
+      if (hasMeaningfulError && error && error.code !== 'PGRST116') {
         // Handle 406 and other errors gracefully
-        if (error.code === 'PGRST116') {
-          // PGRST116 means no rows found - this is expected when profile doesn't exist
-          console.log('No profile found (PGRST116) for email:', normalizedEmail)
-          setProfile(null)
-        } else if (error.message?.includes('406') || error.message?.includes('Not Acceptable')) {
+        if (error.message?.includes('406') || error.message?.includes('Not Acceptable')) {
           // 406 error - treat as no profile
           console.log('406 error - treating as no profile for email:', normalizedEmail)
           setProfile(null)
         } else {
-          // Other errors - log but don't fail completely
-          console.error('Error fetching profile:', error)
+          // Other errors - log with full details but don't fail completely
+          // Only log if we have meaningful error info with actual values
+          if (errorInfo && Object.keys(errorInfo).length > 0) {
+            // Final verification: ensure errorInfo has actual non-empty values
+            const hasActualValues = Object.values(errorInfo).some(v => {
+              if (v == null || v === '' || v === undefined) return false
+              if (Array.isArray(v) && v.length === 0) return false
+              if (typeof v === 'object' && Object.keys(v).length === 0) return false
+              return true
+            })
+            
+            if (hasActualValues) {
+              // Rebuild with only truly non-empty values
+              const finalErrorInfo: any = {}
+              Object.entries(errorInfo).forEach(([key, value]) => {
+                if (value != null && value !== '' && value !== undefined) {
+                  if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                      finalErrorInfo[key] = value
+                    }
+                  } else if (typeof value === 'object') {
+                    if (Object.keys(value).length > 0) {
+                      finalErrorInfo[key] = value
+                    }
+                  } else {
+                    finalErrorInfo[key] = value
+                  }
+                }
+              })
+              
+              // Final check: only log if finalErrorInfo has content
+              if (Object.keys(finalErrorInfo).length > 0 && 
+                  Object.values(finalErrorInfo).some(v => {
+                    if (v == null || v === '' || v === undefined) return false
+                    if (Array.isArray(v) && v.length === 0) return false
+                    if (typeof v === 'object' && Object.keys(v).length === 0) return false
+                    return true
+                  })) {
+                console.error('Error fetching profile:', {
+                  email: normalizedEmail,
+                  ...finalErrorInfo
+                })
+              } else {
+                // Don't log empty object - treat as no error
+                console.log('Query returned empty error object (treating as success, no error to log)')
+              }
+            } else {
+              // Don't log empty object - treat as no error
+              console.log('Query returned empty error object (treating as success, no error to log)')
+            }
+          } else {
+            // Don't log empty object - treat as no error
+            console.log('Query returned empty error object (treating as success, no error to log)')
+          }
           // Still set profile to null to allow create mode
           setProfile(null)
         }
+        setLoading(false)
+        return
+      }
+
+      // PGRST116, empty error object, or no data means no profile found - this is expected
+      if (error?.code === 'PGRST116' || !data || (!hasMeaningfulError && error)) {
+        console.log('No profile found for email:', normalizedEmail, {
+          errorCode: error?.code,
+          hasError: !!error,
+          hasMeaningfulError
+        })
+        setProfile(null)
         setLoading(false)
         return
       }
@@ -642,7 +800,22 @@ export default function MyProfilePage() {
       const { data: completeProfileData, error: fetchError } = await supabase
         .from('professionals')
         .select(`
-          *,
+          id,
+          name,
+          profession,
+          category,
+          email,
+          phone,
+          location,
+          experience,
+          rating,
+          description,
+          availability,
+          image_url,
+          verified,
+          created_at,
+          updated_at,
+          is_visible,
           services (
             service_name
           )
