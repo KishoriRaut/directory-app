@@ -886,10 +886,14 @@ function HomeContent({
                   </Link>
                 </li>
                 <li>
-                  <span className="text-sm text-gray-500">Terms of Service</span>
+                  <Link href="/terms" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Terms of Service
+                  </Link>
                 </li>
                 <li>
-                  <span className="text-sm text-gray-500">Privacy Policy</span>
+                  <Link href="/privacy" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">
+                    Privacy Policy
+                  </Link>
                 </li>
               </ul>
             </div>
