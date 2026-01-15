@@ -1,15 +1,5 @@
 ICON PLACEHOLDER
 
-This file is a placeholder. You need to create two PNG icon files:
+This file is a placeholder. You can add favicon and app icons here if needed.
 
-1. icon-192x192.png (192x192 pixels)
-2. icon-512x512.png (512x512 pixels)
-
-Place them in this /public folder.
-
-The PWA will work without icons, but they're recommended for:
-- Home screen icons
-- Splash screens
-- Better user experience
-
-See PWA_SETUP.md for icon creation instructions.
+Place icon files in this /public folder.
