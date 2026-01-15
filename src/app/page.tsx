@@ -44,7 +44,7 @@ const Statistics = dynamic(() => import('@/components/Statistics').then(mod => (
 })
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { X, Search, CheckCircle, Star, Clock, MapPin } from 'lucide-react'
+import { X, Search, CheckCircle, Star, Clock, MapPin, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured, buildProfessionalsQuery, checkIsVisibleColumnExists, setIsVisibleColumnExists, isMissingColumnError } from '@/lib/supabase'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -813,6 +813,74 @@ function HomeContent({
 
       {/* How It Works - Moved down after results (industry standard) */}
       <HowItWorks />
+
+      {/* CTA Section for Professionals - Encourage profile creation */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
+              Are You a Professional?
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-indigo-100 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
+              Join thousands of trusted professionals and grow your business. Create your free profile today and start connecting with clients in your area.
+            </p>
+            <ClientOnly
+              fallback={
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <div className="h-12 w-48 bg-white/20 rounded-lg animate-pulse" />
+                  <div className="h-12 w-32 bg-white/20 rounded-lg animate-pulse" />
+                </div>
+              }
+            >
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                {user ? (
+                  <>
+                    <Link href="/add-profile">
+                      <Button className="bg-white text-indigo-600 hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all min-h-[44px] touch-target">
+                        <Briefcase className="h-5 w-5 mr-2" aria-hidden="true" />
+                        Add Your Profile
+                      </Button>
+                    </Link>
+                    <Link href="/how-it-works">
+                      <Button variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all min-h-[44px] touch-target bg-transparent">
+                        Learn More
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth/signup">
+                      <Button className="bg-white text-indigo-600 hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all min-h-[44px] touch-target">
+                        <Briefcase className="h-5 w-5 mr-2" aria-hidden="true" />
+                        Get Started Free
+                      </Button>
+                    </Link>
+                    <Link href="/how-it-works">
+                      <Button variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all min-h-[44px] touch-target bg-transparent">
+                        Learn More
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </ClientOnly>
+            <div className="mt-8 sm:mt-10 flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm sm:text-base text-indigo-100">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" aria-hidden="true" />
+                <span>Free to join</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" aria-hidden="true" />
+                <span>No hidden fees</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" aria-hidden="true" />
+                <span>Verified profiles</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Testimonials */}
       <Testimonials />
