@@ -26,7 +26,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Siscora" }],
   creator: "Siscora",
   publisher: "Siscora",
-  manifest: "/manifest.json",
   robots: {
     index: true,
     follow: true,
@@ -63,11 +62,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Siscora Pro",
-  },
   icons: {
     icon: [
       { url: "/vercel.svg", sizes: "any", type: "image/svg+xml" },
@@ -93,11 +87,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#4f46e5" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Siscora Pro" />
         {/* DNS prefetch and preconnect for external resources - Performance optimization */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -124,14 +114,6 @@ export default function RootLayout({
                   }
                 });
                 
-                // Unregister any stale service workers that might cause MIME type errors
-                if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    for(let registration of registrations) {
-                      registration.unregister();
-                    }
-                  });
-                }
               })();
             `,
           }}
