@@ -584,7 +584,7 @@ function HomeContent({
         <Header user={user} onSignOut={handleSignOut} />
         
         {/* Main content landmark */}
-        <main id="main-content" role="main">
+        <main id="main-content" suppressHydrationWarning>
 
       {/* Hero Section with Search - Full viewport height on desktop */}
       <section className="bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 sm:py-16 lg:min-h-screen lg:flex lg:items-center">
@@ -632,7 +632,7 @@ function HomeContent({
               </div>
             </aside>
 
-            <main className="lg:col-span-3 order-1 lg:order-2 relative">
+            <div className="lg:col-span-3 order-1 lg:order-2 relative">
             {/* Results Header */}
             <div className="mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -796,7 +796,7 @@ function HomeContent({
                 />
               </div>
             )}
-          </main>
+          </div>
         </div>
       </div>
       </section>

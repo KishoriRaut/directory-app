@@ -53,30 +53,37 @@ export function Header({ user, onSignOut }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [mounted])
 
-  // Close menus when clicking outside or pressing Escape
+  // Close mobile menu when clicking outside
   useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return () => {} // Always return a cleanup function
+    }
+    
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
       
-      // Never interfere with any navigation links, buttons, or header elements
-      if (target.closest('header a') || target.closest('header button') || target.closest('nav')) {
+      // Don't close if clicking on mobile menu trigger or inside mobile menu
+      if (target.closest('.mobile-menu-trigger') || target.closest('.mobile-menu')) {
         return
       }
       
-      // Close dropdown if clicking outside of it
-      if (!target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
-        setIsDropdownOpen(false)
-      }
-      
-      // Close mobile menu only if clicking outside of it
-      const isMobileMenuElement = target.closest('.mobile-menu')
-      const isMobileMenuTrigger = target.closest('.mobile-menu-trigger')
-      
-      if (!isMobileMenuElement && !isMobileMenuTrigger) {
-        setIsMobileMenuOpen(false)
-      }
+      // Close mobile menu if clicking outside
+      setIsMobileMenuOpen(false)
     }
     
+    // Add listener with a small delay to avoid immediate closure on button click
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 100)
+    
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+    }
+  }, [isMobileMenuOpen])
+
+  // Handle Escape key for both menus
+  useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsDropdownOpen(false)
@@ -84,13 +91,39 @@ export function Header({ user, onSignOut }: HeaderProps) {
       }
     }
     
-    document.addEventListener('click', handleClickOutside)
     document.addEventListener('keydown', handleEscape)
     return () => {
-      document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
   }, [])
+  
+  // Handle dropdown click outside
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      return () => {} // Always return a cleanup function
+    }
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      
+      // Don't close if clicking on dropdown trigger or inside dropdown menu
+      if (target.closest('.dropdown-trigger') || target.closest('.dropdown-menu')) {
+        return
+      }
+      
+      // Close dropdown if clicking outside
+      setIsDropdownOpen(false)
+    }
+    
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 100)
+    
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+    }
+  }, [isDropdownOpen])
 
   return (
     <>
@@ -155,7 +188,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                       }}
                       className="dropdown-trigger flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       aria-label="User menu"
-                      aria-expanded={isDropdownOpen}
+                      aria-expanded={mounted ? isDropdownOpen : false}
                       aria-haspopup="true"
                       title="User menu"
                     >
@@ -254,8 +287,13 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
             {/* Mobile Menu Button */}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="mobile-menu-trigger lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsMobileMenuOpen(!isMobileMenuOpen)
+              }}
+              className="mobile-menu-trigger lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label="Toggle mobile menu"
+              aria-expanded={mounted ? isMobileMenuOpen : false}
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6 text-gray-700" />
@@ -268,7 +306,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white">
+          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white z-40">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
               {/* Mobile Navigation */}
               <nav className="space-y-1">
