@@ -20,7 +20,10 @@ import {
   Briefcase,
   Building,
   ArrowRight,
-  LayoutGrid
+  LayoutGrid,
+  Home,
+  FileText,
+  Lock
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
@@ -306,14 +309,22 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white z-40">
+          <div className="mobile-menu lg:hidden border-t border-gray-100 bg-white z-40 max-h-[calc(100vh-80px)] overflow-y-auto">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
-              {/* Mobile Navigation */}
-              <nav className="space-y-1">
+              {/* Main Navigation - Industry Standard: Start with Home */}
+              <nav className="space-y-1 mb-6">
+                <Link
+                  href="/"
+                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors min-h-[44px] touch-target"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Home className="h-5 w-5" aria-hidden="true" />
+                  <span>Home</span>
+                </Link>
                 <Link
                   key="categories-mobile-nav"
                   href="/#categories"
-                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors min-h-[44px] touch-target"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <LayoutGrid className="h-5 w-5" aria-hidden="true" />
@@ -322,7 +333,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 <Link
                   key="how-it-works-mobile-nav"
                   href="/how-it-works"
-                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="mobile-menu flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors min-h-[44px] touch-target"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Shield className="h-5 w-5" aria-hidden="true" />
@@ -330,76 +341,111 @@ export function Header({ user, onSignOut }: HeaderProps) {
                 </Link>
               </nav>
 
-              {/* Mobile Actions */}
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                {user ? (
-                  <>
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-white">
-                        <User className="h-5 w-5 text-white" />
+              {/* User Section - Industry Standard: Show user info, then account actions */}
+              {user ? (
+                <>
+                  {/* User Info - Compact display */}
+                  <div className="mb-6 pt-6 border-t border-gray-100">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-lg mb-4">
+                      <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="h-4 w-4 text-white" aria-hidden="true" />
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-sm truncate">
                           {user.email?.split('@')[0]}
                         </p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
                     </div>
+
+                    {/* Primary Action */}
                     <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)} className="mb-4 block">
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
-                        <Briefcase className="h-4 w-4 mr-2" />
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
+                        <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
                         Add Your Profile
                       </Button>
                     </Link>
+
+                    {/* Account Links */}
                     <div className="space-y-1 mb-4">
                       <Link
                         href="/profile"
-                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors min-h-[44px] touch-target"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <User className="h-4 w-4 text-gray-500" />
+                        <User className="h-4 w-4 text-gray-500" aria-hidden="true" />
                         <span>My Profile</span>
                       </Link>
                       <Link
                         href="/settings"
-                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="mobile-menu flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors min-h-[44px] touch-target"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <Settings className="h-4 w-4 text-gray-500" />
+                        <Settings className="h-4 w-4 text-gray-500" aria-hidden="true" />
                         <span>Settings</span>
                       </Link>
                     </div>
-                    <button
-                      onClick={() => {
-                        onSignOut()
-                        setIsMobileMenuOpen(false)
-                      }}
-                      className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors mb-4"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign Out</span>
-                    </button>
-                  </>
-                ) : (
+
+                    {/* Sign Out - Clearly separated */}
+                    <div className="pt-4 border-t border-gray-100">
+                      <button
+                        onClick={() => {
+                          onSignOut()
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] touch-target"
+                        aria-label="Sign out"
+                      >
+                        <LogOut className="h-4 w-4" aria-hidden="true" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="mb-6 pt-6 border-t border-gray-100">
+                  {/* Primary Actions for Guests */}
                   <div className="space-y-3 mb-4">
                     <Link href="/add-profile" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
-                        <Briefcase className="h-4 w-4 mr-2" />
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
+                        <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
                         Add Your Profile
                       </Button>
                     </Link>
                     <Link href="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all min-h-[44px] touch-target">
                         Sign Up
                       </Button>
                     </Link>
                     <Link href="/auth/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                      <Button variant="outline" className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all min-h-[44px] touch-target">
                         Log In
                       </Button>
                     </Link>
                   </div>
-                )}
+                </div>
+              )}
+
+              {/* Legal Links - Industry Standard: At the bottom */}
+              <div className="pt-6 mt-6 border-t border-gray-100">
+                <nav className="space-y-1">
+                  <Link
+                    href="/terms"
+                    className="mobile-menu flex items-center gap-3 text-gray-600 hover:text-indigo-600 text-sm py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors min-h-[44px] touch-target"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <FileText className="h-4 w-4" aria-hidden="true" />
+                    <span>Terms of Service</span>
+                  </Link>
+                  <Link
+                    href="/privacy"
+                    className="mobile-menu flex items-center gap-3 text-gray-600 hover:text-indigo-600 text-sm py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors min-h-[44px] touch-target"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Lock className="h-4 w-4" aria-hidden="true" />
+                    <span>Privacy Policy</span>
+                  </Link>
+                </nav>
               </div>
             </div>
           </div>

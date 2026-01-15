@@ -179,7 +179,8 @@ export function FeaturedProfessionals() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
-                      loading="lazy"
+                      loading="eager"
+                      priority
                       decoding="async"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement

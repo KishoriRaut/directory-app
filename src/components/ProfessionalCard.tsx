@@ -12,9 +12,10 @@ import { getDeterministicCount, getInitials } from '@/lib/utils'
 interface ProfessionalCardProps {
   professional: Professional
   onViewProfile: (id: string) => void
+  priority?: boolean // For above-the-fold images (LCP optimization)
 }
 
-export const ProfessionalCard = memo(function ProfessionalCard({ professional, onViewProfile }: ProfessionalCardProps) {
+export const ProfessionalCard = memo(function ProfessionalCard({ professional, onViewProfile, priority = false }: ProfessionalCardProps) {
 
   const reviewCount = getDeterministicCount(professional.id)
 
@@ -40,7 +41,8 @@ export const ProfessionalCard = memo(function ProfessionalCard({ professional, o
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              loading="lazy"
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
               decoding="async"
               onError={(e) => {
                 const target = e.target as HTMLImageElement

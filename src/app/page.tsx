@@ -774,11 +774,12 @@ function HomeContent({
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                {professionals.map((professional: Professional) => (
+                {professionals.map((professional: Professional, index: number) => (
                   <ProfessionalCard
                     key={professional.id}
                     professional={professional}
                     onViewProfile={handleViewProfile}
+                    priority={index < 6} // Eager load first 6 cards for LCP optimization (covers mobile: 2, tablet: 4, desktop: 6)
                   />
                 ))}
               </div>
